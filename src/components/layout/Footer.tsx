@@ -24,7 +24,7 @@ const navLinks = [
 
 const Footer = () => {
   return (
-    <div className="bg-sidebar/95 w-19/20 mx-auto rounded-xl px-6 md:px-14 py-16 mb-8 border border-neutral-200/50 dark:border-neutral-700/50">
+    <div className="bg-sidebar/95 w-19/20 max-w-[1220px] mx-auto rounded-xl px-6 md:px-14 py-16 mb-8 border border-neutral-200/50 dark:border-neutral-700/50">
         <div className="flex items-start flex-wrap gap-y-10">
             <div className="flex flex-col gap-y-2 items-start md:w-1/2 lg:w-3/5">
                 <button className="p-2 hover:bg-background/80 transition-all rounded-xl cursor-pointer mx-auto md:mx-0">
