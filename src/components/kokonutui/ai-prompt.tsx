@@ -148,7 +148,7 @@ export default function AI_Prompt() {
         <div className="overflow-y-auto" style={{ maxHeight: "300px" }}>
           <Textarea
             className={cn(
-              "w-full resize-none rounded-xl rounded-b-none border-none bg-black/5 px-4 py-3 placeholder:text-black/70 focus-visible:ring-0 focus-visible:ring-offset-0  dark:text-white dark:placeholder:text-white/70",
+              "w-full resize-none rounded-xl rounded-b-none border-none bg-black/5 dark:bg-white/5 px-4 py-3 placeholder:text-black/70 focus-visible:ring-0 focus-visible:ring-offset-0  dark:text-white dark:placeholder:text-white/70",
               "min-h-[62px]"
             )}
             id="ai-input-15"
