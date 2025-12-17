@@ -5,6 +5,7 @@ import {
 import { Providers } from './providers'
 import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
+import { TRPCReactProvider } from '@/trpc/client'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -28,13 +29,15 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-      <html lang="en" suppressHydrationWarning>
-        <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-          <Providers>
-            {children}
-          </Providers>
-        </body>
-      </html>
+      <TRPCReactProvider>
+        <html lang="en" suppressHydrationWarning>
+          <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+            <Providers>
+              {children}
+            </Providers>
+          </body>
+        </html>
+      </TRPCReactProvider>
     </ClerkProvider>
   )
 }

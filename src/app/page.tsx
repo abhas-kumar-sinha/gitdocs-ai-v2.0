@@ -1,5 +1,4 @@
 import { ClerkLoaded, ClerkLoading, SignedIn, SignedOut } from "@clerk/nextjs";
-
 import CircleBackground from "@/components/animated-backgrounds/CircleBackground";
 import LandingPage from "@/pages/LandingPage";
 import LoadingScreen from "@/components/common/LoadingScreen";
