@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import Image from "next/image"
 import { Button } from "../ui/button"
-import { ChevronDown, ChevronLeft, History } from "lucide-react"
+import { ChevronDown, ChevronLeft, Github, GitPullRequestArrow, History } from "lucide-react"
 import AI_Prompt from "../kokonutui/ai-prompt"
 import MessageContainer from "./MessageContainer"
 import Toolbar from "../kokonutui/toolbar"
@@ -59,14 +59,21 @@ const ProjectView = ({projectId} : {projectId : string}) => {
             </div>
         </ResizablePanel>
         <ResizableHandle withHandle />
-        <ResizablePanel className="h-screen relative flex flex-col" minSize={50}>
+        <ResizablePanel className="h-screen relative flex flex-col" defaultSize={67} minSize={50}>
             <div className="flex items-center justify-between px-4 absolute w-full top-0 h-12">
                 
                 <Toolbar />
 
-                <Button variant="ghost" size="icon-sm">
-                    <History />
-                </Button>
+                <div className="flex items-center gap-x-2">
+                    <Button variant="outline" size="icon-sm">
+                        <Github />
+                    </Button>
+
+                    <Button variant="default" size="sm">
+                        <GitPullRequestArrow /> 
+                        Commit
+                    </Button>
+                </div>
             </div>
         </ResizablePanel>
     </ResizablePanelGroup>

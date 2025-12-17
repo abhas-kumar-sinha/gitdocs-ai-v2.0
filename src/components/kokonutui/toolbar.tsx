@@ -33,8 +33,8 @@ const buttonVariants = {
     },
     animate: (isSelected: boolean) => ({
         gap: isSelected ? ".5rem" : 0,
-        paddingLeft: isSelected ? "1rem" : ".5rem",
-        paddingRight: isSelected ? "1rem" : ".5rem",
+        paddingLeft: isSelected ? ".5rem" : ".5rem",
+        paddingRight: isSelected ? ".5rem" : ".5rem",
     }),
 };
 
@@ -85,10 +85,10 @@ export function Toolbar({
                             onClick={() => handleItemClick(item.id)}
                             transition={transition  as TransitionWithValueOverrides<"width" | "height" | "left" | "right" | "top" | "bottom">}
                             className={cn(
-                                "relative flex items-center rounded-lg py-1.5 px-0",
+                                "relative flex items-center rounded-lg py-1.5",
                                 "text-xs font-medium transition-colors duration-300 cursor-pointer",
                                 selected === item.id
-                                    ? "bg-[#1F9CFE] text-white rounded-lg"
+                                    ? "bg-primary/30 border border-primary/50 text-white rounded-lg"
                                     : "text-muted-foreground hover:bg-muted hover:text-foreground"
                             )}
                         >
