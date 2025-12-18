@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
   provider = "prisma-client"
@@ -13,18 +8,46 @@ datasource db {
   provider = "postgresql"
 }
 
-model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
-  posts Post[]
+model Project {
+  id        String @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  messages Message[]
 }
 
-model Post {
-  id        Int     @id @default(autoincrement())
-  title     String
-  content   String?
-  published Boolean @default(false)
-  authorId  Int
-  author    User    @relation(fields: [authorId], references: [id])
+enum MessageRole {
+  USER
+  ASSISTANT
+}
+
+enum MessageType {
+  RESULT
+  ERROR
+}
+
+model Message {
+  id        String @id @default(cuid())
+  content   String
+  role      MessageRole
+  type      MessageType
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId String
+
+  fragments Fragment?
+}
+
+model Fragment {
+  id        String @id @default(cuid())
+  
+  message   Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  messageId String @unique
+  
+  readme    String @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

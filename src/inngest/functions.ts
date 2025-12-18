@@ -68,10 +68,12 @@ const SupportedModels = [
     },
     toolCalling: true
   }
-]
+];
 
-export const aiCall = inngest.createFunction(
-  { id: "summarize-contents" },
+
+
+export const codeAgent = inngest.createFunction(
+  { id: "code-agent" },
   { event: "app/ticket.created" },
   async ({ event }) => {
 
