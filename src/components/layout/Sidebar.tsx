@@ -1,18 +1,18 @@
 "use client"
 
 import { cn } from "@/lib/utils";
-import { Blocks, Book, Box, House, Inbox, PanelRight, Search, Star } from "lucide-react";
+import { Blocks, Book, Box, Github, House, Inbox, PanelRight, Search, Star } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react"
 import { Button } from "../ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+// import {
+//   DropdownMenu,
+//   DropdownMenuContent,
+//   DropdownMenuItem,
+//   DropdownMenuLabel,
+//   DropdownMenuSeparator,
+//   DropdownMenuTrigger,
+// } from "@/components/ui/dropdown-menu"
 import { UserButton } from "@clerk/nextjs";
 import SidebarItem from "../common/SidebarItem";
 import Link from "next/link";
@@ -59,6 +59,14 @@ const sidebarBottomItems = [
 const Sidebar = () => {
 
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
+
+  const install = () => {
+    window.open(
+      "/api/auth/github",
+      "github-install",
+      "width=850,height=500,top=100,left=100,resizable=yes,scrollbars=yes"
+    );
+  };
 
   return (
     <>
@@ -143,17 +151,21 @@ const Sidebar = () => {
         </div>
       </div>
 
-      {/* TODO: Implement Github */}
-      <DropdownMenu >
-        <DropdownMenuTrigger>
-          <Button onClick={(e) => e.stopPropagation()} size="sm" variant="sidebarButton" className="w-full my-2">
-            M
-          </Button>
-        </DropdownMenuTrigger>
+      {/* <DropdownMenu>
+        <DropdownMenuTrigger className="w-full"> */}
+          <button onClick={(e) => {e.stopPropagation(); install()}} className="cursor-pointer w-full my-1.5 py-1 px-[4.5px] border border-neutral-700/50 group/button rounded-md bg-background hover:bg-neutral-300/50 dark:hover:bg-neutral-700/50 flex items-center text-foreground hover:text-foreground/90">
+            <div className="flex items-center justify-center bg-accent py-1 px-[5px] rounded-md">
+              <Github size={15} />
+            </div>
+            <span className={cn("ms-2 whitespace-nowrap text-sm", isSidebarOpen ? "" : "hidden")}>
+              Connect Github
+            </span>
+          </button>
+        {/* </DropdownMenuTrigger>
         <DropdownMenuContent>
           hello
         </DropdownMenuContent>
-      </DropdownMenu>
+      </DropdownMenu> */}
 
       {sidebarTopItems.map((Item, idx) => {
         return (

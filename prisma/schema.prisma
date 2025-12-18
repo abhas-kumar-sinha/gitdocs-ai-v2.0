@@ -20,6 +20,9 @@ model User {
   
   // Onboarding
   onboardingCompleted Boolean @default(false)
+
+  // per-user limit (default 5 chats/day)
+  dailyAiChatLimit Int @default(5)
   
   // Timestamps
   createdAt DateTime @default(now())
@@ -28,6 +31,7 @@ model User {
   // Relations
   installations Installation[]
   projects      Project[]
+  aiUsages      AiUsage[]
   
   @@index([clerkId])
   @@index([email])
@@ -215,23 +219,22 @@ model WebhookEvent {
 
 // ============= Rate Limiting & Usage =============
 
-model ApiUsage {
+model AiUsage {
   id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id])
   userId    String
-  
-  // Usage metrics
+
   date      DateTime @db.Date
-  endpoint  String
-  count     Int      @default(1)
-  
-  // Cost tracking (if applicable)
+
+  count     Int      @default(0)
+
   tokensUsed Int?
-  cost      Float?
-  
+  cost       Float?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
-  @@unique([userId, date, endpoint])
+
+  @@unique([userId, date])
   @@index([userId])
   @@index([date])
 }

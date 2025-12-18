@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
 
   const { userId } = await auth();
 
-  if (!userId) {
+  if (!userId || (userId !== state)) {
     return redirect('/onboarding?error=unauthorized');
   }
 

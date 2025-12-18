@@ -1,6 +1,6 @@
 import { inngest } from '../client';
 import { prisma } from '@/lib/db';
-import { getAuthenticatedOctokit } from '@/lib/github/appAuth';
+import { getInstallationOctokit } from '@/lib/github/appAuth';
 
 export const syncRepositories = inngest.createFunction(
   { id: 'github-sync-repositories' },
@@ -18,10 +18,10 @@ export const syncRepositories = inngest.createFunction(
       throw new Error('Installation not found');
     }
 
-    const octokit = getAuthenticatedOctokit(parseInt(installation.installationId));
+    const octokit = await getInstallationOctokit(parseInt(installation.installationId));
 
     const repos = await step.run('fetch-repos', async () => {
-      const { data } = await octokit.request('GET /installation/repositories', {
+      const { data } = await octokit.rest.apps.listReposAccessibleToInstallation({
         per_page: 100,
       });
       return data.repositories;

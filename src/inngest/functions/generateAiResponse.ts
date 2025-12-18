@@ -1,7 +1,7 @@
 import { inngest } from '../client';
 import { prisma } from '@/lib/db';
 import { createAgent, openai } from '@inngest/agent-kit';
-import { getAuthenticatedOctokit } from '@/lib/github/appAuth';
+import { getInstallationOctokit } from '@/lib/github/appAuth';
 
 export const generateAIResponse = inngest.createFunction(
   { id: 'ai-generate-response' },
@@ -31,13 +31,13 @@ export const generateAIResponse = inngest.createFunction(
     // Get repository context if available
     let repoContext = '';
     if (project.repository) {
-      const octokit = getAuthenticatedOctokit(
+      const octokit = await getInstallationOctokit(
         parseInt(project.repository.installation.installationId)
       );
 
       // Fetch README if exists
       try {
-        const { data } = await octokit.request('GET /repos/{owner}/{repo}/readme', {
+        const { data } = await octokit.rest.repos.getReadme({
           owner: project.repository.ownerLogin,
           repo: project.repository.name,
         });

@@ -1,6 +1,6 @@
 import { inngest } from '../client';
 import { prisma } from '@/lib/db';
-import { getAuthenticatedOctokit, getAppOctokit } from '@/lib/github/appAuth';
+import { getInstallationOctokit, getAppOctokit } from '@/lib/github/appAuth';
 
 export const processInstallation = inngest.createFunction(
   { id: 'github-process-installation' },
@@ -32,11 +32,11 @@ export const processInstallation = inngest.createFunction(
     });
 
     // Get installation-specific octokit for repo operations
-    const octokit = getAuthenticatedOctokit(installationId);
+    const octokit = await getInstallationOctokit(installationId);
 
     // Sync repositories
     await step.run('sync-repositories', async () => {
-      const { data } = await octokit.request('GET /installation/repositories', {
+      const { data } = await octokit.rest.apps.listReposAccessibleToInstallation({
         per_page: 100,
       });
 
