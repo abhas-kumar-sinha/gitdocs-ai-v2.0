@@ -62,6 +62,7 @@ const Sidebar = () => {
 
   return (
     <>
+    {/* Mobile View */}
     <header
       className='fixed top-0 left-0 right-0 z-50 transition-all duration-300 py-4 px-3 md:hidden flex items-center justify-between'
     >
@@ -104,7 +105,7 @@ const Sidebar = () => {
       )}
     >
       {/* Header */}
-      <div className="flex items-center h-10 w-full">
+      <div onClick={(e) => e.stopPropagation()} className="flex items-center h-10 w-full">
         
         {/* LEFT — fixed, never moves */}
         <div className="shrink-0 w-10 flex items-center justify-center">
@@ -143,9 +144,9 @@ const Sidebar = () => {
       </div>
 
       {/* TODO: Implement Github */}
-      <DropdownMenu>
+      <DropdownMenu >
         <DropdownMenuTrigger>
-          <Button size="sm" variant="sidebarButton" className="w-full my-2">
+          <Button onClick={(e) => e.stopPropagation()} size="sm" variant="sidebarButton" className="w-full my-2">
             M
           </Button>
         </DropdownMenuTrigger>
@@ -178,7 +179,7 @@ const Sidebar = () => {
 
 
       {/* Footer */}
-      <div className={cn("shrink-0 mt-auto w-10 md:flex items-center justify-center transition-all duration-300 -ms-0.5 hidden", isSidebarOpen && "translate-y-11")}>
+      <div onClick={(e) => e.stopPropagation()} className={cn("shrink-0 mt-auto w-10 md:flex items-center justify-center transition-all duration-300 -ms-0.5 hidden", isSidebarOpen && "translate-y-11")}>
         <Button
           variant="sidebarButton"
           size="sm"
@@ -188,9 +189,7 @@ const Sidebar = () => {
         </Button>
       </div>
 
-      <div
-        className="ms-auto w-fit mt-1 hidden md:block"
-      >
+      <div onClick={(e) => e.stopPropagation()} className="ms-auto w-fit mt-1 hidden md:block">
         <Button variant="sidebarButton" size="sm" className="group/button">
           <Inbox className="transition-transform duration-300 group-hover/button:scale-110" />
         </Button>

@@ -17,7 +17,7 @@ const SidebarItem = ({Item, isSidebarOpen} : SidebarItemProp) => {
     {!isSidebarOpen ?
         <Tooltip>
         <TooltipTrigger asChild>
-            <Button size="sm" variant="sidebarButton" className="w-full justify-start">
+            <Button onClick={(e) => e.stopPropagation()} size="sm" variant="sidebarButton" className="w-full justify-start">
             <Item.icon className="group-hover/button:scale-110" />
             <span className={cn("ms-1", isSidebarOpen ? "" : "hidden")}>
                 {Item.label}
@@ -29,7 +29,7 @@ const SidebarItem = ({Item, isSidebarOpen} : SidebarItemProp) => {
         </TooltipContent>
     </Tooltip>
     :
-    <Button size="sm" variant="sidebarButton" className="w-full justify-start">
+    <Button onClick={(e) => e.stopPropagation()} size="sm" variant="sidebarButton" className="w-full justify-start">
         <Item.icon className="group-hover/button:scale-110" />
         <span className={cn("ms-1", isSidebarOpen ? "" : "hidden")}>
             {Item.label}

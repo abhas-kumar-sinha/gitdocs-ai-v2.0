@@ -27,17 +27,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <ClerkProvider>
-          <TRPCReactProvider>
-            <Providers>
-              <Toaster />
-              {children}
-            </Providers>
-          </TRPCReactProvider>
-        </ClerkProvider>
-      </body>
-    </html>
+    <ClerkProvider>
+      <TRPCReactProvider>
+        <html lang="en" suppressHydrationWarning>
+          <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+                <Providers>
+                  <Toaster />
+                  {children}
+                </Providers>
+          </body>
+        </html>
+      </TRPCReactProvider>
+    </ClerkProvider>
   );
 }

@@ -41,8 +41,6 @@ model Installation {
   
   // GitHub App Installation Info
   installationId   String   @unique // GitHub installation ID
-  accountType      String              // "User" or "Organization"
-  accountLogin     String              // GitHub username or org name
   accountId        String              // GitHub account ID
   accountAvatarUrl String?
   
@@ -61,30 +59,9 @@ model Installation {
   // Relations
   user             User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   repositories     Repository[]
-  accessTokens     AccessToken[]
   
   @@index([userId])
   @@index([installationId])
-}
-
-model AccessToken {
-  id        String   @id @default(cuid())
-  installationId String
-  
-  // Token info
-  token         String   @db.Text // Encrypted installation access token
-  expiresAt     DateTime
-  
-  // Permissions snapshot
-  permissions   Json
-  repositoryIds String[] // Array of repo IDs this token can access
-  
-  createdAt     DateTime @default(now())
-  
-  installation  Installation @relation(fields: [installationId], references: [id], onDelete: Cascade)
-  
-  @@index([installationId])
-  @@index([expiresAt])
 }
 
 model Repository {
@@ -136,7 +113,7 @@ model Repository {
   @@index([fullName])
 }
 
-// ============= Projects & Messages (Your existing structure) =============
+// ============= Projects & Messages =============
 
 model Project {
   id        String   @id @default(cuid())
@@ -149,7 +126,7 @@ model Project {
   
   // README generation settings
   autoUpdate  Boolean @default(false)
-  template    String? // Template preference if any
+  template    String?
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -157,7 +134,6 @@ model Project {
   user       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   repository Repository?  @relation(fields: [repositoryId], references: [id], onDelete: SetNull)
   messages   Message[]
-  versions   ReadmeVersion[]
   
   @@index([userId])
   @@index([repositoryId])
@@ -179,9 +155,7 @@ model Message {
   role      MessageRole
   type      MessageType
   
-  // AI metadata
-  model     String?     // e.g., "claude-sonnet-4"
-  tokensUsed Int?
+  model     String?     
   
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
@@ -203,45 +177,10 @@ model Fragment {
   
   readme    String   @db.Text
   
-  // Fragment metadata
-  section   String?  // Which section of README this fragment relates to
-  language  String?  // Programming language context
-  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   
   @@index([messageId])
-}
-
-// ============= README Version Control =============
-
-model ReadmeVersion {
-  id           String   @id @default(cuid())
-  projectId    String
-  
-  // Version info
-  version      Int
-  content      String   @db.Text
-  
-  // Change tracking
-  changeDescription String?
-  gitCommitSha String?  // If committed to GitHub
-  
-  // Generation metadata
-  generatedBy  String   // "ai" or "manual"
-  prompt       String?  @db.Text
-  model        String?  // AI model used
-  
-  // GitHub sync status
-  pushedToGitHub Boolean @default(false)
-  pushedAt       DateTime?
-  
-  createdAt    DateTime @default(now())
-  
-  project      Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  
-  @@index([projectId])
-  @@index([version])
 }
 
 // ============= Webhooks & Events =============
