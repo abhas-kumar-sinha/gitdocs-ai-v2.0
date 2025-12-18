@@ -8,13 +8,159 @@ datasource db {
   provider = "postgresql"
 }
 
+// ============= User & Auth =============
+
+model User {
+  id        String   @id @default(cuid())
+  clerkId   String   @unique
+  email     String   @unique
+  firstName String?
+  lastName  String?
+  imageUrl  String?
+  
+  // Onboarding
+  onboardingCompleted Boolean @default(false)
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  installations Installation[]
+  projects      Project[]
+  
+  @@index([clerkId])
+  @@index([email])
+}
+
+// ============= GitHub App Integration =============
+
+model Installation {
+  id        String   @id @default(cuid())
+  userId    String
+  
+  // GitHub App Installation Info
+  installationId   String   @unique // GitHub installation ID
+  accountType      String              // "User" or "Organization"
+  accountLogin     String              // GitHub username or org name
+  accountId        String              // GitHub account ID
+  accountAvatarUrl String?
+  
+  // Permissions
+  permissions      Json                // Store granted permissions
+  repositorySelection String           // "all" or "selected"
+  
+  // Installation status
+  suspended        Boolean  @default(false)
+  suspendedAt      DateTime?
+  
+  // Timestamps
+  installedAt      DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  
+  // Relations
+  user             User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  repositories     Repository[]
+  accessTokens     AccessToken[]
+  
+  @@index([userId])
+  @@index([installationId])
+}
+
+model AccessToken {
+  id        String   @id @default(cuid())
+  installationId String
+  
+  // Token info
+  token         String   @db.Text // Encrypted installation access token
+  expiresAt     DateTime
+  
+  // Permissions snapshot
+  permissions   Json
+  repositoryIds String[] // Array of repo IDs this token can access
+  
+  createdAt     DateTime @default(now())
+  
+  installation  Installation @relation(fields: [installationId], references: [id], onDelete: Cascade)
+  
+  @@index([installationId])
+  @@index([expiresAt])
+}
+
+model Repository {
+  id          String   @id @default(cuid())
+  installationId String
+  
+  // GitHub Repository Info
+  githubId    String   @unique // GitHub repository ID
+  name        String
+  fullName    String   // owner/repo
+  description String?
+  private     Boolean  @default(false)
+  defaultBranch String @default("main")
+  url         String
+  
+  // Owner info
+  ownerLogin  String
+  ownerType   String   // "User" or "Organization"
+  
+  // Repository metadata
+  language    String?
+  topics      String[] // Array of topics/tags
+  homepage    String?
+  size        Int      @default(0)
+  stargazers  Int      @default(0)
+  watchers    Int      @default(0)
+  forks       Int      @default(0)
+  openIssues  Int      @default(0)
+  
+  // README Info
+  hasReadme   Boolean  @default(false)
+  readmePath  String?  @default("README.md")
+  readmeSha   String?  // Git blob SHA for the README
+  
+  // Last sync info
+  lastSyncedAt DateTime?
+  syncStatus   String   @default("pending") // pending, syncing, completed, failed
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  installation Installation @relation(fields: [installationId], references: [id], onDelete: Cascade)
+  projects     Project[]
+  
+  @@index([installationId])
+  @@index([githubId])
+  @@index([fullName])
+}
+
+// ============= Projects & Messages (Your existing structure) =============
+
 model Project {
-  id        String @id @default(cuid())
+  id        String   @id @default(cuid())
   name      String
+  userId    String
+  repositoryId String?
+  
+  // Project metadata
+  description String?
+  
+  // README generation settings
+  autoUpdate  Boolean @default(false)
+  template    String? // Template preference if any
+  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  messages Message[]
+  user       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  repository Repository?  @relation(fields: [repositoryId], references: [id], onDelete: SetNull)
+  messages   Message[]
+  versions   ReadmeVersion[]
+  
+  @@index([userId])
+  @@index([repositoryId])
 }
 
 enum MessageRole {
@@ -28,26 +174,125 @@ enum MessageType {
 }
 
 model Message {
-  id        String @id @default(cuid())
-  content   String
+  id        String      @id @default(cuid())
+  content   String      @db.Text
   role      MessageRole
   type      MessageType
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  
+  // AI metadata
+  model     String?     // e.g., "claude-sonnet-4"
+  tokensUsed Int?
+  
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
 
-  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
   projectId String
 
-  fragments Fragment?
+  fragment  Fragment?
+  
+  @@index([projectId])
+  @@index([createdAt])
 }
 
 model Fragment {
-  id        String @id @default(cuid())
+  id        String   @id @default(cuid())
   
-  message   Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
-  messageId String @unique
+  message   Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  messageId String   @unique
   
-  readme    String @db.Text
+  readme    String   @db.Text
+  
+  // Fragment metadata
+  section   String?  // Which section of README this fragment relates to
+  language  String?  // Programming language context
+  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  
+  @@index([messageId])
+}
+
+// ============= README Version Control =============
+
+model ReadmeVersion {
+  id           String   @id @default(cuid())
+  projectId    String
+  
+  // Version info
+  version      Int
+  content      String   @db.Text
+  
+  // Change tracking
+  changeDescription String?
+  gitCommitSha String?  // If committed to GitHub
+  
+  // Generation metadata
+  generatedBy  String   // "ai" or "manual"
+  prompt       String?  @db.Text
+  model        String?  // AI model used
+  
+  // GitHub sync status
+  pushedToGitHub Boolean @default(false)
+  pushedAt       DateTime?
+  
+  createdAt    DateTime @default(now())
+  
+  project      Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  @@index([projectId])
+  @@index([version])
+}
+
+// ============= Webhooks & Events =============
+
+model WebhookEvent {
+  id        String   @id @default(cuid())
+  
+  // Event details
+  eventType String   // installation, installation_repositories, push, etc.
+  action    String?  // created, deleted, added, removed, etc.
+  
+  // GitHub identifiers
+  installationId String?
+  repositoryId   String?
+  senderId       String?  // GitHub user who triggered the event
+  
+  // Payload
+  payload   Json     @db.JsonB
+  
+  // Processing status
+  processed Boolean  @default(false)
+  processedAt DateTime?
+  error     String?  @db.Text
+  
+  createdAt DateTime @default(now())
+  
+  @@index([installationId])
+  @@index([eventType])
+  @@index([processed])
+  @@index([createdAt])
+}
+
+// ============= Rate Limiting & Usage =============
+
+model ApiUsage {
+  id        String   @id @default(cuid())
+  userId    String
+  
+  // Usage metrics
+  date      DateTime @db.Date
+  endpoint  String
+  count     Int      @default(1)
+  
+  // Cost tracking (if applicable)
+  tokensUsed Int?
+  cost      Float?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@unique([userId, date, endpoint])
+  @@index([userId])
+  @@index([date])
 }
