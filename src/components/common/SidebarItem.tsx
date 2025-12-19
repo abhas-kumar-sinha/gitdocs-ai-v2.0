@@ -7,9 +7,8 @@ import { ChevronDown, Eye, Github, Lock, LucideIcon, Shield } from "lucide-react
 import { useRouter } from "next/navigation"
 import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger} from "@/components/ui/dropdown-menu"
 import { useTRPC } from "@/trpc/client"
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import Image from "next/image"
-import { Status } from "@/generated/prisma/enums"
 import { useEffect } from "react"
 
 
@@ -61,10 +60,6 @@ const GithubConnectionItem = ({ isSidebarOpen } : {isSidebarOpen : boolean}) => 
 
   const { data: userInstallations, isLoading } = useQuery(trpc.installation.list.queryOptions());
 
-  const updateInstallProcessMutation = useMutation(
-    trpc.installationProcess.update.mutationOptions()
-  );
-
   const install = () => {
     
     const popup = window.open(
@@ -78,7 +73,6 @@ const GithubConnectionItem = ({ isSidebarOpen } : {isSidebarOpen : boolean}) => 
     const timer = setInterval(async () => {
       if (popup.closed) {
         clearInterval(timer);
-        updateInstallProcessMutation.mutate({ status: Status.FAILED })
       }
     }, 500);
 
@@ -104,8 +98,8 @@ const GithubConnectionItem = ({ isSidebarOpen } : {isSidebarOpen : boolean}) => 
     <DropdownMenu>
       <DropdownMenuTrigger className="w-full outline-none focus:outline-none focus-visible:outline-none">
         <button onClick={(e) => {e.stopPropagation()}} className="cursor-pointer w-full my-1.5 py-1 px-[4.5px] border border-neutral-700/50 group/button rounded-md bg-background hover:bg-neutral-300/50 dark:hover:bg-neutral-700/50 flex items-center text-foreground hover:text-foreground/90">
-          <div className="flex shrink-0 items-center justify-center bg-accent py-1 px-[5px] rounded-md">
-            <Image src={userInstallations[0].accountAvatarUrl as string} alt="user" width={15} height={15} />
+          <div className="flex shrink-0 items-center justify-center p-0.5 rounded-md">
+            <Image src={userInstallations[0].accountAvatarUrl as string} className="rounded-md" alt="user" width={21} height={21} />
           </div>
           <span className={cn("ms-2 whitespace-nowrap text-sm", isSidebarOpen ? "" : "hidden")}>
             {userInstallations[0].accountName || "No Name Configured"}

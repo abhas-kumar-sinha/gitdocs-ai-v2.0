@@ -9,7 +9,6 @@ export const installationProcessRouter = createTRPCRouter({
       return prisma.installationProcess.findFirst({
         where: {
           userId: ctx.auth.userId,
-          status: Status.PENDING,
         },
         orderBy: {
           createdAt: "desc",

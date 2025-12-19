@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
 import { AlertCircle, CheckCircle2, Loader2, XCircle } from "lucide-react";
 import { Status } from "@/generated/prisma/enums";
+import LoadingScreen from "@/components/common/LoadingScreen";
 
 export default function GitHubInstallPage() {
   const trpc = useTRPC();
@@ -18,7 +19,7 @@ export default function GitHubInstallPage() {
   const { data: installationStatus } = useQuery({
     ...trpc.installationProcess.findRecent.queryOptions(),
     enabled: pollingEnabled,
-    refetchInterval: 2000, // Poll every 2 seconds
+    refetchInterval: 1000, // Poll every 1 second
   });
 
   useEffect(() => {
@@ -103,46 +104,12 @@ export default function GitHubInstallPage() {
 
   // Render connecting/syncing state
   if (status === "connected") {
-    const isCompleted = installationStatus?.status === "COMPLETED";
     
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background p-4">
-        <div className="w-full max-w-md space-y-6 text-center">
-          <div className="flex justify-center">
-            <div className="rounded-full bg-primary/10 p-4">
-              {isCompleted ? (
-                <CheckCircle2 className="h-12 w-12 text-green-500" />
-              ) : (
-                <Loader2 className="h-12 w-12 animate-spin text-primary" />
-              )}
-            </div>
-          </div>
-          
-          <div className="space-y-2">
-            <h1 className="text-2xl font-semibold tracking-tight">
-              {isCompleted ? "Installation Complete!" : "Setting Up Your Repositories"}
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              {isCompleted 
-                ? "Successfully synced your repositories. Closing window..."
-                : "We're syncing your repositories and setting up Gitdocs AI. This may take a few moments."}
-            </p>
-          </div>
-
-          {!isCompleted && (
-            <div className="flex flex-col items-center gap-3">
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-                <span>Syncing repositories...</span>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
+      <LoadingScreen title="Setting up your repositories" subtitle="We're syncing your repositories and setting up Gitdocs AI. This may take a few moments." />
     );
   }
 
-  // Default state (shouldn't normally reach here)
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <div className="w-full max-w-md space-y-6 text-center">
