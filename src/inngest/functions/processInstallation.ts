@@ -1,3 +1,4 @@
+import { Status } from '@/generated/prisma/enums';
 import { inngest } from '../client';
 import { prisma } from '@/lib/db';
 import { getInstallationOctokit, getAppOctokit } from '@/lib/github/appAuth';
@@ -118,6 +119,18 @@ export const processInstallation = inngest.createFunction(
 
       return data;
     });
+
+    await step.run('inform-frontend', async () => {
+      await prisma.installationProcess.updateMany({
+        where: {
+          userId,
+          status: Status.PENDING,
+        },
+        data: {
+          status: Status.COMPLETED,
+        },
+      });
+    })
 
     return { 
       success: true, 

@@ -3,12 +3,14 @@
 import { cn } from "@/lib/utils"
 import { Button } from "../ui/button"
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip"
-import { Eye, Github, Lock, LucideIcon, Shield } from "lucide-react"
+import { ChevronDown, Eye, Github, Lock, LucideIcon, Shield } from "lucide-react"
 import { useRouter } from "next/navigation"
 import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger} from "@/components/ui/dropdown-menu"
 import { useTRPC } from "@/trpc/client"
-import { useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import Image from "next/image"
+import { Status } from "@/generated/prisma/enums"
+import { useEffect } from "react"
 
 
 interface SidebarItemProp {
@@ -55,16 +57,47 @@ const SidebarItem = ({Item, isSidebarOpen} : SidebarItemProp) => {
 const GithubConnectionItem = ({ isSidebarOpen } : {isSidebarOpen : boolean}) => {
 
   const trpc = useTRPC();
+  const queryClient = useQueryClient();
 
   const { data: userInstallations, isLoading } = useQuery(trpc.installation.list.queryOptions());
 
+  const updateInstallProcessMutation = useMutation(
+    trpc.installationProcess.update.mutationOptions()
+  );
+
   const install = () => {
-    window.open(
+    
+    const popup = window.open(
       "/api/auth/github",
       "github-install",
       "width=850,height=500,top=100,left=100,resizable=yes,scrollbars=yes"
     );
+
+    if (!popup) return;
+
+    const timer = setInterval(async () => {
+      if (popup.closed) {
+        clearInterval(timer);
+        updateInstallProcessMutation.mutate({ status: Status.FAILED })
+      }
+    }, 500);
+
   };
+
+  useEffect(() => {
+    function onMessage(event: MessageEvent) {
+      if (event.origin !== window.origin) return;
+
+      if (event.data?.type === "GITHUB_INSTALL_SUCCESS") {
+        queryClient.invalidateQueries(trpc.installation.list.queryOptions());
+      } else if (event.data?.type === "GITHUB_INSTALL_FAILED") {
+        alert(`Installation Failed`)
+      }
+    }
+
+    window.addEventListener("message", onMessage);
+    return () => window.removeEventListener("message", onMessage);
+  });
 
   return (
     <>
@@ -79,6 +112,7 @@ const GithubConnectionItem = ({ isSidebarOpen } : {isSidebarOpen : boolean}) => 
           <span className={cn("ms-2 whitespace-nowrap text-sm", isSidebarOpen ? "" : "hidden")}>
             {userInstallations[0].accountName || "No Name Configured"}
           </span>
+          <ChevronDown className="ms-auto me-2" size={18} />
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent 
@@ -138,9 +172,10 @@ const GithubConnectionItem = ({ isSidebarOpen } : {isSidebarOpen : boolean}) => 
           <div className="flex items-center justify-center bg-accent py-1 px-[5px] rounded-md">
             <Github size={15} />
           </div>
-          <span className={cn("ms-2 whitespace-nowrap text-sm", isSidebarOpen ? "" : "hidden")}>
+          <span className={cn("ms-2 whitespace-nowrap text-sm font-semibold", isSidebarOpen ? "" : "hidden")}>
             Connect Github
           </span>
+          <ChevronDown className="ms-auto me-2" size={18} />
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent 

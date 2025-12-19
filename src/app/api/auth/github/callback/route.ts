@@ -3,14 +3,6 @@ import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/db';
 import { inngest } from '@/inngest/client';
 import { auth } from '@clerk/nextjs/server';
-import crypto from "crypto";
-
-function hashClerkId(clerkId: string) {
-  return crypto
-    .createHmac("sha256", process.env.STATE_ENCRYPTION_KEY!)
-    .update(clerkId)
-    .digest("hex");
-}
 
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
@@ -19,19 +11,24 @@ export async function GET(req: NextRequest) {
   const state = searchParams.get('state');
 
   if (!installationId || !state) {
-    return redirect('/onboarding?error=missing_params');
+    return redirect('/github/install?error=missing_params');
   }
 
   const { userId } = await auth();
 
   if (!userId) {
-    return redirect('/onboarding?error=unauthorized');
+    return redirect('/github/install?error=unauthorized');
   }
 
-  const verifiedUserId = hashClerkId(userId);
+  const verified = await prisma.installationProcess.findFirst({
+    orderBy: {
+      createdAt: "desc",
+    },
+    select: {state: true}
+  });
 
-  if (verifiedUserId !== state) {
-    return redirect('/onboarding?error=unauthorized');
+  if (verified?.state !== state) {
+    return redirect('/github/install?error=unauthorized');
   }
 
   if (setupAction === 'install' || setupAction === 'update') {
@@ -42,7 +39,7 @@ export async function GET(req: NextRequest) {
       });
 
       if (!user) {
-        return redirect('/onboarding?error=user_not_found');
+        return redirect('/github/install?error=user_not_found');
       }
 
       // Trigger Inngest to process installation
@@ -55,12 +52,12 @@ export async function GET(req: NextRequest) {
         },
       });
 
-      return redirect('/onboarding?step=2&status=connected');
+      return redirect('/github/install?status=connected');
     } catch (error) {
       console.error('Installation callback error:', error);
-      return redirect('/onboarding?error=installation_failed');
+      return redirect('/github/install?error=installation_failed');
     }
   }
 
-  return redirect('/onboarding');
+  return redirect('/github/install');
 }

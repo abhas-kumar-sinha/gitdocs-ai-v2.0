@@ -1,13 +1,7 @@
+import crypto from "crypto";
+import { prisma } from "@/lib/db";
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
-import crypto from "crypto";
-
-function hashClerkId(clerkId: string) {
-  return crypto
-    .createHmac("sha256", process.env.STATE_ENCRYPTION_KEY!)
-    .update(clerkId)
-    .digest("hex");
-}
 
 export async function GET() {
   const { userId } = await auth();
@@ -16,9 +10,26 @@ export async function GET() {
     return new Response('Unauthorized', { status: 401 });
   }
 
+  const user = await prisma.user.findUnique({
+    where: {clerkId: userId},
+    select: {id: true}
+  })
+
+  if (!user) {
+    return new Response('Unauthorized', { status: 401 });
+  }
+
   const installUrl = new URL('https://github.com/apps/gitdocs-ai/installations/new');
   
-  const state = hashClerkId(userId)
+  const state = crypto.randomUUID();
+
+  await prisma.installationProcess.create({
+    data : {
+      userId: user.id,
+      state,
+      status: "PENDING"
+    }
+  })
 
   installUrl.searchParams.set('state', state);
 
