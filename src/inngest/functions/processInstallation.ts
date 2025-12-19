@@ -2,6 +2,7 @@ import { Status } from '@/generated/prisma/enums';
 import { inngest } from '../client';
 import { prisma } from '@/lib/db';
 import { getInstallationOctokit, getAppOctokit } from '@/lib/github/appAuth';
+import { RequestError } from 'octokit';
 
 export const processInstallation = inngest.createFunction(
   { id: 'github-process-installation' },
@@ -52,69 +53,68 @@ export const processInstallation = inngest.createFunction(
 
       const currentGithubRepoIds = data.repositories.map((repo) => repo.id.toString());
 
-      // Upsert all accessible repositories
-      for (const repo of data.repositories) {
-        await prisma.repository.upsert({
-          where: { githubId: repo.id.toString() },
-          update: {
-            installationId: installation.id,
-            name: repo.name,
-            fullName: repo.full_name,
-            description: repo.description,
-            private: repo.private,
-            defaultBranch: repo.default_branch || 'main',
-            url: repo.html_url,
-            ownerLogin: repo.owner!.login,
-            ownerType: repo.owner!.type!,
-            language: repo.language,
-            topics: repo.topics || [],
-            stargazers: repo.stargazers_count || 0,
-            watchers: repo.watchers_count || 0,
-            forks: repo.forks_count || 0,
-            lastSyncedAt: new Date(),
-            syncStatus: 'completed',
-          },
-          create: {
-            installationId: installation.id,
-            githubId: repo.id.toString(),
-            name: repo.name,
-            fullName: repo.full_name,
-            description: repo.description,
-            private: repo.private,
-            defaultBranch: repo.default_branch || 'main',
-            url: repo.html_url,
-            ownerLogin: repo.owner!.login,
-            ownerType: repo.owner!.type!,
-            language: repo.language,
-            topics: repo.topics || [],
-            stargazers: repo.stargazers_count || 0,
-            watchers: repo.watchers_count || 0,
-            forks: repo.forks_count || 0,
-            lastSyncedAt: new Date(),
-            syncStatus: 'completed',
-          },
-        });
-      }
+      // Parallelize README checks
+      const reposWithReadmeInfo = await Promise.all(
+        data.repositories.map(async (repo) => {
+          try {
+            const { data: readmeData } = await octokit.rest.repos.getReadme({
+              owner: repo.owner!.login,
+              repo: repo.name,
+            });
+            return { ...repo, hasReadme: true, readmeSha: readmeData.sha };
+          } catch (error) {
+            if (error instanceof RequestError && error.status === 404) {
+              return { ...repo, hasReadme: false, readmeSha: null };
+            }
+            throw error;
+          }
+        })
+      );
 
-      // If this is an update action, remove repos that are no longer accessible
-      if (action === 'update') {
-        const existingRepos = await prisma.repository.findMany({
-          where: { installationId: installation.id },
-          select: { githubId: true },
-        });
+      // Extract common fields to avoid duplication
+      const getRepoData = (repo: typeof reposWithReadmeInfo[0]) => ({
+        installationId: installation.id,
+        name: repo.name,
+        fullName: repo.full_name,
+        description: repo.description,
+        private: repo.private,
+        defaultBranch: repo.default_branch || 'main',
+        url: repo.html_url,
+        ownerLogin: repo.owner!.login,
+        ownerType: repo.owner!.type!,
+        language: repo.language,
+        topics: repo.topics || [],
+        stargazers: repo.stargazers_count || 0,
+        watchers: repo.watchers_count || 0,
+        forks: repo.forks_count || 0,
+        hasReadme: repo.hasReadme,
+        readmeSha: repo.readmeSha,
+        lastSyncedAt: new Date(),
+        syncStatus: 'completed' as const,
+      });
 
-        const reposToRemove = existingRepos
-          .map((repo) => repo.githubId)
-          .filter((githubId) => !currentGithubRepoIds.includes(githubId));
-
-        if (reposToRemove.length > 0) {
-          await prisma.repository.deleteMany({
-            where: {
-              installationId: installation.id,
-              githubId: { in: reposToRemove },
+      // Parallelize upserts
+      await Promise.all(
+        reposWithReadmeInfo.map((repo) =>
+          prisma.repository.upsert({
+            where: { githubId: repo.id.toString() },
+            update: getRepoData(repo),
+            create: {
+              githubId: repo.id.toString(),
+              ...getRepoData(repo),
             },
-          });
-        }
+          })
+        )
+      );
+
+      // Remove repos that are no longer accessible
+      if (action === 'update') {
+        await prisma.repository.deleteMany({
+          where: {
+            installationId: installation.id,
+            githubId: { notIn: currentGithubRepoIds },
+          },
+        });
       }
 
       return data;
@@ -130,7 +130,7 @@ export const processInstallation = inngest.createFunction(
           status: Status.COMPLETED,
         },
       });
-    })
+    });
 
     return { 
       success: true, 

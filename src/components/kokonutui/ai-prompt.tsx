@@ -9,7 +9,7 @@ import { Repository } from "@/generated/prisma/client";
 import { SignUpButton, SignedIn, SignedOut } from "@clerk/nextjs";
 import { TemplateId } from "../project/context-selection/TemplateList";
 import { useAutoResizeTextarea } from "@/hooks/use-auto-resize-textarea";
-import { ArrowRight, Book, ChevronRight, Paperclip } from "lucide-react";
+import { ArrowRight, Book, ChevronRight } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 
 export default function AI_Prompt({ isActive } : { isActive: boolean }) {
@@ -93,18 +93,6 @@ export default function AI_Prompt({ isActive } : { isActive: boolean }) {
                 </Button>
               </SignUpButton>
             </SignedOut>
-            <div className="mx-0.5 h-4 w-px bg-black/10 dark:bg-white/10" />
-            <label
-              aria-label="Attach file"
-              className={cn(
-                "cursor-pointer rounded-lg bg-black/5 p-2 dark:bg-white/5",
-                "hover:bg-black/10 focus-visible:ring-1 focus-visible:ring-blue-500 focus-visible:ring-offset-0 dark:hover:bg-white/10",
-                "text-black/40 hover:text-black dark:text-white/40 dark:hover:text-white"
-              )}
-            >
-              <input className="hidden" type="file" />
-              <Paperclip className="h-4 w-4 transition-colors" />
-            </label>
           </div>
           <button
             aria-label="Send message"
