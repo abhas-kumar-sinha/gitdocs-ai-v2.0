@@ -31,7 +31,7 @@ const ProjectView = ({projectId} : {projectId : string}) => {
                 <div className="flex items-center justify-between px-2 absolute w-full top-0 h-12">
                     <div className="flex items-center">
                         <DropdownMenu>
-                            <DropdownMenuTrigger className="flex items-center gap-x-2">
+                            <DropdownMenuTrigger asChild className="flex items-center gap-x-2">
                                 <Button variant="ghost" size="sm">
                                     <Image src="/logo.png" alt="logo" height={24} width={24} />
                                     <span>staggered-text-blur</span>
@@ -59,7 +59,7 @@ const ProjectView = ({projectId} : {projectId : string}) => {
                     <MessageContainer />
                 </div>
                 <div className="absolute bottom-2 w-[98%] mx-auto ms-1">
-                    <AI_Prompt />
+                    <AI_Prompt isActive={true}/>
                 </div>
             </ResizablePanel>
             <ResizableHandle withHandle />

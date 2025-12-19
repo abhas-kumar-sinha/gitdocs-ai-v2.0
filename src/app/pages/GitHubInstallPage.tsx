@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useTRPC } from "@/trpc/client";
 import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
-import { AlertCircle, CheckCircle2, Loader2, XCircle } from "lucide-react";
+import { AlertCircle, Loader2, XCircle } from "lucide-react";
 import { Status } from "@/generated/prisma/enums";
 import LoadingScreen from "@/components/common/LoadingScreen";
 

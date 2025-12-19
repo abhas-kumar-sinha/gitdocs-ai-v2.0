@@ -3,30 +3,8 @@ import { createTRPCRouter, protectedProcedure } from '@/trpc/init';
 import { TRPCError } from '@trpc/server';
 import { prisma } from '@/lib/db';
 import { inngest } from '@/inngest/client';
-import { Prisma } from '@/generated/prisma/client';
 
-export type InstallationWithRepositories =
-  Prisma.InstallationGetPayload<{
-    include: {
-      repositories: true;
-    };
-  }>;
-
-export const installationRouter = createTRPCRouter({
-  list: protectedProcedure
-    .query(async ({ ctx }) => {
-      const installations: InstallationWithRepositories[] = await prisma.installation.findMany({
-        where: { userId: ctx.auth.userId },
-        include: {
-          repositories: {
-            orderBy: { updatedAt: 'desc' },
-          },
-        },
-      });
-
-      return installations;
-    }),
-
+export const repositoryRouter = createTRPCRouter({
   syncRepositories: protectedProcedure
     .input(z.object({ installationId: z.string().min(1, { message: 'Installation ID is required' }) }))
     .mutation(async ({ ctx, input }) => {

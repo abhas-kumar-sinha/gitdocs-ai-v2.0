@@ -3,6 +3,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { Providers } from "./providers";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { RepositoryProvider } from "@/contexts/RepositoryContext";
 import { TRPCReactProvider } from "@/trpc/client";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -31,10 +32,12 @@ export default function RootLayout({
       <TRPCReactProvider>
         <html lang="en" suppressHydrationWarning>
           <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-                <Providers>
-                  <Toaster />
-                  {children}
-                </Providers>
+            <Providers>
+              <RepositoryProvider>
+                <Toaster />
+                {children}
+              </RepositoryProvider>
+            </Providers>
           </body>
         </html>
       </TRPCReactProvider>

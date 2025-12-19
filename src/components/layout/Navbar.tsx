@@ -78,7 +78,7 @@ const Navbar = () => {
 
           {/* Mobile Menu Button */}
           <DropdownMenu>
-            <DropdownMenuTrigger className="md:hidden">
+            <DropdownMenuTrigger asChild className="md:hidden">
               <Button variant="ghost">
                 <TextAlignJustify />
               </Button>

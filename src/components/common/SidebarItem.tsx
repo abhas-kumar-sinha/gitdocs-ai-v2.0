@@ -1,16 +1,18 @@
 "use client"
 
+import Image from "next/image"
 import { cn } from "@/lib/utils"
+import { useEffect, useMemo } from "react"
 import { Button } from "../ui/button"
+import { useTRPC } from "@/trpc/client"
+import { useRouter } from "next/navigation"
+import { Repository } from "@/generated/prisma/client"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
+import { useRepositoryContext } from "@/contexts/RepositoryContext"
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip"
 import { ChevronDown, Eye, Github, Lock, LucideIcon, Shield } from "lucide-react"
-import { useRouter } from "next/navigation"
+import { InstallationWithRepositories } from "@/modules/installation/server/procedures"
 import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger} from "@/components/ui/dropdown-menu"
-import { useTRPC } from "@/trpc/client"
-import { useQuery, useQueryClient } from "@tanstack/react-query"
-import Image from "next/image"
-import { useEffect } from "react"
-
 
 interface SidebarItemProp {
     Item: {
@@ -57,8 +59,47 @@ const GithubConnectionItem = ({ isSidebarOpen } : {isSidebarOpen : boolean}) => 
 
   const trpc = useTRPC();
   const queryClient = useQueryClient();
+  const { repositories, setRepositories, setIsLoading } = useRepositoryContext();
 
   const { data: userInstallations, isLoading } = useQuery(trpc.installation.list.queryOptions());
+
+  useEffect(() => {
+    setIsLoading(isLoading);
+  }, [isLoading, setIsLoading]);
+
+  const computedRepos = useMemo(() => {
+    if (!userInstallations || userInstallations.length === 0) return [] as Repository[];
+
+    const allRepos = userInstallations.flatMap((inst) => inst.repositories ?? []);
+
+    const map = new Map<string | number, Repository>();
+    for (const r of allRepos) {
+      map.set(r.id, r);
+    }
+    const arr = Array.from(map.values());
+
+    arr.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+
+    return arr;
+  }, [userInstallations]);
+
+  useEffect(() => {
+    const a = repositories ?? [];
+    const b = computedRepos;
+
+    const same =
+      a.length === b.length &&
+      a.every((ar, i) => {
+        const br = b[i];
+        const aTime = typeof ar.updatedAt === "string" ? new Date(ar.updatedAt).getTime() : ar.updatedAt.getTime();
+        const bTime = typeof br.updatedAt === "string" ? new Date(br.updatedAt).getTime() : br.updatedAt.getTime();
+        return ar.id === br.id && aTime === bTime;
+      });
+
+    if (!same) {
+      setRepositories(b);
+    }
+  }, [computedRepos, repositories, setRepositories]);
 
   const install = () => {
     
@@ -96,7 +137,7 @@ const GithubConnectionItem = ({ isSidebarOpen } : {isSidebarOpen : boolean}) => 
     {!isLoading && userInstallations && userInstallations?.length > 0 
     ?
     <DropdownMenu>
-      <DropdownMenuTrigger className="w-full outline-none focus:outline-none focus-visible:outline-none">
+      <DropdownMenuTrigger asChild className="w-full outline-none focus:outline-none focus-visible:outline-none">
         <button onClick={(e) => {e.stopPropagation()}} className="cursor-pointer w-full my-1.5 py-1 px-[4.5px] border border-neutral-700/50 group/button rounded-md bg-background hover:bg-neutral-300/50 dark:hover:bg-neutral-700/50 flex items-center text-foreground hover:text-foreground/90">
           <div className="flex shrink-0 items-center justify-center p-0.5 rounded-md">
             <Image src={userInstallations[0].accountAvatarUrl as string} className="rounded-md" alt="user" width={21} height={21} />
@@ -159,7 +200,7 @@ const GithubConnectionItem = ({ isSidebarOpen } : {isSidebarOpen : boolean}) => 
     </DropdownMenu>
     :
     <DropdownMenu>
-      <DropdownMenuTrigger className="w-full outline-none focus:outline-none focus-visible:outline-none">
+      <DropdownMenuTrigger asChild className="w-full outline-none focus:outline-none focus-visible:outline-none">
         <button onClick={(e) => {e.stopPropagation()}} className="cursor-pointer w-full my-1.5 py-1 px-[4.5px] border border-neutral-700/50 group/button rounded-md bg-background hover:bg-neutral-300/50 dark:hover:bg-neutral-700/50 flex items-center text-foreground hover:text-foreground/90">
           <div className="flex items-center justify-center bg-accent py-1 px-[5px] rounded-md">
             <Github size={15} />

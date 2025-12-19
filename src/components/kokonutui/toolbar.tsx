@@ -83,7 +83,7 @@ export function Toolbar({
                             animate="animate"
                             custom={selected === item.id}
                             onClick={() => handleItemClick(item.id)}
-                            transition={transition  as TransitionWithValueOverrides<"width" | "height" | "left" | "right" | "top" | "bottom">}
+                            transition={transition as TransitionWithValueOverrides<"width" | "height" | "left" | "right" | "top" | "bottom">}
                             className={cn(
                                 "relative flex items-center rounded-lg py-1.5",
                                 "text-xs font-medium transition-colors duration-300 cursor-pointer",

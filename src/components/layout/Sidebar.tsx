@@ -7,7 +7,7 @@ import { useState } from "react"
 import { Button } from "../ui/button";
 import { UserButton } from "@clerk/nextjs";
 import { SidebarItem, GithubConnectionItem } from "../common/SidebarItem";
-import { Blocks, Book, Box, House, Inbox, PanelRight, Search, Star } from "lucide-react";
+import { Blocks, Box, Briefcase, House, Inbox, PanelRight, Search, Star } from "lucide-react";
 
 const sidebarTopItems = [
   {
@@ -42,7 +42,7 @@ const sidebarBottomItems = [
     href: "/templates"
   },
   {
-    icon: Book,
+    icon: Briefcase,
     label: "Learn",
     href: "/learn"
   }

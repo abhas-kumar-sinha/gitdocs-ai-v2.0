@@ -51,7 +51,7 @@ const LandingPage = () => {
                             Ship Now!
                             </p>
                         </div>
-                        <AI_Prompt />
+                        <AI_Prompt isActive={false} />
                         </div>
                     </div>
                 </div>
