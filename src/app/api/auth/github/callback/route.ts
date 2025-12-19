@@ -52,11 +52,12 @@ export async function GET(req: NextRequest) {
         },
       });
 
-      return redirect('/github/install?status=connected');
     } catch (error) {
       console.error('Installation callback error:', error);
       return redirect('/github/install?error=installation_failed');
     }
+    
+    return redirect('/github/install?status=connected');
   }
 
   return redirect('/github/install');

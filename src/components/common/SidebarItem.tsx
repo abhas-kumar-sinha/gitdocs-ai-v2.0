@@ -90,8 +90,6 @@ const GithubConnectionItem = ({ isSidebarOpen } : {isSidebarOpen : boolean}) => 
 
       if (event.data?.type === "GITHUB_INSTALL_SUCCESS") {
         queryClient.invalidateQueries(trpc.installation.list.queryOptions());
-      } else if (event.data?.type === "GITHUB_INSTALL_FAILED") {
-        alert(`Installation Failed`)
       }
     }
 

@@ -36,17 +36,6 @@ export default function GitHubInstallPage() {
       setTimeout(() => {
         window.close();
       }, 1000);
-    } else {
-      if (window.opener) {
-        window.opener.postMessage(
-          { type: "GITHUB_INSTALL_FAILED" },
-          window.origin
-        );
-      }
-      
-      setTimeout(() => {
-        window.close();
-      }, 2000);
     }
   }, [status, installationStatus]);
 
