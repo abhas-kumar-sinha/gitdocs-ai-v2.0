@@ -46,6 +46,7 @@ model Installation {
   // GitHub App Installation Info
   installationId   String   @unique // GitHub installation ID
   accountId        String              // GitHub account ID
+  accountName      String              // GitHub account name
   accountAvatarUrl String?
   
   // Permissions

@@ -1,3 +1,4 @@
+import { prisma } from '@/lib/db';
 import { auth } from '@clerk/nextjs/server';
 import { initTRPC, TRPCError } from '@trpc/server';
 import { cache } from 'react';
@@ -15,19 +16,31 @@ const t = initTRPC.context<Context>().create({
   transformer: superjson,
 });
 
-const isAuthorized = t.middleware(({ next, ctx }) => {
-  if (!ctx.auth.userId) {
-    throw new TRPCError({
-      code: 'UNAUTHORIZED',
-      message: 'Not authenticated',
-    })
+export const isAuthorized = t.middleware(async ({ next, ctx }) => {
+  const clerkId = ctx?.auth?.userId;
+  if (!clerkId) {
+    throw new TRPCError({ code: "UNAUTHORIZED", message: "Not authenticated" });
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { clerkId },
+    select: { id: true, clerkId: true },
+  });
+
+  if (!user) {
+    throw new TRPCError({ code: "UNAUTHORIZED", message: "Not authenticated" });
   }
 
   return next({
     ctx: {
-      auth: ctx.auth,
+      ...ctx,
+      auth: {
+        ...ctx.auth,
+        clerkId,        // original Clerk id
+        userId: user.id // your internal user id
+      },
     },
-  })
+  });
 });
 
 // Base router and procedure helpers

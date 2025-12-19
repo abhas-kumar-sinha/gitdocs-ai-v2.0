@@ -23,6 +23,7 @@ export const processInstallation = inngest.createFunction(
         where: { installationId: installationId.toString() },
         update: {
           accountId: installationData.account?.id?.toString() || '',
+          accountName: installationData.account?.name?.toString() || '',
           accountAvatarUrl: installationData.account?.avatar_url,
           permissions: installationData.permissions,
           repositorySelection: installationData.repository_selection || 'all',
@@ -31,6 +32,7 @@ export const processInstallation = inngest.createFunction(
           userId,
           installationId: installationId.toString(),
           accountId: installationData.account?.id?.toString() || '',
+          accountName: installationData.account?.name?.toString() || '',
           accountAvatarUrl: installationData.account?.avatar_url,
           permissions: installationData.permissions,
           repositorySelection: installationData.repository_selection || 'all',

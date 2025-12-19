@@ -35,7 +35,6 @@ export const installationRouter = createTRPCRouter({
         name: 'github/sync-repositories',
         data: {
           installationId: installation.id,
-          userId: ctx.auth.userId,
         },
       });
 
