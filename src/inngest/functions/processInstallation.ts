@@ -6,21 +6,28 @@ export const processInstallation = inngest.createFunction(
   { id: 'github-process-installation' },
   { event: 'github/process-installation' },
   async ({ event, step }) => {
-    const { userId, installationId } = event.data;
+    const { userId, installationId, action = 'install' } = event.data;
 
     // Get app-level octokit to fetch installation details
     const appOctokit = getAppOctokit();
 
     const installationData = await step.run('fetch-installation', async () => {
-      const { data } = await appOctokit.request('GET /app/installations/{installation_id}', {
+      const { data } = await appOctokit.rest.apps.getInstallation({
         installation_id: installationId,
       });
       return data;
     });
 
-    const installation = await step.run('save-installation', async () => {
-      return prisma.installation.create({
-        data: {
+    const installation = await step.run('upsert-installation', async () => {
+      return prisma.installation.upsert({
+        where: { installationId: installationId.toString() },
+        update: {
+          accountId: installationData.account?.id?.toString() || '',
+          accountAvatarUrl: installationData.account?.avatar_url,
+          permissions: installationData.permissions,
+          repositorySelection: installationData.repository_selection || 'all',
+        },
+        create: {
           userId,
           installationId: installationId.toString(),
           accountId: installationData.account?.id?.toString() || '',
@@ -35,17 +42,19 @@ export const processInstallation = inngest.createFunction(
     const octokit = await getInstallationOctokit(installationId);
 
     // Sync repositories
-    await step.run('sync-repositories', async () => {
+    const data = await step.run('sync-repositories', async () => {
       const { data } = await octokit.rest.apps.listReposAccessibleToInstallation({
         per_page: 100,
       });
 
-      const repos = data.repositories;
+      const currentGithubRepoIds = data.repositories.map((repo) => repo.id.toString());
 
-      for (const repo of repos) {
+      // Upsert all accessible repositories
+      for (const repo of data.repositories) {
         await prisma.repository.upsert({
           where: { githubId: repo.id.toString() },
           update: {
+            installationId: installation.id,
             name: repo.name,
             fullName: repo.full_name,
             description: repo.description,
@@ -83,8 +92,35 @@ export const processInstallation = inngest.createFunction(
           },
         });
       }
+
+      // If this is an update action, remove repos that are no longer accessible
+      if (action === 'update') {
+        const existingRepos = await prisma.repository.findMany({
+          where: { installationId: installation.id },
+          select: { githubId: true },
+        });
+
+        const reposToRemove = existingRepos
+          .map((repo) => repo.githubId)
+          .filter((githubId) => !currentGithubRepoIds.includes(githubId));
+
+        if (reposToRemove.length > 0) {
+          await prisma.repository.deleteMany({
+            where: {
+              installationId: installation.id,
+              githubId: { in: reposToRemove },
+            },
+          });
+        }
+      }
+
+      return data;
     });
 
-    return { success: true };
+    return { 
+      success: true, 
+      action,
+      reposCount: data.repositories.length 
+    };
   }
 );

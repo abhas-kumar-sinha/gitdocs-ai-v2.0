@@ -1,5 +1,13 @@
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
+import crypto from "crypto";
+
+function hashClerkId(clerkId: string) {
+  return crypto
+    .createHmac("sha256", process.env.STATE_ENCRYPTION_KEY!)
+    .update(clerkId)
+    .digest("hex");
+}
 
 export async function GET() {
   const { userId } = await auth();
@@ -9,7 +17,10 @@ export async function GET() {
   }
 
   const installUrl = new URL('https://github.com/apps/gitdocs-ai/installations/new');
-  installUrl.searchParams.set('state', userId);
+  
+  const state = hashClerkId(userId)
+
+  installUrl.searchParams.set('state', state);
 
   redirect(installUrl.toString());
 }

@@ -3,6 +3,14 @@ import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/db';
 import { inngest } from '@/inngest/client';
 import { auth } from '@clerk/nextjs/server';
+import crypto from "crypto";
+
+function hashClerkId(clerkId: string) {
+  return crypto
+    .createHmac("sha256", process.env.STATE_ENCRYPTION_KEY!)
+    .update(clerkId)
+    .digest("hex");
+}
 
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
@@ -16,11 +24,17 @@ export async function GET(req: NextRequest) {
 
   const { userId } = await auth();
 
-  if (!userId || (userId !== state)) {
+  if (!userId) {
     return redirect('/onboarding?error=unauthorized');
   }
 
-  if (setupAction === 'install') {
+  const verifiedUserId = hashClerkId(userId);
+
+  if (verifiedUserId !== state) {
+    return redirect('/onboarding?error=unauthorized');
+  }
+
+  if (setupAction === 'install' || setupAction === 'update') {
     try {
       // Find user
       const user = await prisma.user.findUnique({
@@ -36,8 +50,8 @@ export async function GET(req: NextRequest) {
         name: 'github/process-installation',
         data: {
           userId: user.id,
-          clerkId: userId,
           installationId: parseInt(installationId),
+          action: setupAction,
         },
       });
 
