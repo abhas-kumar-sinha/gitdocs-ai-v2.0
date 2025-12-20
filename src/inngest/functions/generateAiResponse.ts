@@ -3,10 +3,75 @@ import { prisma } from '@/lib/db';
 import { createAgent, openai } from '@inngest/agent-kit';
 import { getInstallationOctokit } from '@/lib/github/appAuth';
 import { lastAssistantTextMessage } from '../utils';
+import type { Octokit } from '@octokit/rest';
+import { Prisma } from '@/generated/prisma/client';
+
+// ============= TYPE DEFINITIONS =============
+
+type TemplateType = 'minimal' | 'standard' | 'api' | 'data-science' | 'documentation' | 'monorepo' | 'hackathon';
+
+type ModelConfig = {
+  model: string;
+  temp: number;
+  cost: number;
+};
+
+export type ProjectWithRelations = Prisma.ProjectGetPayload<{
+  include: {
+    repository: true;
+    messages: {
+      include: {
+        fragment: true;
+      };
+    };
+  };
+}>;
+
+type GitHubTreeItem = {
+  path?: string;
+  mode?: string;
+  type?: string;
+  sha?: string;
+  size?: number;
+  url?: string;
+};
+
+type ConversationMessage = {
+  role: 'user' | 'assistant';
+  content: string;
+};
+
+type ContextResult = {
+  hasRepo: boolean;
+  context: string;
+};
+
+type AgentConfig = {
+  systemPrompt: string;
+  userMessage: string;
+  selectedModel: ModelConfig;
+  template: string;
+};
+
+type ParsedResult = {
+  messageId: string;
+  readmeContent: string | null;
+  thinking: string | null;
+  summary: string;
+  template: string;
+};
+
+type PackageJson = {
+  name?: string;
+  version?: string;
+  description?: string;
+  dependencies?: Record<string, string>;
+  scripts?: Record<string, string>;
+};
 
 // ============= TEMPLATE SYSTEM PROMPTS =============
 
-const TEMPLATE_PROMPTS = {
+const TEMPLATE_PROMPTS: Record<TemplateType, string> = {
   minimal: `Create a MINIMALIST README with:
 - Brief description (1-2 sentences)
 - Quick installation (one command)
@@ -65,13 +130,13 @@ Keep it clean and simple.`,
 
 // ============= OPTIMIZED MODEL SELECTOR =============
 
-const SupportedModels = {
+const SupportedModels: Record<'fast' | 'balanced' | 'quality', ModelConfig> = {
   fast: { model: "gpt-5-nano", temp: 1, cost: 0.14 },
   balanced: { model: "gpt-5-mini", temp: 1, cost: 0.69 },
   quality: { model: "o4-mini", temp: 1, cost: 1.93 },
 };
 
-function selectModel(template: string) {
+function selectModel(template: string): ModelConfig {
   if (['minimal', 'hackathon'].includes(template)) return SupportedModels.fast;
   if (['documentation', 'monorepo'].includes(template)) return SupportedModels.quality;
   return SupportedModels.balanced;
@@ -79,7 +144,10 @@ function selectModel(template: string) {
 
 // ============= SMART CONTEXT BUILDER =============
 
-async function buildComprehensiveContext(project: any, octokit: any) {
+async function buildComprehensiveContext(
+  project: ProjectWithRelations,
+  octokit: Octokit | null
+): Promise<ContextResult> {
   const repo = project.repository;
   
   if (!repo || !octokit) {
@@ -120,8 +188,10 @@ Homepage: ${repo.homepage || 'None'}\n\n`;
     });
     
     const files = tree.tree
-      .filter((item: any) => item.type === 'blob')
-      .map((item: any) => item.path);
+      .filter((item: GitHubTreeItem): item is GitHubTreeItem & { path: string } => 
+        item.type === 'blob' && typeof item.path === 'string'
+      )
+      .map((item) => item.path);
 
     // Analyze structure
     const fileTypes: Record<string, number> = {};
@@ -135,7 +205,7 @@ Homepage: ${repo.homepage || 'None'}\n\n`;
     });
 
     // Detect frameworks
-    const frameworks = [];
+    const frameworks: string[] = [];
     if (files.some(p => p.includes('package.json'))) frameworks.push('Node.js');
     if (files.some(p => p.includes('requirements.txt'))) frameworks.push('Python');
     if (files.some(p => p.includes('Cargo.toml'))) frameworks.push('Rust');
@@ -174,10 +244,10 @@ Homepage: ${repo.homepage || 'None'}\n\n`;
             path: file,
           });
           
-          if ('content' in data) {
+          if ('content' in data && typeof data.content === 'string') {
             const content = Buffer.from(data.content, 'base64').toString('utf-8');
             try {
-              const parsed = JSON.parse(content);
+              const parsed = JSON.parse(content) as PackageJson;
               if (file === 'package.json') {
                 context += `PACKAGE INFO:
                 Name: ${parsed.name}
@@ -251,16 +321,16 @@ export const generateAIResponse = inngest.createFunction(
         ? await getInstallationOctokit(parseInt(project.repository.installation.installationId))
         : null;
 
-      return await buildComprehensiveContext(project, octokit);
+      return await buildComprehensiveContext(project as unknown as ProjectWithRelations, octokit as unknown as Octokit);
     });
 
     // ========== STEP 3: Prepare Agent Configuration ==========
-    const agentConfig = await step.run('prepare-agent-config', async () => {
+    const agentConfig = await step.run('prepare-agent-config', async (): Promise<AgentConfig> => {
       const template = project.template || 'standard';
       const selectedModel = selectModel(template);
       
       // Build conversation history
-      const conversationHistory = project.messages
+      const conversationHistory: ConversationMessage[] = project.messages
         .reverse()
         .slice(0, 9)
         .map(msg => ({
@@ -273,7 +343,7 @@ export const generateAIResponse = inngest.createFunction(
       const systemPrompt = `You are an expert README architect with deep knowledge of software documentation best practices.
 
       === TEMPLATE STYLE ===
-      ${TEMPLATE_PROMPTS[template as keyof typeof TEMPLATE_PROMPTS] || TEMPLATE_PROMPTS.standard}
+      ${TEMPLATE_PROMPTS[template as TemplateType] || TEMPLATE_PROMPTS.standard}
 
       === REPOSITORY CONTEXT ===
       ${repoContext}
@@ -361,7 +431,7 @@ export const generateAIResponse = inngest.createFunction(
     const agentResult = await agent.run(agentConfig.userMessage);
     
     // ========== STEP 5: Parse and Save Response ==========
-    const result = await step.run('parse-and-save', async () => {
+    const result = await step.run('parse-and-save', async (): Promise<ParsedResult> => {
       const fullOutput = lastAssistantTextMessage(agentResult);
 
       // Parse structured sections
@@ -403,7 +473,7 @@ export const generateAIResponse = inngest.createFunction(
 
       return {
         messageId: message.id,
-        readmeContent: readme,
+        readmeContent: readme ? readme : null,
         thinking,
         summary: displayMessage,
         template: agentConfig.template,
@@ -451,9 +521,10 @@ export const generateAIResponse = inngest.createFunction(
           });
 
           return { updated: true };
-        } catch (err: any) {
-          console.error('GitHub update failed:', err);
-          return { error: err.message };
+        } catch (err) {
+          const error = err as Error;
+          console.error('GitHub update failed:', error);
+          return { error: error.message };
         }
       });
     }
