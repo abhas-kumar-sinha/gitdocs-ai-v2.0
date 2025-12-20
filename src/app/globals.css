@@ -474,6 +474,189 @@
   filter: brightness(0.95) invert(1) saturate(0.9);
 }
 
+/* =========================================
+   Markdown Preview MINI (Micro/Thumbnail)
+   ========================================= */
+.markdown-preview-mini {
+  /* Ultra-small base settings - essentially a minimap */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-size: 6px;       /* 6px base size */
+  line-height: 1.15;    /* Very tight lines */
+  color: var(--md-fg-primary);
+  background-color: var(--md-bg-canvas);
+  word-wrap: break-word;
+  overflow: hidden;
+  padding: 4px;         /* Tiny container padding */
+}
+
+/* Headings - Minimal vertical space */
+.markdown-preview-mini h1,
+.markdown-preview-mini h2,
+.markdown-preview-mini h3,
+.markdown-preview-mini h4,
+.markdown-preview-mini h5,
+.markdown-preview-mini h6 {
+  margin-top: 6px;
+  margin-bottom: 3px;
+  font-weight: 700; /* Bolder to remain visible at small sizes */
+  line-height: 1.1;
+  color: var(--md-fg-primary);
+}
+
+.markdown-preview-mini h1 {
+  font-size: 12px; /* 2em */
+  padding-bottom: 2px;
+  border-bottom: 1px solid var(--md-border-muted);
+}
+
+.markdown-preview-mini h2 {
+  font-size: 9px; /* 1.5em */
+  padding-bottom: 1px;
+  border-bottom: 1px solid var(--md-border-muted);
+}
+
+.markdown-preview-mini h3 { font-size: 7.5px; } /* 1.25em */
+.markdown-preview-mini h4 { font-size: 6px; font-weight: 700; }
+
+/* Paragraphs */
+.markdown-preview-mini p {
+  margin-top: 0;
+  margin-bottom: 4px;
+}
+
+.markdown-preview-mini a {
+  color: var(--md-fg-accent);
+  text-decoration: none;
+}
+
+.markdown-preview-mini strong { font-weight: 700; }
+.markdown-preview-mini em { font-style: italic; }
+
+/* Horizontal Rule */
+.markdown-preview-mini hr {
+  height: 1px;
+  margin: 6px 0;
+  background-color: var(--md-border-default);
+  border: 0;
+}
+
+/* Blockquotes */
+.markdown-preview-mini blockquote {
+  margin: 0 0 4px;
+  padding: 0 4px;
+  color: var(--md-fg-secondary);
+  border-left: 1.5px solid var(--md-blockquote-border);
+}
+
+/* Lists */
+.markdown-preview-mini ul,
+.markdown-preview-mini ol {
+  margin-top: 0;
+  margin-bottom: 4px;
+  padding-left: 10px;
+}
+
+.markdown-preview-mini li {
+  word-wrap: break-all;
+}
+
+.markdown-preview-mini li > p {
+  margin-top: 2px;
+}
+
+/* Task Lists - Fix checkboxes being huge */
+.markdown-preview-mini ul.contains-task-list {
+  padding-left: 0;
+  list-style-type: none;
+}
+
+.markdown-preview-mini input[type="checkbox"] {
+  margin-right: 2px;
+  vertical-align: middle;
+  transform-origin: left center;
+  transform: scale(0.5); /* Force browser checkbox to look tiny */
+}
+
+/* Code Blocks */
+.markdown-preview-mini code {
+  padding: 0 2px;
+  margin: 0;
+  font-size: 5.5px;
+  font-family: ui-monospace, monospace;
+  background-color: var(--md-code-bg);
+  border-radius: 2px;
+}
+
+.markdown-preview-mini pre {
+  margin-top: 0;
+  margin-bottom: 4px;
+  padding: 4px;
+  overflow: hidden;
+  font-size: 5.5px;
+  line-height: 1.1;
+  background-color: var(--md-pre-bg);
+  border-radius: 2px;
+  border: 1px solid var(--md-border-muted);
+}
+
+.markdown-preview-mini pre code {
+  font-size: 100%;
+  white-space: pre;
+  border: 0;
+  padding: 0;
+}
+
+/* Tables */
+.markdown-preview-mini table {
+  border-spacing: 0;
+  border-collapse: collapse;
+  margin-top: 0;
+  margin-bottom: 4px;
+  width: 100%;
+  display: table;
+}
+
+.markdown-preview-mini table tr {
+  background-color: var(--md-bg-canvas);
+  border-top: 1px solid var(--md-border-muted);
+}
+
+.markdown-preview-mini table tr:nth-child(2n) {
+  background-color: var(--md-table-stripe);
+}
+
+.markdown-preview-mini table th,
+.markdown-preview-mini table td {
+  padding: 1px 3px;
+  border: 1px solid var(--md-border-default);
+  font-size: 5px;
+}
+
+.markdown-preview-mini table th {
+  font-weight: 700;
+  background-color: var(--md-bg-canvas-subtle);
+}
+
+/* Images */
+.markdown-preview-mini img {
+  max-width: 100%;
+  box-sizing: content-box;
+  background-color: var(--md-bg-canvas);
+}
+
+/* ===== Micro Badges ===== */
+.markdown-preview-mini img[src*="img.shields.io"] {
+  height: 7px;  /* Extremely small badge height */
+  display: inline-block;
+  margin: 0 2px 0 0;
+  border-radius: 2px;
+}
+
+/* Adjust dark mode filter */
+.dark .markdown-preview-mini img[src*="img.shields.io"] {
+  filter: brightness(0.95) invert(1) saturate(0.9);
+}
+
 
 /* =========================================
    Chat Message Typography

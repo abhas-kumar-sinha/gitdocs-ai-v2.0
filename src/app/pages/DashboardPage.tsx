@@ -1,11 +1,17 @@
+import { caller } from "@/trpc/server";
 import Sidebar from "@/components/layout/Sidebar";
-import AuraBackground from "@/components/animated-backgrounds/AuraBackground";
-import AI_Prompt from "@/components/kokonutui/ai-prompt";
 import { ChevronRight, Heart } from "lucide-react";
 import Anthropic from "@/components/kokonutui/anthropic";
+import AI_Prompt from "@/components/kokonutui/ai-prompt";
 import AnthropicDark from "@/components/kokonutui/anthropic-dark";
+import ProjectMiniPreview from "@/components/common/ProjectMiniPreview";
+import AuraBackground from "@/components/animated-backgrounds/AuraBackground";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
-const DashboardPage = () => {
+const DashboardPage = async () => {
+
+  const projects = await caller.project.list();
+
   return (
     <div className="flex h-screen">
       <Sidebar />
@@ -13,7 +19,7 @@ const DashboardPage = () => {
       <div className="relative flex-1 overflow-y-scroll overflow-x-hidden">
         <AuraBackground source="landing" />
         <div className="h-screen max-h-[768px] flex items-center justify-center">
-          <div className="flex flex-col gap-y-4 w-full">
+          <div className="flex flex-col gap-y-2 w-full -mt-14">
             <span className="mx-auto text-sm text-foreground/70 border border-foreground/10 ps-4 pe-3 py-1 rounded-full bg-background/90 flex items-center gap-x-2 cursor-pointer group transition-colors duration-300 hover:scale-102 animate-all hover:text-foreground hover:border-foreground/30">
                 <Heart size={13} />
 
@@ -47,6 +53,28 @@ const DashboardPage = () => {
             </div>
           </div>
           </div>
+        </div>
+
+        <div className="min-h-1/2 bg-background/60 p-6 rounded-2xl w-[94%] mx-auto -mt-24 mb-10">
+          <Tabs defaultValue="projects" className="w-full">
+            <TabsList className="h-9 bg-transparent">
+              <TabsTrigger value="projects" className="w-30">My Projects</TabsTrigger>
+              <TabsTrigger value="templates" className="w-30">Templates</TabsTrigger>
+            </TabsList>
+            <TabsContent className="mt-3" value="projects">
+              <div className="grid grid-cols-3 gap-6">
+                {projects.length > 0 && projects.map((project, idx) => {
+                  return (
+                  project.messages[0].fragment?.readme ? 
+                  <ProjectMiniPreview key={idx} project={project} />
+                    :
+                  null
+                )
+                })}
+              </div>
+            </TabsContent>
+            <TabsContent value="templates">Change your password here.</TabsContent>
+          </Tabs>
         </div>
       </div>
     </div>

@@ -17,6 +17,7 @@ import PreviewPanel from "./tabs/PreviewPanel";
 import DesignPanel from "./tabs/DesignPanel";
 import CodePanel from "./tabs/CodePanel";
 import ContextPanel from "./tabs/ContextPanel";
+import { TemplateId } from "./context-selection/TemplateList";
 
 export interface ToolbarItem {
     id: string;
@@ -50,7 +51,7 @@ const ProjectView = ({projectId} : {projectId : string}) => {
           <div className="flex items-center">
             <DropdownMenu>
               <DropdownMenuTrigger asChild className="flex items-center gap-x-2">
-                <Button variant="ghost" size="sm" className="hover:bg-transparent!">
+                <Button variant="ghost" size="sm" className="hover:bg-transparent!" suppressHydrationWarning>
                   <span className="uppercase px-1.5 py-1 rounded-md bg-accent text-xs">{project?.name.slice(0, 2)}</span>
                   <span>{project?.name}</span>
                   <ChevronDown />
@@ -77,7 +78,7 @@ const ProjectView = ({projectId} : {projectId : string}) => {
         <MessageContainer projectId={projectId} activeFragment={activeFragment} setActiveFragment={setActiveFragment} />
 
         <div className="absolute bottom-2 w-[98%] mx-auto ms-1">
-          <AI_Prompt isActive={true} projectId={projectId}/>
+          <AI_Prompt isActive={true} projectId={projectId} repository={project.repository ? project.repository : undefined} templateId={project.template ? project.template as TemplateId : "ai-gen"} />
         </div>
       </ResizablePanel>
 

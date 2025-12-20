@@ -1,9 +1,9 @@
 "use client";
-import { Suspense, useEffect, useRef } from "react";
 import { useTRPC } from "@/trpc/client";
 import MessageCard from "./MessageCard";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { Suspense, useEffect, useRef } from "react";
 import { Fragment } from "@/generated/prisma/client";
+import { useSuspenseQuery } from "@tanstack/react-query";
 
 const MessageContainer = ({
   projectId,
@@ -16,8 +16,8 @@ const MessageContainer = ({
 }) => {
   const trpc = useTRPC();
   
-  // 1. Create a reference for the bottom of the list
   const bottomRef = useRef<HTMLDivElement>(null);
+  const previousMessageCountRef = useRef<number>(0); // Track previous count
 
   const { data: messages } = useSuspenseQuery(
     trpc.message.getMany.queryOptions({
@@ -25,14 +25,17 @@ const MessageContainer = ({
     })
   );
 
-  // 2. Auto-scroll effect: Runs whenever 'messages' changes
+  // Only scroll when message count increases (new message added)
   useEffect(() => {
-    if (bottomRef.current) {
-      bottomRef.current.scrollIntoView({ behavior: "smooth" });
+    const currentCount = messages?.length || 0;
+    
+    if (currentCount > previousMessageCountRef.current) {
+      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
     }
+    
+    previousMessageCountRef.current = currentCount;
   }, [messages]);
 
-  // Existing Logic for setting active fragment
   useEffect(() => {
     if (messages && messages.length > 0) {
       const lastAssistantMessage = [...messages]
@@ -47,10 +50,6 @@ const MessageContainer = ({
 
   return (
     <div 
-      // Updated ClassName:
-      // 1. overflow-y-auto: Only shows scrollbar when needed
-      // 2. h-full: Ensures it fills parent height (crucial for scrolling)
-      // 3. custom-scrollbar: Optional, but good for chat UIs
       className="flex flex-col flex-1 w-full mt-14 mb-32 px-6 overflow-y-auto overflow-x-hidden pb-4 scroll-smooth"
     >
       <Suspense fallback={<p className="text-center text-gray-500 mt-4">Loading Messages...</p>}>
@@ -65,7 +64,6 @@ const MessageContainer = ({
         ))}
       </Suspense>
 
-      {/* 3. Invisible element at the bottom to scroll to */}
       <div ref={bottomRef} />
     </div>
   );

@@ -3,6 +3,18 @@ import { prisma } from '@/lib/db';
 import { TRPCError } from '@trpc/server';
 import { inngest } from '@/inngest/client';
 import { createTRPCRouter, protectedProcedure } from '@/trpc/init';
+import { Prisma } from '@/generated/prisma/client';
+
+export type ProjectWithChildren = Prisma.ProjectGetPayload<{
+  include: {
+    repository: true;
+    messages: {
+      include: {
+        fragment: true;
+      };
+    };
+  };
+}>;
 
 export const projectRouter = createTRPCRouter({
   create: protectedProcedure
@@ -42,17 +54,20 @@ export const projectRouter = createTRPCRouter({
     }),
 
   list: protectedProcedure.query(async ({ ctx }) => {
-    return prisma.project.findMany({
+    const projects: ProjectWithChildren[] = await prisma.project.findMany({
       where: { userId: ctx.auth.userId },
       include: {
         repository: true,
         messages: {
           orderBy: { createdAt: 'desc' },
           take: 1,
+          include: { fragment: true },
         },
       },
       orderBy: { updatedAt: 'desc' },
     });
+
+    return projects;
   }),
 
   getById: protectedProcedure

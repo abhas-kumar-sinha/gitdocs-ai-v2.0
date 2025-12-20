@@ -68,8 +68,8 @@ const RawPreview = ({ content }: { content: string }) => {
 
   if (!content) {
     return (
-      <div className="h-full flex items-center justify-center text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-950">
-        <p>No Preview Available</p>
+      <div className="h-full flex items-center justify-center bg-foreground/5">
+        <p className="text-foreground/60">No Preview Available</p>
       </div>
     );
   }

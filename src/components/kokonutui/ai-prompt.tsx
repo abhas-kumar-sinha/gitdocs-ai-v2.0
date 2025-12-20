@@ -16,12 +16,12 @@ import { ArrowRight, Book, ChevronRight } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-export default function AI_Prompt({ isActive, projectId } : { isActive: boolean, projectId?: string }) {
+export default function AI_Prompt({ isActive, projectId, repository, templateId } : { isActive: boolean, projectId?: string, repository?: Repository, templateId?: TemplateId }) {
   const trpc = useTRPC();
   const router = useRouter();
   const queryClient = useQueryClient();
   const [value, setValue] = useState("");
-  const [selectedRepository, setSelectedRepository] = useState<Repository | null>(null);
+  const [selectedRepository, setSelectedRepository] = useState<Repository | null>(repository ? repository : null);
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateId>("ai-gen");
 
   const { textareaRef, adjustHeight } = useAutoResizeTextarea({
@@ -78,8 +78,6 @@ export default function AI_Prompt({ isActive, projectId } : { isActive: boolean,
       template: selectedTemplate,
     })
     
-    setValue("");
-    adjustHeight(true);
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {

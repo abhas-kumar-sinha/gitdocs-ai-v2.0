@@ -5,7 +5,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useScrollPosition } from "@/contexts/ScrollPositionContext";
 
-const MarkdownPreview = ({ content }: { content: string }) => {
+const MarkdownPreview = ({ content, view = "max" }: { content: string, view?: "max" | "min" }) => {
   const { markdownScrollPosition, setMarkdownScrollPosition } =
     useScrollPosition();
   const [isReady, setIsReady] = useState(false);
@@ -95,10 +95,12 @@ const MarkdownPreview = ({ content }: { content: string }) => {
       {/* Markdown content - hidden until ready */}
       <div
         ref={containerRef}
-        className={`h-full markdown-preview bg-transparent rounded-xl text-[#e0e3e7] focus:outline-none w-full p-4 resize-none rounded-b-lg overflow-y-auto transition-opacity duration-300 ${
+        className={`h-full bg-transparent rounded-xl text-[#e0e3e7] focus:outline-none w-full p-4 resize-none rounded-b-lg transition-opacity duration-300 ${
           isReady ? 'opacity-100' : 'opacity-0'
+        } ${
+          view === "max" ? 'markdown-preview overflow-y-auto' : 'markdown-preview-mini px-20! pt-6!'
         }`}
-        onScroll={handleScroll}
+        onScroll={view === "max" ? handleScroll : undefined}
       >
         <ReactMarkdown remarkPlugins={[remarkGfm]}>
           {cleanContent}

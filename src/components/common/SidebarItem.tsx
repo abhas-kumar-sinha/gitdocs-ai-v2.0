@@ -149,7 +149,7 @@ const GithubConnectionItem = ({ isSidebarOpen } : {isSidebarOpen : boolean}) => 
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent 
-        sideOffset={-1} 
+        sideOffset={4} 
         onClick={(e) => e.stopPropagation()} 
         className={cn("w-64", isSidebarOpen ? "ms-1" : "ms-[10px]")}
       >
