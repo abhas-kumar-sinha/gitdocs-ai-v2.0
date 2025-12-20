@@ -1,0 +1,111 @@
+"use client";
+
+import React, { useRef, useEffect, useState } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { useScrollPosition } from "@/contexts/ScrollPositionContext";
+
+const MarkdownPreview = ({ content }: { content: string }) => {
+  const { markdownScrollPosition, setMarkdownScrollPosition } =
+    useScrollPosition();
+  const [isReady, setIsReady] = useState(false);
+  
+  const containerRef = useRef<HTMLDivElement>(null);
+  const hasRestoredRef = useRef(false);
+
+  // Clean and preprocess content
+  const cleanContent = content
+    .replace(/\\n/g, "\n")
+    .replace(/\\`\\`\\`/g, "```")
+    .trim();
+
+  // Explicitly save scroll position when component unmounts
+  useEffect(() => {
+    return () => {
+      if (containerRef.current) {
+        const currentPos = containerRef.current.scrollTop;
+        if (currentPos > 0) {
+          setMarkdownScrollPosition(currentPos);
+        }
+      }
+      hasRestoredRef.current = false;
+      setIsReady(false);
+    };
+  }, [setMarkdownScrollPosition]);
+
+  // Restore scroll position after content has rendered
+  useEffect(() => {
+    if (
+      content &&
+      containerRef.current &&
+      !hasRestoredRef.current
+    ) {
+      // Wait for markdown to render
+      const timer = setTimeout(() => {
+        if (containerRef.current && markdownScrollPosition > 0) {
+          containerRef.current.scrollTop = markdownScrollPosition;
+          hasRestoredRef.current = true;
+        }
+        
+        // Mark as ready after scroll restoration
+        setTimeout(() => {
+          setIsReady(true);
+        }, 50);
+      }, 150);
+
+      return () => clearTimeout(timer);
+    } else if (content && !hasRestoredRef.current) {
+      // If no scroll position to restore, mark ready faster
+      setTimeout(() => {
+        setIsReady(true);
+        hasRestoredRef.current = true;
+      }, 100);
+    }
+  }, [content, markdownScrollPosition]);
+
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const newPosition = e.currentTarget.scrollTop;
+    const difference = Math.abs(newPosition - markdownScrollPosition);
+
+    if (difference > 20) {
+      setMarkdownScrollPosition(newPosition);
+    }
+  };
+
+  if (!content) {
+    return (
+      <div className="h-full flex items-center justify-center bg-foreground/5">
+        <p className="text-foreground/60">No Preview Available</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative h-full">
+      {/* Loading overlay */}
+      {!isReady && (
+        <div className="absolute inset-0 z-10 flex items-center justify-center bg-foreground/5">
+          <div className="flex flex-col items-center gap-3">
+            <div className="w-8 h-8 border-4 border-foreground/20 border-t-foreground/60 rounded-full animate-spin" />
+            <p className="text-sm text-foreground/60">Preparing markdown...</p>
+          </div>
+        </div>
+      )}
+
+      {/* Markdown content - hidden until ready */}
+      <div
+        ref={containerRef}
+        className={`h-full markdown-preview bg-transparent rounded-xl text-[#e0e3e7] focus:outline-none w-full p-4 resize-none rounded-b-lg overflow-y-auto transition-opacity duration-300 ${
+          isReady ? 'opacity-100' : 'opacity-0'
+        }`}
+        onScroll={handleScroll}
+      >
+        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+          {cleanContent}
+        </ReactMarkdown>
+      </div>
+    </div>
+  );
+};
+
+export default MarkdownPreview;

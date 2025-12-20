@@ -23,13 +23,25 @@ export async function GET() {
   
   const state = crypto.randomUUID();
 
+  // Discarding any previous pending process
+  await prisma.installationProcess.updateMany({
+    where: {
+      userId: user.id,
+      status: "PENDING"
+    },
+    data: {
+      status: "FAILED"
+    }
+  });
+
+  // Then create the new pending process
   await prisma.installationProcess.create({
-    data : {
+    data: {
       userId: user.id,
       state,
       status: "PENDING"
     }
-  })
+  });
 
   installUrl.searchParams.set('state', state);
 

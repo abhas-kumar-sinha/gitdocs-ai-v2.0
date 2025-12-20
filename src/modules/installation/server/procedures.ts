@@ -5,7 +5,7 @@ import { prisma } from '@/lib/db';
 import { inngest } from '@/inngest/client';
 import { Prisma } from '@/generated/prisma/client';
 
-export type InstallationWithRepositories =
+type InstallationWithRepositories =
   Prisma.InstallationGetPayload<{
     include: {
       repositories: true;

@@ -6,6 +6,7 @@ import "./globals.css";
 import { RepositoryProvider } from "@/contexts/RepositoryContext";
 import { TRPCReactProvider } from "@/trpc/client";
 import { Toaster } from "@/components/ui/sonner";
+import { ScrollPositionProvider } from "@/contexts/ScrollPositionContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,10 +34,12 @@ export default function RootLayout({
         <html lang="en" suppressHydrationWarning>
           <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
             <Providers>
-              <RepositoryProvider>
-                <Toaster />
-                {children}
-              </RepositoryProvider>
+              <ScrollPositionProvider>
+                <RepositoryProvider>
+                  <Toaster />
+                  {children}
+                </RepositoryProvider>
+              </ScrollPositionProvider>
             </Providers>
           </body>
         </html>

@@ -9,4 +9,4 @@ const Page = () => {
     </Suspense>
   )
 }
-export default Page
+export default Page;

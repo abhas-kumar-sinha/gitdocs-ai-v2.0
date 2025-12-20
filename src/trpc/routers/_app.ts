@@ -10,7 +10,7 @@ export const appRouter = createTRPCRouter({
   user: userRouter,
   installation: installationRouter,
   installationProcess: installationProcessRouter,
-  messages: messagesRouter,
+  message: messagesRouter,
   project: projectRouter,
   repository: repositoryRouter
 });

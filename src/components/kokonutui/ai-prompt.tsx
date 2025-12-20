@@ -1,8 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { useState } from "react";
 import SmoothTab from "./smooth-tab";
+import { useTRPC } from "@/trpc/client";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Repository } from "@/generated/prisma/client";
@@ -11,8 +14,12 @@ import { TemplateId } from "../project/context-selection/TemplateList";
 import { useAutoResizeTextarea } from "@/hooks/use-auto-resize-textarea";
 import { ArrowRight, Book, ChevronRight } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-export default function AI_Prompt({ isActive } : { isActive: boolean }) {
+export default function AI_Prompt({ isActive, projectId } : { isActive: boolean, projectId?: string }) {
+  const trpc = useTRPC();
+  const router = useRouter();
+  const queryClient = useQueryClient();
   const [value, setValue] = useState("");
   const [selectedRepository, setSelectedRepository] = useState<Repository | null>(null);
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateId>("ai-gen");
@@ -22,11 +29,67 @@ export default function AI_Prompt({ isActive } : { isActive: boolean }) {
     maxHeight: 250,
   });
 
+  const createProject = useMutation(trpc.project.create.mutationOptions({
+    onError: () => {
+      toast.error("Failed to create project");
+    },
+    onSuccess: (data) => {
+      router.push(`/projects/${data.id}`);
+    }
+  }));
+
+  const createMessage = useMutation(trpc.message.create.mutationOptions({
+    onError: () => {
+      toast.error("Failed to send message");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [['message', 'getMany'], { input: { projectId } }]
+      });
+    },
+  }));
+
+  const handleCreateMessage = () => {
+    
+    if (!value.trim() || !isActive || !projectId) return;
+    
+    createMessage.mutate({
+      value: value,
+      projectId: projectId,
+    })
+    
+    setValue("");
+    adjustHeight(true);
+  }
+
+  const handleCreateProject = () => {
+    
+    if (!value.trim() || !isActive) return;
+
+    if (!selectedRepository) {
+      toast.error("Please select a repository");
+      return;
+    }
+    
+    createProject.mutate({
+      name: selectedRepository.name,
+      prompt: value,
+      repositoryId: selectedRepository.id,
+      template: selectedTemplate,
+    })
+    
+    setValue("");
+    adjustHeight(true);
+  }
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      setValue("");
-      adjustHeight(true);
+      if (projectId) {
+        handleCreateMessage();
+      } else {
+        handleCreateProject();
+      }
     }
   };
 
@@ -56,7 +119,7 @@ export default function AI_Prompt({ isActive } : { isActive: boolean }) {
             <SignedIn>
               <Sheet>
                 <SheetTrigger asChild>
-                  <Button variant="secondary" className="flex h-8 items-center gap-1 rounded-md pr-2 pl-1 text-xs hover:bg-black/10 focus-visible:ring-1 focus-visible:ring-blue-500 focus-visible:ring-offset-0 dark:text-white dark:hover:bg-white/10">
+                  <Button disabled={!!projectId} variant="secondary" className="flex h-8 items-center gap-1 rounded-md pr-2 pl-1 text-xs hover:bg-black/10 focus-visible:ring-1 focus-visible:ring-blue-500 focus-visible:ring-offset-0 dark:text-white dark:hover:bg-white/10">
                     <Book className="h-3.5! w-3.5!" />
                     {selectedRepository && selectedTemplate && selectedTemplate !== "ai-gen" ? (
                       <span className="mx-1 flex items-center gap-1">
@@ -96,9 +159,11 @@ export default function AI_Prompt({ isActive } : { isActive: boolean }) {
           </div>
           <button
             aria-label="Send message"
+            onClick={projectId ? handleCreateMessage : handleCreateProject}
             className={cn(
               "rounded-lg bg-black/5 p-2 dark:bg-white/5",
-              "hover:bg-black/10 focus-visible:ring-1 focus-visible:ring-blue-500 focus-visible:ring-offset-0 dark:hover:bg-white/10"
+              "hover:bg-black/10 focus-visible:ring-1 focus-visible:ring-blue-500 focus-visible:ring-offset-0 dark:hover:bg-white/10",
+              !value.trim() ? "opacity-30 cursor-not-allowed" : "cursor-pointer"
             )}
             disabled={!value.trim()}
             type="button"
@@ -115,3 +180,4 @@ export default function AI_Prompt({ isActive } : { isActive: boolean }) {
     </div>
   );
 }
+

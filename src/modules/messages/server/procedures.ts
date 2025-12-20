@@ -1,14 +1,29 @@
 import { z } from 'zod';
-import { baseProcedure, createTRPCRouter } from '@/trpc/init';
 import { prisma } from '@/lib/db';
 import { inngest } from '@/inngest/client';
+import { baseProcedure, createTRPCRouter } from '@/trpc/init';
+import { Prisma } from '@/generated/prisma/client';
+
+type messageWithFragment = 
+  Prisma.MessageGetPayload<{
+    include: {
+      fragment: true;
+    };
+  }>;
 
 export const messagesRouter = createTRPCRouter({
   getMany: baseProcedure
-    .query(async () => {
-      const messages = await prisma.message.findMany({
+    .input(z.object({ projectId: z.string() }))
+    .query(async ({ input }) => {
+      const messages: messageWithFragment[] = await prisma.message.findMany({
+        where: {
+          projectId: input.projectId,
+        },
+        include: {
+          fragment: true,
+        },
         orderBy: {
-          updatedAt: "desc",
+          updatedAt: "asc",
         }
       });
 
@@ -36,10 +51,9 @@ export const messagesRouter = createTRPCRouter({
         })
 
         await inngest.send({
-          name: "code-agent",
+          name: "ai/generate-response",
           data: {
-              value: input.value,
-              projectId: input.projectId,
+            projectId: input.projectId,
           }
         })
 

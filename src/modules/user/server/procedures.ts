@@ -17,7 +17,6 @@ export const userRouter = createTRPCRouter({
             },
           },
           projects: {
-            take: 5,
             orderBy: { updatedAt: 'desc' },
           },
         },

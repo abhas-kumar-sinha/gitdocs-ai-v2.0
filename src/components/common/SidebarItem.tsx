@@ -2,16 +2,16 @@
 
 import Image from "next/image"
 import { cn } from "@/lib/utils"
-import { useEffect, useMemo } from "react"
 import { Button } from "../ui/button"
 import { useTRPC } from "@/trpc/client"
+import { FaGithub } from "react-icons/fa"
+import { useEffect, useMemo } from "react"
 import { useRouter } from "next/navigation"
 import { Repository } from "@/generated/prisma/client"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { useRepositoryContext } from "@/contexts/RepositoryContext"
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip"
-import { ChevronDown, Eye, Github, Lock, LucideIcon, Shield } from "lucide-react"
-import { InstallationWithRepositories } from "@/modules/installation/server/procedures"
+import { ChevronDown, Eye, Lock, LucideIcon, Shield } from "lucide-react"
 import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger} from "@/components/ui/dropdown-menu"
 
 interface SidebarItemProp {
@@ -203,7 +203,7 @@ const GithubConnectionItem = ({ isSidebarOpen } : {isSidebarOpen : boolean}) => 
       <DropdownMenuTrigger asChild className="w-full outline-none focus:outline-none focus-visible:outline-none">
         <button onClick={(e) => {e.stopPropagation()}} className="cursor-pointer w-full my-1.5 py-1 px-[4.5px] border border-neutral-700/50 group/button rounded-md bg-background hover:bg-neutral-300/50 dark:hover:bg-neutral-700/50 flex items-center text-foreground hover:text-foreground/90">
           <div className="flex items-center justify-center bg-accent py-1 px-[5px] rounded-md">
-            <Github size={15} />
+            <FaGithub size={15} />
           </div>
           <span className={cn("ms-2 whitespace-nowrap text-sm font-semibold", isSidebarOpen ? "" : "hidden")}>
             Connect Github

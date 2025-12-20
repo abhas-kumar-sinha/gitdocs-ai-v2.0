@@ -73,6 +73,9 @@ export const generateAIResponse = inngest.createFunction(
     4. Professional tone
 
     When generating README content, wrap it in a special marker:
+    <MESSAGE>
+    ...summary of what you have done one paragraph and a few number points...
+    </MESSAGE>
     <README>
     ...your markdown here...
     </README>`;
@@ -99,11 +102,9 @@ export const generateAIResponse = inngest.createFunction(
     const latestMessage = conversationHistory[conversationHistory.length - 1];
     
     // Pass previous messages as context to the agent
-    const { output } = await step.run('generate-readme', async () => {
-      return readmeAgent.run(
-        `${latestMessage.content}, history: ${conversationHistory.slice(0, -1)}`
-      );
-    });
+    const { output } = await readmeAgent.run(
+      `${latestMessage.content}, history: ${conversationHistory.slice(0, -1)}`
+    );
 
     const content = JSON.stringify(output);
 
@@ -111,11 +112,15 @@ export const generateAIResponse = inngest.createFunction(
     const readmeMatch = content.match(/<README>([\s\S]*?)<\/README>/);
     const readmeContent = readmeMatch ? readmeMatch[1].trim() : null;
 
+    // Extract message fragment if present
+    const messageMatch = content.match(/<MESSAGE>([\s\S]*?)<\/MESSAGE>/);
+    const messageContent = messageMatch ? messageMatch[1].trim() : null;
+
     await step.run('save-response', async () => {
       const message = await prisma.message.create({
         data: {
           projectId,
-          content,
+          content: messageContent || "",
           role: 'ASSISTANT',
           type: 'RESULT',
           model: 'o4-mini',

@@ -1,27 +1,44 @@
 import { z } from 'zod';
-import { createTRPCRouter, protectedProcedure } from '@/trpc/init';
-import { TRPCError } from '@trpc/server';
 import { prisma } from '@/lib/db';
+import { TRPCError } from '@trpc/server';
 import { inngest } from '@/inngest/client';
+import { createTRPCRouter, protectedProcedure } from '@/trpc/init';
 
 export const projectRouter = createTRPCRouter({
   create: protectedProcedure
     .input(
       z.object({
         name: z.string(),
-        repositoryId: z.string().optional(),
-        description: z.string().optional(),
+        prompt: z.string().min(1, { message: "Prompt cannot be empty" }).max(1000, { message: "Prompt cannot be longer than 1000 characters" }),
+        repositoryId: z.string().min(1, { message: "Repository cannot be empty" }),
+        template: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
-      return prisma.project.create({
+      const createdProject = await prisma.project.create({
         data: {
           userId: ctx.auth.userId,
           name: input.name,
           repositoryId: input.repositoryId,
-          description: input.description,
+          template: input.template,
+          messages: {
+            create: {
+              content: input.prompt,
+              role: 'USER',
+              type: 'RESULT',
+            },
+          }
         },
       });
+
+      await inngest.send({
+        name: 'ai/generate-response',
+        data: {
+          projectId: createdProject.id,
+        },
+      });
+
+      return createdProject;
     }),
 
   list: protectedProcedure.query(async ({ ctx }) => {
@@ -56,40 +73,9 @@ export const projectRouter = createTRPCRouter({
       });
 
       if (!project) {
-        throw new TRPCError({ code: 'NOT_FOUND' });
+        throw new TRPCError({ code: 'NOT_FOUND', message: "Project not found" });
       }
 
       return project;
-    }),
-
-  sendMessage: protectedProcedure
-    .input(
-      z.object({
-        projectId: z.string(),
-        content: z.string(),
-      })
-    )
-    .mutation(async ({ ctx, input }) => {
-      // Create user message
-      const message = await prisma.message.create({
-        data: {
-          projectId: input.projectId,
-          content: input.content,
-          role: 'USER',
-          type: 'RESULT',
-        },
-      });
-
-      // Trigger AI response
-      await inngest.send({
-        name: 'ai/generate-response',
-        data: {
-          projectId: input.projectId,
-          messageId: message.id,
-          userId: ctx.auth.userId,
-        },
-      });
-
-      return message;
     }),
 });

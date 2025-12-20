@@ -1,28 +1,18 @@
 "use client";
 
 import * as React from "react";
-import { AnimatePresence, motion, TransitionWithValueOverrides } from "motion/react";
-import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip"
 import { cn } from "@/lib/utils";
-import {
-    CodeXml,
-    Form,
-    Globe,
-    Palette,
-    type LucideIcon,
-} from "lucide-react";
-
-interface ToolbarItem {
-    id: string;
-    title: string;
-    icon: LucideIcon;
-    type?: never;
-}
+import { ToolbarItem } from "../project/ProjectView";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip"
+import { AnimatePresence, motion, TransitionWithValueOverrides } from "motion/react";
 
 interface ToolbarProps {
-    className?: string;
-    activeColor?: string;
-    onSearch?: (value: string) => void;
+  selected: string | null;
+  setSelected: (value: string | null) => void;
+  className?: string;
+  activeColor?: string;
+  onSearch?: (value: string) => void;
+  toolbarItems: ToolbarItem[];
 }
 
 const buttonVariants = {
@@ -47,20 +37,15 @@ const spanVariants = {
 const transition = { type: "spring", bounce: 0, duration: 0.4 };
 
 export function Toolbar({
+    selected,
+    setSelected,
+    toolbarItems,
     className,
 }: ToolbarProps) {
-    const [selected, setSelected] = React.useState<string | null>("preview");
     const outsideClickRef = React.useRef(null);
 
-    const toolbarItems: ToolbarItem[] = [
-        { id: "preview", title: "Preview", icon: Globe },
-        { id: "design", title: "Design", icon: Palette },
-        { id: "code", title: "Code", icon: CodeXml },
-        { id: "context", title: "Context", icon: Form },
-    ];
-
     const handleItemClick = (itemId: string) => {
-        setSelected(selected === itemId ? null : itemId);
+        setSelected(itemId);
     };
 
     return (
@@ -88,7 +73,7 @@ export function Toolbar({
                                 "relative flex items-center rounded-lg py-1.5",
                                 "text-xs font-medium transition-colors duration-300 cursor-pointer",
                                 selected === item.id
-                                    ? "bg-primary/30 border border-primary/50 text-white rounded-lg"
+                                    ? "bg-primary/30 border border-primary/50 text-foreground rounded-lg"
                                     : "text-muted-foreground hover:bg-muted hover:text-foreground"
                             )}
                         >
@@ -99,7 +84,7 @@ export function Toolbar({
                                     <item.icon
                                         size={14}
                                         className={cn(
-                                            selected === item.id && "text-white"
+                                            selected === item.id && "text-foreground"
                                         )}
                                     />
                                 </TooltipTrigger>
@@ -111,7 +96,7 @@ export function Toolbar({
                             <item.icon
                                 size={14}
                                 className={cn(
-                                    selected === item.id && "text-white"
+                                    selected === item.id && "text-foreground"
                                 )}
                             />}
                             <AnimatePresence initial={false}>

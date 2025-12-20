@@ -82,7 +82,7 @@ export default function RepositoryList({ selected, setSelected }: { selected: Re
       </div>
 
       {/* Scrollable List */}
-      <div className="flex-1 overflow-y-auto -mx-1 px-1">
+      <div className="flex-1 overflow-y-auto -mx-1 px-1 pt-0.5">
         {filteredRepos.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-10 text-center text-muted-foreground">
             <p className="text-sm">No repositories found.</p>
