@@ -1,10 +1,11 @@
 "use client"
 
-import { UserButton } from "@clerk/nextjs"
-import MarkdownPreview from "../project/tabs/PreviewPanel"
-import { ProjectWithChildren } from "@/modules/projects/server/procedures";
-import { Button } from "../ui/button";
 import { Star } from "lucide-react";
+import { Button } from "../ui/button";
+import { UserButton } from "@clerk/nextjs"
+import { useRouter } from "next/navigation";
+import MarkdownPreview from "../project/tabs/PreviewPanel";
+import { ProjectWithChildren } from "@/modules/projects/server/procedures";
 
 const timeAgo = (date: Date | string) => {
   const d = new Date(date);
@@ -24,6 +25,7 @@ const timeAgo = (date: Date | string) => {
 };
 
 const ProjectMiniPreview = ({ project }: { project: ProjectWithChildren }) => {
+  const router = useRouter();
   const readmeContent = project.messages?.[0]?.fragment?.readme || "";
 
   return (
@@ -34,7 +36,7 @@ const ProjectMiniPreview = ({ project }: { project: ProjectWithChildren }) => {
       </Button>
       
       {/* Preview Box */}
-      <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-muted/10 border border-border/40 shadow-sm">
+      <div onClick={() => router.push(`/projects/${project.id}`)} className="relative aspect-video w-full overflow-hidden rounded-xl bg-muted/10 border border-border/40 shadow-sm">
         <MarkdownPreview 
           content={readmeContent} 
           view="min"

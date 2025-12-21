@@ -38,7 +38,8 @@ const MarkdownPreview = ({ content, view = "max" }: { content: string, view?: "m
     if (
       content &&
       containerRef.current &&
-      !hasRestoredRef.current
+      !hasRestoredRef.current &&
+      view === "max"
     ) {
       // Wait for markdown to render
       const timer = setTimeout(() => {
@@ -100,7 +101,7 @@ const MarkdownPreview = ({ content, view = "max" }: { content: string, view?: "m
         } ${
           view === "max" ? 'markdown-preview overflow-y-auto' : 'markdown-preview-mini px-20! pt-6!'
         }`}
-        onScroll={view === "max" ? handleScroll : undefined}
+        onScroll={handleScroll}
       >
         <ReactMarkdown remarkPlugins={[remarkGfm]}>
           {cleanContent}

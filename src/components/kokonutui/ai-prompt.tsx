@@ -10,19 +10,20 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Repository } from "@/generated/prisma/client";
 import { SignUpButton, SignedIn, SignedOut } from "@clerk/nextjs";
-import { TemplateId } from "../project/context-selection/TemplateList";
-import { useAutoResizeTextarea } from "@/hooks/use-auto-resize-textarea";
-import { ArrowRight, Book, ChevronRight } from "lucide-react";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { TemplateId } from "../project/context-selection/TemplateList";
+import { ArrowRight, Book, ChevronRight, Loader2 } from "lucide-react";
+import { useAutoResizeTextarea } from "@/hooks/use-auto-resize-textarea";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 
-export default function AI_Prompt({ isActive, projectId, repository, templateId } : { isActive: boolean, projectId?: string, repository?: Repository, templateId?: TemplateId }) {
+export default function AI_Prompt({ isActive, projectId, repository } : { isActive: boolean, projectId?: string, repository?: Repository }) {
   const trpc = useTRPC();
   const router = useRouter();
   const queryClient = useQueryClient();
   const [value, setValue] = useState("");
-  const [selectedRepository, setSelectedRepository] = useState<Repository | null>(repository ? repository : null);
+  const [isGenerating, setIsGenerating] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateId>("ai-gen");
+  const [selectedRepository, setSelectedRepository] = useState<Repository | null>(repository ? repository : null);
 
   const { textareaRef, adjustHeight } = useAutoResizeTextarea({
     minHeight: 62,
@@ -31,6 +32,7 @@ export default function AI_Prompt({ isActive, projectId, repository, templateId 
 
   const createProject = useMutation(trpc.project.create.mutationOptions({
     onError: () => {
+      setIsGenerating(false);
       toast.error("Failed to create project");
     },
     onSuccess: (data) => {
@@ -40,6 +42,7 @@ export default function AI_Prompt({ isActive, projectId, repository, templateId 
 
   const createMessage = useMutation(trpc.message.create.mutationOptions({
     onError: () => {
+      setIsGenerating(false);
       toast.error("Failed to send message");
     },
     onSuccess: () => {
@@ -51,7 +54,9 @@ export default function AI_Prompt({ isActive, projectId, repository, templateId 
 
   const handleCreateMessage = () => {
     
-    if (!value.trim() || !isActive || !projectId) return;
+    if (!value.trim() || !isActive || !projectId || isGenerating) return;
+
+    setIsGenerating(true);
     
     createMessage.mutate({
       value: value,
@@ -64,12 +69,14 @@ export default function AI_Prompt({ isActive, projectId, repository, templateId 
 
   const handleCreateProject = () => {
     
-    if (!value.trim() || !isActive) return;
+    if (!value.trim() || !isActive || isGenerating) return;
 
     if (!selectedRepository) {
       toast.error("Please select a repository");
       return;
     }
+
+    setIsGenerating(true);
     
     createProject.mutate({
       name: selectedRepository.name,
@@ -81,6 +88,9 @@ export default function AI_Prompt({ isActive, projectId, repository, templateId 
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    
+    if (isGenerating) return;
+    
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       if (projectId) {
@@ -163,15 +173,15 @@ export default function AI_Prompt({ isActive, projectId, repository, templateId 
               "hover:bg-black/10 focus-visible:ring-1 focus-visible:ring-blue-500 focus-visible:ring-offset-0 dark:hover:bg-white/10",
               !value.trim() ? "opacity-30 cursor-not-allowed" : "cursor-pointer"
             )}
-            disabled={!value.trim()}
+            disabled={!value.trim() || isGenerating}
             type="button"
           >
-            <ArrowRight
+            {isGenerating ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowRight
               className={cn(
                 "h-4 w-4 transition-opacity duration-200 dark:text-white",
                 value.trim() ? "opacity-100" : "opacity-30"
               )}
-            />
+            />}
           </button>
         </div>
       </div>

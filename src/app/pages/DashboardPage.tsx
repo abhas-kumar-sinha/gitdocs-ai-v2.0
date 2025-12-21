@@ -62,7 +62,7 @@ const DashboardPage = async () => {
               <TabsTrigger value="templates" className="w-30">Templates</TabsTrigger>
             </TabsList>
             <TabsContent className="mt-3" value="projects">
-              <div className="grid grid-cols-3 gap-6">
+              <div className="grid md:px-20 lg:px-0 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
                 {projects.length > 0 && projects.map((project, idx) => {
                   return (
                   project.messages[0].fragment?.readme ? 
