@@ -9,6 +9,28 @@ import ProjectList from "@/components/project/ProjectList";
 import { Search, Plus, ChevronDown, Check } from "lucide-react";
 import {InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { useSidebarContext } from "@/contexts/SidebarContext";
+import { cn } from "@/lib/utils";
+
+function ProjectsSkeleton() {
+  return (
+    <div className="grid md:px-20 lg:px-0 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+      {[...Array(6)].map((_, i) => (
+        <div key={i} className="flex flex-col gap-y-2">
+          <div className="h-48 w-full rounded-xl bg-muted/50 animate-pulse" />
+          
+          <div className="flex gap-x-2">
+            <div className="h-10 w-10 rounded-full bg-muted/50 animate-pulse" />
+            <div className="flex flex-col gap-y-1">
+              <div className="h-5 w-30 rounded-xl bg-muted/50 animate-pulse" />
+              <div className="h-5 w-40 rounded-xl bg-muted/50 animate-pulse" />
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 const ProjectBoard = () => {
 
@@ -21,6 +43,8 @@ const ProjectBoard = () => {
   // Sort State: Default to 'updatedAt' and 'desc' (Newest first)
   const [sortBy, setSortBy] = useState<"updatedAt" | "createdAt" | "name">("updatedAt");
   const [orderBy, setOrderBy] = useState<"asc" | "desc">("desc");
+
+  const { isSidebarOpen } = useSidebarContext();
 
   const filteredProjects = useMemo(() => {
     let data = [...initialProjects];
@@ -55,7 +79,7 @@ const ProjectBoard = () => {
     <div className="w-full px-4 md:px-13 py-10">
       
       {/* Header & Controls */}
-    <h2 className="text-xl font-semibold mb-12 px-1 invisible md:visible">Projects</h2>
+      <h2 className="text-xl font-semibold mb-12 px-1 invisible md:visible">Projects</h2>
       <div className="flex mb-8 gap-4 justify-between">
           {/* Search Bar */}
           <InputGroup className="max-w-72">
@@ -111,7 +135,7 @@ const ProjectBoard = () => {
 
       {/* Content Area */}
       <div className="min-h-1/2 bg-background rounded-2xl w-full mx-auto mb-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 relative md:px-25 lg:px-0">
+        <div className={cn("grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 relative lg:px-0", isSidebarOpen ? "md:px-25" : "")}>
           
           {/* 1. Add New Project Card (Always first in Grid) */}
           <Link href="/">
@@ -124,7 +148,7 @@ const ProjectBoard = () => {
           </Link>
 
           {/* 2. Project List */}
-          <Suspense>
+          <Suspense fallback={<ProjectsSkeleton />}>
             <ProjectList projects={filteredProjects} />
           </Suspense>
         </div>

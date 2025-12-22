@@ -3,11 +3,11 @@
 import Link from "next/link";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
-import { useState } from "react"
 import { Button } from "../ui/button";
 import { UserButton } from "@clerk/nextjs";
 import { SidebarItem, GithubConnectionItem } from "../common/SidebarItem";
 import { Blocks, Box, Briefcase, House, Inbox, PanelRight, Search, Star } from "lucide-react";
+import { useSidebarContext } from "@/contexts/SidebarContext";
 
 const sidebarTopItems = [
   {
@@ -50,7 +50,7 @@ const sidebarBottomItems = [
 
 const Sidebar = () => {
 
-  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
+  const { isSidebarOpen, setIsSidebarOpen } = useSidebarContext();
 
   return (
     <>

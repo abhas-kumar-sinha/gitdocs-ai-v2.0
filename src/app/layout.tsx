@@ -1,11 +1,12 @@
-import type { Metadata } from "next";
-import { ClerkProvider } from "@clerk/nextjs";
-import { Providers } from "./providers";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { RepositoryProvider } from "@/contexts/RepositoryContext";
-import { TRPCReactProvider } from "@/trpc/client";
+import type { Metadata } from "next";
+import { Providers } from "./providers";
+import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "@/components/ui/sonner";
+import { TRPCReactProvider } from "@/trpc/client";
+import { Geist, Geist_Mono } from "next/font/google";
+import { SidebarProvider } from "@/contexts/SidebarContext";
+import { RepositoryProvider } from "@/contexts/RepositoryContext";
 import { ScrollPositionProvider } from "@/contexts/ScrollPositionContext";
 
 const geistSans = Geist({
@@ -36,8 +37,10 @@ export default function RootLayout({
             <Providers>
               <ScrollPositionProvider>
                 <RepositoryProvider>
-                  <Toaster />
-                  {children}
+                  <SidebarProvider>
+                    <Toaster />
+                    {children}
+                  </SidebarProvider>
                 </RepositoryProvider>
               </ScrollPositionProvider>
             </Providers>
