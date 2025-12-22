@@ -22,7 +22,7 @@ const Page = async ({ params }: Props) => {
     await queryClient.prefetchQuery(trpc.project.getById.queryOptions({
         id: projectId
       }))
-    } catch {
+    } catch (error) {
       console.error('Failed to prefetch projects:', error);
     }
 
