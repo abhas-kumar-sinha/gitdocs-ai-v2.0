@@ -15,12 +15,16 @@ const Page = async ({ params }: Props) => {
 
     const queryClient = getQueryClient();
 
-    void queryClient.prefetchQuery(trpc.message.getMany.queryOptions({
+    try {
+    await queryClient.prefetchQuery(trpc.message.getMany.queryOptions({
         projectId
       }))
-    void queryClient.prefetchQuery(trpc.project.getById.queryOptions({
+    await queryClient.prefetchQuery(trpc.project.getById.queryOptions({
         id: projectId
       }))
+    } catch {
+      console.error('Failed to prefetch projects:', error);
+    }
 
     return (
       <HydrationBoundary state={dehydrate(queryClient)}>
