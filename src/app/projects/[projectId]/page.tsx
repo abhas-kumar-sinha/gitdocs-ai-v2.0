@@ -11,28 +11,28 @@ interface Props {
 }
 
 const Page = async ({ params }: Props) => {
-    const { projectId } = await params;
+  const { projectId } = await params;
 
-    const queryClient = getQueryClient();
+  const queryClient = getQueryClient();
 
-    try {
-    await queryClient.prefetchQuery(trpc.message.getMany.queryOptions({
-        projectId
-      }))
-    await queryClient.prefetchQuery(trpc.project.getById.queryOptions({
-        id: projectId
-      }))
-    } catch (error) {
-      console.error('Failed to prefetch projects:', error);
-    }
+  try {
+  await queryClient.prefetchQuery(trpc.message.getMany.queryOptions({
+      projectId
+    }))
+  await queryClient.prefetchQuery(trpc.project.getById.queryOptions({
+      id: projectId
+    }))
+  } catch (error) {
+    console.error('Failed to prefetch projects:', error);
+  }
 
-    return (
-      <HydrationBoundary state={dehydrate(queryClient)}>
-        <Suspense fallback={<LoadingScreen title={"Loading Project"} subtitle={"Getting everything ready"} /> }>
-          <ProjectView projectId={projectId} />
-        </Suspense>
-      </HydrationBoundary>
-    )
+  return (
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <Suspense fallback={<LoadingScreen title={"Loading Project"} subtitle={"Getting everything ready"} /> }>
+        <ProjectView projectId={projectId} />
+      </Suspense>
+    </HydrationBoundary>
+  )
 };
 
 export default Page;
