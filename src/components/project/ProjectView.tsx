@@ -3,21 +3,20 @@
 import { useState } from "react";
 import { Button } from "../ui/button"
 import { useTRPC } from "@/trpc/client"
+import CodePanel from "./tabs/CodePanel";
 import Toolbar from "../kokonutui/toolbar"
 import { FaGithub } from "react-icons/fa";
-import { useRouter } from "next/navigation"
-import AI_Prompt from "../kokonutui/ai-prompt"
+import { useRouter } from "next/navigation";
+import DesignPanel from "./tabs/DesignPanel";
+import AI_Prompt from "../kokonutui/ai-prompt";
+import ContextPanel from "./tabs/ContextPanel";
+import PreviewPanel from "./tabs/PreviewPanel";
 import MessageContainer from "./MessageContainer"
+import { Fragment } from "@/generated/prisma/client";
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { ChevronDown, ChevronLeft, CodeXml, Form, GitPullRequestArrow, Globe, History, LucideIcon, Palette } from "lucide-react"
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { Fragment } from "@/generated/prisma/client";
-import PreviewPanel from "./tabs/PreviewPanel";
-import DesignPanel from "./tabs/DesignPanel";
-import CodePanel from "./tabs/CodePanel";
-import ContextPanel from "./tabs/ContextPanel";
-import { TemplateId } from "./context-selection/TemplateList";
 
 export interface ToolbarItem {
     id: string;

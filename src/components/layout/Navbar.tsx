@@ -58,7 +58,7 @@ const Navbar = () => {
     >
       <div className="container mx-auto ps-6 pe-10 md:px-10 lg:px-20">
         <div className="flex items-center justify-between">
-          <Link href="/" className="md:flex items-center space-x-2 hidden">
+          <Link prefetch={true} href="/" className="md:flex items-center space-x-2 hidden">
             <Image src={"/logo.png"} width={33} height={33} alt="logo" />
             <span className="text-lg font-semibold font-geist">GitDocs AI</span>
           </Link>
@@ -68,6 +68,7 @@ const Navbar = () => {
             {navLinks.map((navItem, idx) => {
               return (<Link
               key={idx}
+              prefetch={true}
               href={navItem.href}
               className="text-xs uppercase relative font-medium hover:text-white transition-colors"
             >
@@ -88,7 +89,7 @@ const Navbar = () => {
                 {navLinks.map((navItem, idx) => {
                   return (
                     <DropdownMenuItem key={idx}>
-                      <Link className="uppercase text-xs my-1" href={navItem.href}>
+                      <Link prefetch={true} className="uppercase text-xs my-1" href={navItem.href}>
                         {navItem.title}
                       </Link>
                     </DropdownMenuItem>
@@ -125,26 +126,6 @@ const Navbar = () => {
             </div>
           </SignedIn>
         </div>
-
-        {/* <div
-          className={`fixed inset-0 z-50 md:hidden transition-all duration-300`}
-        >
-          <div className="relative h-full flex flex-col justify-center items-center">
-            <nav className="flex flex-col items-center justify-center space-y-8 p-8">
-              {navLinks.map((navItem, idx) => {
-                return (
-                  <Link
-                  key={idx}
-                  href={navItem.href}
-                  className="text-xl uppercase font-semibold text-[#221F26] hover:text-gitdocs-blue relative group transition-colors duration-300"
-                >
-                  {navItem.title}
-                </Link>
-                )
-              })}
-            </nav>
-          </div>
-        </div> */}
       </div>
     </header>
   );

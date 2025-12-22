@@ -66,7 +66,7 @@ const Sidebar = () => {
         <PanelRight className="transition-transform duration-300 group-hover/button:scale-110" />
       </Button>
 
-      <Link href="/" className="flex items-center space-x-2 flex-1 ms-4">
+      <Link prefetch={true} href="/" className="flex items-center space-x-2 flex-1 ms-4">
         <Image src={"/logo.png"} width={24} height={24} alt="logo" />
         <span className="text-lg font-semibold font-geist">GitDocs AI</span>
       </Link>

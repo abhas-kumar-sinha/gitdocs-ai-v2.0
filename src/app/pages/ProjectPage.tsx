@@ -1,48 +1,44 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useMemo } from "react";
+import { useTRPC } from "@/trpc/client";
 import { Button } from "@/components/ui/button";
+import { useState, useMemo, Suspense } from "react";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import ProjectList from "@/components/project/ProjectList";
 import { Search, Plus, ChevronDown, Check } from "lucide-react";
-import ProjectMiniPreview from "@/components/common/ProjectMiniPreview";
-import { ProjectWithChildren } from "@/modules/projects/server/procedures";
 import {InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 
-interface ProjectBoardProps {
-  initialProjects: ProjectWithChildren[];
-}
+const ProjectBoard = () => {
 
-const ProjectBoard = ({ initialProjects }: ProjectBoardProps) => {
-  // State
+  const trpc = useTRPC();
+
+  const { data: initialProjects } = useSuspenseQuery(trpc.project.list.queryOptions());
+
   const [searchQuery, setSearchQuery] = useState("");
   
   // Sort State: Default to 'updatedAt' and 'desc' (Newest first)
   const [sortBy, setSortBy] = useState<"updatedAt" | "createdAt" | "name">("updatedAt");
   const [orderBy, setOrderBy] = useState<"asc" | "desc">("desc");
 
-  // Filter and Sort Logic
   const filteredProjects = useMemo(() => {
     let data = [...initialProjects];
 
-    // 1. Filter by Search
     if (searchQuery) {
       data = data.filter((p) =>
         p.name.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
-    // 2. Sort
     data.sort((a, b) => {
       let valA = a[sortBy];
       let valB = b[sortBy];
 
-      // Handle Dates
       if (sortBy === "updatedAt" || sortBy === "createdAt") {
         valA = new Date(valA as Date).getTime().toString();
         valB = new Date(valB as Date).getTime().toString();
       } else {
-        // String comparison for name
         valA = (valA as string).toLowerCase();
         valB = (valB as string).toLowerCase();
       }
@@ -59,7 +55,7 @@ const ProjectBoard = ({ initialProjects }: ProjectBoardProps) => {
     <div className="w-full px-4 md:px-13 py-10">
       
       {/* Header & Controls */}
-    <h2 className="text-xl font-semibold mb-12 px-1">Projects</h2>
+    <h2 className="text-xl font-semibold mb-12 px-1 invisible md:visible">Projects</h2>
       <div className="flex mb-8 gap-4 justify-between">
           {/* Search Bar */}
           <InputGroup className="max-w-72">
@@ -115,7 +111,7 @@ const ProjectBoard = ({ initialProjects }: ProjectBoardProps) => {
 
       {/* Content Area */}
       <div className="min-h-1/2 bg-background rounded-2xl w-full mx-auto mb-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 relative">
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 relative md:px-25 lg:px-0">
           
           {/* 1. Add New Project Card (Always first in Grid) */}
           <Link href="/">
@@ -128,12 +124,9 @@ const ProjectBoard = ({ initialProjects }: ProjectBoardProps) => {
           </Link>
 
           {/* 2. Project List */}
-          {filteredProjects.map((project, idx) => {
-            // Keeping your existing check for readme existence
-            if (!project.messages[0]?.fragment?.readme) return null;
-            
-            return <ProjectMiniPreview key={project.id || idx} project={project} />;
-          })}
+          <Suspense>
+            <ProjectList projects={filteredProjects} />
+          </Suspense>
         </div>
       </div>
     </div>
