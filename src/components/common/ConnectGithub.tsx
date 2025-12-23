@@ -7,7 +7,7 @@ import { Eye, Lock, Shield } from "lucide-react"
 import { useQueryClient } from "@tanstack/react-query";
 import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger} from "@/components/ui/dropdown-menu"
 
-const ConnectGithub = ({ children, isSidebarOpen }: { children: ReactNode, isSidebarOpen: boolean }) => {
+const ConnectGithub = ({ children, isSidebarOpen, update }: { children: ReactNode, isSidebarOpen: boolean, update?: boolean }) => {
 
   const trpc = useTRPC();
   const queryClient = useQueryClient();
@@ -43,7 +43,13 @@ const ConnectGithub = ({ children, isSidebarOpen }: { children: ReactNode, isSid
   });
 
   return (
-    <DropdownMenu>
+    <>
+    {update 
+    ? 
+    <button onClick={() => install("existing")} className="text-primary underline cursor-pointer">
+      {children}
+    </button>
+    : <DropdownMenu>
       <DropdownMenuTrigger asChild className="w-full outline-none focus:outline-none focus-visible:outline-none">
         {children}
       </DropdownMenuTrigger>
@@ -97,7 +103,8 @@ const ConnectGithub = ({ children, isSidebarOpen }: { children: ReactNode, isSid
           </div>
         </div>
       </DropdownMenuContent>
-    </DropdownMenu>
+    </DropdownMenu>}
+    </>
   )
 }
 export default ConnectGithub

@@ -4,6 +4,8 @@ import { useState, useMemo } from "react"
 import { Repository } from "@/generated/prisma/client"
 import { useRepositoryContext } from "@/contexts/RepositoryContext"
 import { Star, GitFork, Lock, Globe, Search, Circle, AlertCircle, CheckCircle2, RefreshCw, Clock } from "lucide-react"
+import ConnectGithub from "@/components/common/ConnectGithub"
+import { InstallationWithRepositories } from "@/modules/installation/server/procedures"
 
 // --- Helpers ---
 const formatNumber = (num: number) => 
@@ -30,7 +32,7 @@ const SyncStatusIcon = ({ status }: { status: string }) => {
   }
 }
 
-export default function RepositoryList({ selected, setSelected }: { selected: Repository | null, setSelected: (repo: Repository | null) => void }) {
+export default function RepositoryList({ selected, setSelected, userInstallations }: { selected: Repository | null, setSelected: (repo: Repository | null) => void, userInstallations: InstallationWithRepositories[] | undefined }) {
   const { repositories, isLoading } = useRepositoryContext()
   const [searchQuery, setSearchQuery] = useState("")
 
@@ -154,6 +156,14 @@ export default function RepositoryList({ selected, setSelected }: { selected: Re
           </div>
         )}
       </div>
+
+      {/* Footer - Fixed at bottom  */}
+      {userInstallations && userInstallations.length > 0 && <div className="sticky bottom-0 z-10 py-1 text-sm mx-auto">
+        <span className="text-foreground/70">Missing Git repository?</span>
+        <ConnectGithub isSidebarOpen={false} update={true}>
+          <span> Adjust GitHub App Permissions → </span>
+        </ConnectGithub>
+      </div>}
     </div>
   )
 }

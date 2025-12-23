@@ -41,7 +41,7 @@ export default function AI_Prompt({ isActive, projectId, repository } : { isActi
       color: "bg-blue-500 hover:bg-blue-600",
       cardContent: (
         <div className="relative h-full">
-          <RepositoryList selected={selectedRepository} setSelected={setSelectedRepository} />
+          <RepositoryList selected={selectedRepository} setSelected={setSelectedRepository} userInstallations={userInstallations} />
         </div>
       ),
     },
