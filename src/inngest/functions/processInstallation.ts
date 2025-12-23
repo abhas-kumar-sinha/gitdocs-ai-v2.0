@@ -8,7 +8,7 @@ export const processInstallation = inngest.createFunction(
   { id: 'github-process-installation' },
   { event: 'github/process-installation' },
   async ({ event, step }) => {
-    const { userId, installationId, action = 'install' } = event.data;
+    const { userId, installationId, action = 'install', permissions } = event.data;
 
     // Get app-level octokit to fetch installation details
     const appOctokit = getAppOctokit();
@@ -27,7 +27,7 @@ export const processInstallation = inngest.createFunction(
           accountId: installationData.account?.id?.toString() || '',
           accountName: installationData.account?.name?.toString() || '',
           accountAvatarUrl: installationData.account?.avatar_url,
-          permissions: installationData.permissions,
+          permissions: permissions,
           repositorySelection: installationData.repository_selection || 'all',
         },
         create: {
@@ -36,7 +36,7 @@ export const processInstallation = inngest.createFunction(
           accountId: installationData.account?.id?.toString() || '',
           accountName: installationData.account?.name?.toString() || '',
           accountAvatarUrl: installationData.account?.avatar_url,
-          permissions: installationData.permissions,
+          permissions: permissions,
           repositorySelection: installationData.repository_selection || 'all',
         },
       });

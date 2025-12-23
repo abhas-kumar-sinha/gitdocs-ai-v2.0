@@ -3,12 +3,9 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import type { LucideIcon } from "lucide-react";
-import { Repository } from "@/generated/prisma/client";
 import { AnimatePresence, motion, Transition } from "motion/react";
-import RepositoryList from "../project/context-selection/RepositoryList";
-import TemplateList, { TemplateId } from "../project/context-selection/TemplateList";
 
-interface TabItem {
+export interface TabItem {
   id: string;
   title: string;
   icon?: LucideIcon;
@@ -18,11 +15,8 @@ interface TabItem {
 }
 
 interface SmoothTabProps {
-  selectedTemplate: TemplateId;
-  setSelectedTemplate: (template: TemplateId) => void;
-  selectedRepository: Repository | null;
-  setSelectedRepository: (repository: Repository | null) => void;
-  defaultTabId?: string;
+  items: TabItem[]
+  defaultTabId: string;
   className?: string;
   activeColor?: string;
   onChange?: (tabId: string) => void;
@@ -58,11 +52,8 @@ const transition = {
 };
 
 export default function SmoothTab({
-  selectedTemplate,
-  setSelectedTemplate,
-  selectedRepository,
-  setSelectedRepository,
-  defaultTabId = "Repositories",
+  items,
+  defaultTabId,
   className,
   activeColor = "bg-[#1F9CFE]",
   onChange,
@@ -70,29 +61,6 @@ export default function SmoothTab({
   const [selected, setSelected] = React.useState<string>(defaultTabId);
   const [direction, setDirection] = React.useState(0);
   const [dimensions, setDimensions] = React.useState({ width: 0, left: 0 });
-
-  const items: TabItem[] = [
-    {
-      id: "Repositories",
-      title: "Repositories",
-      color: "bg-blue-500 hover:bg-blue-600",
-      cardContent: (
-        <div className="relative h-full">
-          <RepositoryList selected={selectedRepository} setSelected={setSelectedRepository} />
-        </div>
-      ),
-    },
-    {
-      id: "Templates",
-      title: "Templates",
-      color: "bg-purple-500 hover:bg-purple-600",
-      cardContent: (
-        <div className="relative h-full">
-          <TemplateList selected={selectedTemplate} setSelected={setSelectedTemplate} />
-        </div>
-      ),
-    },
-  ];
 
   // Reference for the selected button
   const buttonRefs = React.useRef<Map<string, HTMLButtonElement>>(new Map());

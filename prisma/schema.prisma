@@ -40,6 +40,11 @@ model User {
 
 // ============= GitHub App Integration =============
 
+enum Permission {
+  READ
+  WRITE
+}
+
 model Installation {
   id        String   @id @default(cuid())
   userId    String
@@ -51,7 +56,7 @@ model Installation {
   accountAvatarUrl String?
   
   // Permissions
-  permissions      Json                // Store granted permissions
+  permissions      Permission  @default(READ) // Store granted permissions
   repositorySelection String           // "all" or "selected"
   
   // Installation status
@@ -85,6 +90,9 @@ model InstallationProcess {
 
   // Authentication
   state    String
+
+  // Permissions
+  permissions      Permission  @default(READ) // Store to grant permissions
 
   // Timestamps
   createdAt   DateTime @default(now())
@@ -153,6 +161,7 @@ model Project {
   
   // Project metadata
   description String?
+  isStarred Boolean @default(false)
   
   // README generation settings
   autoUpdate  Boolean @default(false)

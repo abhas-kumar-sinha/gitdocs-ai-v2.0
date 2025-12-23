@@ -3,11 +3,15 @@
 import Link from "next/link";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { useState } from "react";
 import { Button } from "../ui/button";
 import { UserButton } from "@clerk/nextjs";
-import { SidebarItem, GithubConnectionItem } from "../common/SidebarItem";
-import { Blocks, Box, Briefcase, House, Inbox, PanelRight, Search, Star } from "lucide-react";
+import { CommandMenu } from "../common/CommandMenu";
+import SmoothTab, { TabItem } from "../kokonutui/smooth-tab";
 import { useSidebarContext } from "@/contexts/SidebarContext";
+import { SidebarItem, GithubConnectionItem } from "../common/SidebarItem";
+import { Blocks, Box, Briefcase, House, Inbox, Mail, PanelRight, Search, Star } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 const sidebarTopItems = [
   {
@@ -51,12 +55,45 @@ const sidebarBottomItems = [
 const Sidebar = () => {
 
   const { isSidebarOpen, setIsSidebarOpen } = useSidebarContext();
+  const [ isCommandOpen, setIsCommandOpen ] = useState(false);
+
+  const items: TabItem[] = [
+    {
+      id: "Inbox",
+      title: "Inbox",
+      color: "bg-blue-500 hover:bg-blue-600",
+      cardContent: (
+        <div className="relative h-full">
+          <div className="h-full w-full flex flex-col justify-center items-center gap-y-2">
+            <Mail size={20} className="mb-4" />
+            <p className="text-center font-semibold">No messages or invites pending</p>
+            <span className="text-center text-sm">Messages, workspace and project invitations will appear here</span>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: "Catalog",
+      title: "What's New",
+      color: "bg-purple-500 hover:bg-purple-600",
+      cardContent: (
+        <div className="relative h-full">
+          <div className="h-full w-full flex flex-col justify-center items-center gap-y-2">
+            <Mail size={20} className="mb-4" />
+            <p className="text-center font-semibold">No messages or invites pending</p>
+            <span className="text-center text-sm">Messages, workspace and project invitations will appear here</span>
+          </div>
+        </div>
+      ),
+    },
+  ];
 
   return (
     <>
+    <CommandMenu open={isCommandOpen} setOpen={setIsCommandOpen} />
     {/* Mobile View */}
     <header
-      className='fixed top-0 left-0 right-0 z-50 transition-all duration-300 py-4 px-3 md:hidden flex items-center justify-between'
+      className='fixed top-0 left-0 right-0 z-50 transition-all duration-300 py-4 px-3 md:hidden flex items-center justify-between backdrop-blur-md'
     >
       <Button
         variant="sidebarButton"
@@ -75,9 +112,21 @@ const Sidebar = () => {
         <div
           className="ms-auto w-fit mt-1"
         >
-          <Button variant="sidebarButton" size="sm" className="group/button">
-            <Inbox className="transition-transform duration-300 group-hover/button:scale-110" />
-          </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="sidebarButton" size="sm" className="group/button">
+              <Inbox className="transition-transform duration-300 group-hover/button:scale-110" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent side="bottom" className="h-128 w-screen flex flex-col" align="center">
+            <div className="my-2 px-2">
+              <h3 >News & Updates</h3>
+            </div>
+            <div className="flex-1">
+              <SmoothTab items={items} defaultTabId="Inbox" />
+            </div>
+          </DropdownMenuContent>
+        </DropdownMenu>
         </div>
         <Button
           variant="sidebarButton"
@@ -139,7 +188,7 @@ const Sidebar = () => {
 
       {sidebarTopItems.map((Item, idx) => {
         return (
-          <SidebarItem key={idx} Item={Item} isSidebarOpen={isSidebarOpen} />
+          <SidebarItem key={idx} Item={Item} isSidebarOpen={isSidebarOpen} setIsCommandOpen={setIsCommandOpen} />
         )
       })}
 
@@ -172,9 +221,16 @@ const Sidebar = () => {
       </div>
 
       <div onClick={(e) => e.stopPropagation()} className="ms-auto w-fit mt-1 hidden md:block">
-        <Button variant="sidebarButton" size="sm" className="group/button">
-          <Inbox className="transition-transform duration-300 group-hover/button:scale-110" />
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="sidebarButton" size="sm" className="group/button">
+              <Inbox className="transition-transform duration-300 group-hover/button:scale-110" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent side="right" sideOffset={15} className="h-148 w-102" align="end">
+            <SmoothTab items={items} defaultTabId="Inbox" />
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
     </div>

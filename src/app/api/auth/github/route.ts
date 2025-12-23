@@ -1,9 +1,11 @@
 import crypto from "crypto";
 import { prisma } from "@/lib/db";
-import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
+import { NextRequest } from "next/server";
+import { auth } from '@clerk/nextjs/server';
+import { Permission } from "@/generated/prisma/enums";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   const { userId } = await auth();
 
   if (!userId) {
@@ -18,6 +20,10 @@ export async function GET() {
   if (!user) {
     return new Response('Unauthorized', { status: 401 });
   }
+
+  const { searchParams } = new URL(req.url);
+
+  const permissions = searchParams.get("permissions");
 
   const installUrl = new URL('https://github.com/apps/gitdocs-ai/installations/new');
   
@@ -39,6 +45,7 @@ export async function GET() {
     data: {
       userId: user.id,
       state,
+      permissions: permissions ? permissions === "read" ? Permission.READ : Permission.WRITE : Permission.READ,
       status: "PENDING"
     }
   });

@@ -3,7 +3,7 @@
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
-import SmoothTab from "./smooth-tab";
+import SmoothTab, { TabItem } from "./smooth-tab";
 import { useTRPC } from "@/trpc/client";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -11,10 +11,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Repository } from "@/generated/prisma/client";
 import { SignUpButton, SignedIn, SignedOut } from "@clerk/nextjs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { TemplateId } from "../project/context-selection/TemplateList";
+import TemplateList, { TemplateId } from "../project/context-selection/TemplateList";
 import { ArrowRight, Book, ChevronRight, Loader2 } from "lucide-react";
 import { useAutoResizeTextarea } from "@/hooks/use-auto-resize-textarea";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import RepositoryList from "../project/context-selection/RepositoryList";
 
 export default function AI_Prompt({ isActive, projectId, repository } : { isActive: boolean, projectId?: string, repository?: Repository }) {
   const trpc = useTRPC();
@@ -29,6 +30,29 @@ export default function AI_Prompt({ isActive, projectId, repository } : { isActi
     minHeight: 62,
     maxHeight: 250,
   });
+
+  const items: TabItem[] = [
+    {
+      id: "Repositories",
+      title: "Repositories",
+      color: "bg-blue-500 hover:bg-blue-600",
+      cardContent: (
+        <div className="relative h-full">
+          <RepositoryList selected={selectedRepository} setSelected={setSelectedRepository} />
+        </div>
+      ),
+    },
+    {
+      id: "Templates",
+      title: "Templates",
+      color: "bg-purple-500 hover:bg-purple-600",
+      cardContent: (
+        <div className="relative h-full">
+          <TemplateList selected={selectedTemplate} setSelected={setSelectedTemplate} />
+        </div>
+      ),
+    },
+  ];
 
   const createProject = useMutation(trpc.project.create.mutationOptions({
     onError: () => {
@@ -148,7 +172,7 @@ export default function AI_Prompt({ isActive, projectId, repository } : { isActi
                     <SheetTitle>Documentation Setup</SheetTitle>
                   </SheetHeader>
                   <div className="flex h-full flex-col px-2 -mt-5">
-                    <SmoothTab selectedTemplate={selectedTemplate} setSelectedTemplate={setSelectedTemplate} selectedRepository={selectedRepository} setSelectedRepository={setSelectedRepository} />
+                    <SmoothTab items={items} defaultTabId="Repositories" />
                   </div>
                 </SheetContent>
               </Sheet>

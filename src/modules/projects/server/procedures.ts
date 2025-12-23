@@ -53,22 +53,23 @@ export const projectRouter = createTRPCRouter({
       return createdProject;
     }),
 
-  list: protectedProcedure.query(async ({ ctx }) => {
-    const projects: ProjectWithChildren[] = await prisma.project.findMany({
-      where: { userId: ctx.auth.userId },
-      include: {
-        repository: true,
-        messages: {
-          orderBy: { createdAt: 'desc' },
-          take: 1,
-          include: { fragment: true },
+  list: protectedProcedure
+    .query(async ({ ctx }) => {
+      const projects: ProjectWithChildren[] = await prisma.project.findMany({
+        where: { userId: ctx.auth.userId },
+        include: {
+          repository: true,
+          messages: {
+            orderBy: { createdAt: 'desc' },
+            take: 1,
+            include: { fragment: true },
+          },
         },
-      },
-      orderBy: { updatedAt: 'desc' },
-    });
+        orderBy: { updatedAt: 'desc' },
+      });
 
-    return projects;
-  }),
+      return projects;
+    }),
 
   getById: protectedProcedure
     .input(z.object({ id: z.string() }))
@@ -93,4 +94,25 @@ export const projectRouter = createTRPCRouter({
 
       return project;
     }),
+
+  updateStarred: protectedProcedure
+    .input(z.object({ id: z.string(), isStarred: z.boolean() }))
+    .mutation(async ({ input }) => {
+      // First, get the current updatedAt value
+      const currentProject = await prisma.project.findUnique({
+        where: { id: input.id },
+        select: { updatedAt: true }
+      });
+
+      // Update with the old updatedAt value
+      const project = await prisma.project.update({
+        where: { id: input.id },
+        data: { 
+          isStarred: input.isStarred,
+          updatedAt: currentProject?.updatedAt // Keep the original timestamp
+        }
+      });
+      
+      return project;
+    })
 });

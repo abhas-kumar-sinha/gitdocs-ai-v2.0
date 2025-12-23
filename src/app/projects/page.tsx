@@ -1,5 +1,11 @@
+import { Metadata } from "next";
 import ProjectPage from "../pages/ProjectPage";
 import Sidebar from "@/components/layout/Sidebar";
+
+export const metadata: Metadata = {
+  title: "Gitdocs AI | Projects",
+  description: "",
+};
 
 const Page = async () => {
 

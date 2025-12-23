@@ -1,8 +1,14 @@
+import { Metadata } from "next";
+import LandingPage from "@/app/pages/LandingPage";
+import DashboardPage from "@/app/pages/DashboardPage";
+import LoadingScreen from "@/components/common/LoadingScreen";
 import { ClerkLoaded, ClerkLoading, SignedIn, SignedOut } from "@clerk/nextjs";
 import CircleBackground from "@/components/animated-backgrounds/CircleBackground";
-import LandingPage from "@/app/pages/LandingPage";
-import LoadingScreen from "@/components/common/LoadingScreen";
-import DashboardPage from "@/app/pages/DashboardPage";
+
+export const metadata: Metadata = {
+  title: "Gitdocs AI",
+  description: "",
+};
 
 const Home = () => {
   return (

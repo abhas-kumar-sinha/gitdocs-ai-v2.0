@@ -1,16 +1,16 @@
 "use client";
 
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 import { useTRPC } from "@/trpc/client";
 import { Button } from "@/components/ui/button";
-import { useState, useMemo, useDeferredValue } from "react";
 import { useQuery } from "@tanstack/react-query";
 import ProjectList from "@/components/project/ProjectList";
+import { useState, useMemo, useDeferredValue, Suspense } from "react";
+import { useSidebarContext } from "@/contexts/SidebarContext";
 import { Search, Plus, ChevronDown, Check } from "lucide-react";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { useSidebarContext } from "@/contexts/SidebarContext";
-import { cn } from "@/lib/utils";
 
 function ProjectsSkeleton() {
   return (
@@ -37,7 +37,7 @@ const ProjectPage = () => {
   const { isSidebarOpen } = useSidebarContext();
 
   // Use useQuery from @tanstack/react-query with tRPC queryOptions
-  const { data: initialProjects, isLoading } = useQuery(trpc.project.list.queryOptions());
+  const { data: initialProjects, isLoading } = useQuery(trpc.project.list.queryOptions());                                                                                                                                                                            
 
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<"updatedAt" | "createdAt" | "name">("updatedAt");
@@ -167,7 +167,9 @@ const ProjectPage = () => {
               </Link>
 
               {/* Project List */}
-              <ProjectList projects={filteredProjects} />
+              <Suspense fallback={null}>
+                <ProjectList projects={filteredProjects} />
+              </Suspense>
             </div>
           )}
       </div>

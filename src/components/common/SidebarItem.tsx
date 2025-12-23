@@ -7,11 +7,12 @@ import { useTRPC } from "@/trpc/client"
 import { FaGithub } from "react-icons/fa"
 import { useEffect, useMemo } from "react"
 import { useRouter } from "next/navigation"
+import { Progress } from "@/components/ui/progress"
 import { Repository } from "@/generated/prisma/client"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { useRepositoryContext } from "@/contexts/RepositoryContext"
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip"
-import { ChevronDown, Eye, Lock, LucideIcon, Shield } from "lucide-react"
+import { ChevronDown, Eye, Info, Lock, LucideIcon, Shield, Zap } from "lucide-react"
 import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger} from "@/components/ui/dropdown-menu"
 
 interface SidebarItemProp {
@@ -21,18 +22,28 @@ interface SidebarItemProp {
         href: string;
     };
     isSidebarOpen: boolean;
+    setIsCommandOpen?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const SidebarItem = ({Item, isSidebarOpen} : SidebarItemProp) => {
+const SidebarItem = ({Item, isSidebarOpen, setIsCommandOpen} : SidebarItemProp) => {
 
   const router = useRouter();
+
+  const handleClick = (e : React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    if (Item.label === "Search") {
+      setIsCommandOpen?.(true);
+    } else {
+      router.push(Item.href);
+    }
+  }
 
   return (
     <>
     {!isSidebarOpen ?
         <Tooltip>
         <TooltipTrigger asChild>
-            <Button onClick={(e) => {e.stopPropagation(); router.push(Item.href)}} size="sm" variant="sidebarButton" className="w-full justify-start">
+            <Button onClick={(e) => {handleClick(e)}} size="sm" variant="sidebarButton" className="w-full justify-start">
             <Item.icon className="group-hover/button:scale-110" />
             <span className={cn("ms-1", isSidebarOpen ? "" : "hidden")}>
                 {Item.label}
@@ -44,7 +55,7 @@ const SidebarItem = ({Item, isSidebarOpen} : SidebarItemProp) => {
         </TooltipContent>
     </Tooltip>
     :
-    <Button onClick={(e) => {e.stopPropagation(); router.push(Item.href)}} size="sm" variant="sidebarButton" className="w-full justify-start">
+    <Button onClick={(e) => {handleClick(e)}} size="sm" variant="sidebarButton" className="w-full justify-start">
         <Item.icon className="group-hover/button:scale-110" />
         <span className={cn("ms-1", isSidebarOpen ? "" : "hidden")}>
             {Item.label}
@@ -101,10 +112,10 @@ const GithubConnectionItem = ({ isSidebarOpen } : {isSidebarOpen : boolean}) => 
     }
   }, [computedRepos, repositories, setRepositories]);
 
-  const install = () => {
+  const install = (permission: string) => {
     
     const popup = window.open(
-      "/api/auth/github",
+      `/api/auth/github?permissions=${permission}`,
       "github-install",
       "width=850,height=500,top=100,left=100,resizable=yes,scrollbars=yes"
     );
@@ -154,37 +165,54 @@ const GithubConnectionItem = ({ isSidebarOpen } : {isSidebarOpen : boolean}) => 
         className={cn("w-64", isSidebarOpen ? "ms-1" : "ms-[10px]")}
       >
         <DropdownMenuLabel className="text-xs font-medium text-muted-foreground px-2 py-1.5">
-          Permission Settings
+          <div className="flex items-center gap-x-2">
+            <div className="flex shrink-0 items-center justify-center p-0.5 rounded-md">
+              <Image src={userInstallations[0].accountAvatarUrl as string} className="rounded-md cursor-pointer" alt="user" width={32} height={32} />
+            </div>
+            <div className="flex flex-col items-start">
+              <span className="whitespace-nowrap text-sm text-foreground">
+                {userInstallations[0].accountName || "No Name Configured"}
+              </span>
+              <span className="text-xs text-muted-foreground">
+                Basic Plan • {userInstallations[0].permissions === "READ" ? "Read Only" : "Write Access"}
+              </span>
+            </div>
+          </div>
         </DropdownMenuLabel>
+        
         <DropdownMenuSeparator />
         
-        <DropdownMenuItem onClick={install} className="flex flex-col items-start gap-1 py-3 cursor-pointer">
-          <div className="flex items-center gap-2 w-full">
-            <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/10">
-              <Lock className="h-4 w-4 text-primary" />
+        <DropdownMenuLabel>
+          <div className="flex items-center justify-between bg-background/70 rounded-md p-3 -mx-1.5">
+            <div className="flex items-center gap-x-2">
+              <Zap size={18} fill="white" />
+              <span>Go Pro</span>
+              <Tooltip>
+                <TooltipTrigger>
+                  <Info className="h-2.5 w-2.5 cursor-pointer" />
+                </TooltipTrigger>
+                <TooltipContent side="top">
+                  <p>Configure and use your own API keys with a custom provider.</p>
+                </TooltipContent>
+              </Tooltip>
             </div>
-            <div className="flex-1">
-              <p className="text-sm font-medium">With Commit Access</p>
-              <p className="text-xs text-muted-foreground">
-                Can push commits and merge pull requests
-              </p>
-            </div>
+            <Button className="h-7 border-primary bg-accent/30 hover:bg-accent/40 text-primary" >Request</Button>
           </div>
-        </DropdownMenuItem>
+        </DropdownMenuLabel>
 
-        <DropdownMenuItem onClick={install} className="flex flex-col items-start gap-1 py-3 cursor-pointer">
-          <div className="flex items-center gap-2 w-full">
-            <div className="flex h-8 w-8 items-center justify-center rounded-md bg-muted">
-              <Eye className="h-4 w-4 text-muted-foreground" />
+        <DropdownMenuLabel>
+          <div className="flex flex-col bg-background/70 rounded-md p-3 -mx-1.5 -mt-2">
+            <div className="flex items-center justify-between">
+              <span>Credits</span>
+              <span className="text-foreground/70">5 left</span>
             </div>
-            <div className="flex-1">
-              <p className="text-sm font-medium">Without Commit Access</p>
-              <p className="text-xs text-muted-foreground">
-                Read-only access to repository content
-              </p>
+            <Progress value={100} className="my-3 h-3" />
+            <div className="flex items-center gap-x-2">
+              <div className="h-1.5 w-1.5 bg-foreground rounded-full" />
+              <span className="text-xs text-foreground/70">Daily credits reset at midnight UTC</span>
             </div>
           </div>
-        </DropdownMenuItem>
+        </DropdownMenuLabel>
 
         <DropdownMenuSeparator />
         
@@ -221,7 +249,7 @@ const GithubConnectionItem = ({ isSidebarOpen } : {isSidebarOpen : boolean}) => 
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         
-        <DropdownMenuItem onClick={install} className="flex flex-col items-start gap-1 py-3 cursor-pointer">
+        <DropdownMenuItem onClick={() => install("write")} className="flex flex-col items-start gap-1 py-3 cursor-pointer">
           <div className="flex items-center gap-2 w-full">
             <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/10">
               <Lock className="h-4 w-4 text-primary" />
@@ -235,7 +263,7 @@ const GithubConnectionItem = ({ isSidebarOpen } : {isSidebarOpen : boolean}) => 
           </div>
         </DropdownMenuItem>
 
-        <DropdownMenuItem onClick={install} className="flex flex-col items-start gap-1 py-3 cursor-pointer">
+        <DropdownMenuItem onClick={() => install("read")} className="flex flex-col items-start gap-1 py-3 cursor-pointer">
           <div className="flex items-center gap-2 w-full">
             <div className="flex h-8 w-8 items-center justify-center rounded-md bg-muted">
               <Eye className="h-4 w-4 text-muted-foreground" />

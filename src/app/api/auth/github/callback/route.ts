@@ -20,11 +20,24 @@ export async function GET(req: NextRequest) {
     return redirect('/github/install?error=unauthorized');
   }
 
+  const user = await prisma.user.findUnique({
+    where: {clerkId: userId},
+    select: {id: true}
+  });
+
+  if (!user) {
+    return redirect('/github/install?error=unauthorized');
+  }
+
   const verified = await prisma.installationProcess.findFirst({
+    where: {
+      userId: user.id,
+      status: "PENDING"
+    },
     orderBy: {
       createdAt: "desc",
     },
-    select: {state: true}
+    select: {state: true, permissions: true}
   });
 
   if (verified?.state !== state) {
@@ -33,15 +46,6 @@ export async function GET(req: NextRequest) {
 
   if (setupAction === 'install' || setupAction === 'update') {
     try {
-      // Find user
-      const user = await prisma.user.findUnique({
-        where: { clerkId: userId },
-      });
-
-      if (!user) {
-        return redirect('/github/install?error=user_not_found');
-      }
-
       // Trigger Inngest to process installation
       await inngest.send({
         name: 'github/process-installation',
@@ -49,6 +53,7 @@ export async function GET(req: NextRequest) {
           userId: user.id,
           installationId: parseInt(installationId),
           action: setupAction,
+          permissions: verified.permissions
         },
       });
 
