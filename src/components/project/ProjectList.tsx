@@ -2,11 +2,11 @@
 
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
 import { Star } from "lucide-react";
 import { Button } from "../ui/button";
 import { useTRPC } from "@/trpc/client";
 import { UserButton } from "@clerk/nextjs"
+import { useEffect, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import MarkdownPreview from "../project/tabs/PreviewPanel";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -39,6 +39,11 @@ const ProjectList = ({projects: initialProjects} : {projects: ProjectWithChildre
   
   // Local state to track projects
   const [projects, setProjects] = useState(initialProjects);
+
+  // Sync local state when prop changes
+  useEffect(() => {
+    setProjects(initialProjects);
+  }, [initialProjects]);
 
   const updateProject = useMutation(trpc.project.updateStarred.mutationOptions({
     onError: () => {

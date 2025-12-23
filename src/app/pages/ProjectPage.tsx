@@ -6,7 +6,7 @@ import { useTRPC } from "@/trpc/client";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import ProjectList from "@/components/project/ProjectList";
-import { useState, useMemo, useDeferredValue, Suspense } from "react";
+import { useState, useMemo, useDeferredValue } from "react";
 import { useSidebarContext } from "@/contexts/SidebarContext";
 import { Search, Plus, ChevronDown, Check } from "lucide-react";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
@@ -167,9 +167,7 @@ const ProjectPage = () => {
               </Link>
 
               {/* Project List */}
-              <Suspense fallback={null}>
-                <ProjectList projects={filteredProjects} />
-              </Suspense>
+              <ProjectList projects={filteredProjects} />
             </div>
           )}
       </div>
