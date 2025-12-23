@@ -3,19 +3,21 @@
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
-import SmoothTab, { TabItem } from "./smooth-tab";
 import { useTRPC } from "@/trpc/client";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import SmoothTab, { TabItem } from "./smooth-tab";
 import { Textarea } from "@/components/ui/textarea";
 import { Repository } from "@/generated/prisma/client";
 import { SignUpButton, SignedIn, SignedOut } from "@clerk/nextjs";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import TemplateList, { TemplateId } from "../project/context-selection/TemplateList";
-import { ArrowRight, Book, ChevronRight, Loader2 } from "lucide-react";
-import { useAutoResizeTextarea } from "@/hooks/use-auto-resize-textarea";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { ArrowRight, Book, ChevronRight, Loader2, Plus } from "lucide-react";
 import RepositoryList from "../project/context-selection/RepositoryList";
+import { useAutoResizeTextarea } from "@/hooks/use-auto-resize-textarea";
+import TemplateList, { TemplateId } from "../project/context-selection/TemplateList";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import ShimmerText from "./shimmer-text";
+import ConnectGithub from "../common/ConnectGithub";
 
 export default function AI_Prompt({ isActive, projectId, repository } : { isActive: boolean, projectId?: string, repository?: Repository }) {
   const trpc = useTRPC();
@@ -24,6 +26,7 @@ export default function AI_Prompt({ isActive, projectId, repository } : { isActi
   const [value, setValue] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateId>("ai-gen");
+  const { data: userInstallations, isLoading } = useQuery(trpc.installation.list.queryOptions());
   const [selectedRepository, setSelectedRepository] = useState<Repository | null>(repository ? repository : null);
 
   const { textareaRef, adjustHeight } = useAutoResizeTextarea({
@@ -149,6 +152,18 @@ export default function AI_Prompt({ isActive, projectId, repository } : { isActi
         <div className="absolute right-3 bottom-3 left-3 flex w-[calc(100%-24px)] items-center justify-between">
           <div className="flex items-center gap-2">
             <SignedIn>
+              {!isLoading 
+              ? 
+              userInstallations?.length === 0
+              ? 
+              <ConnectGithub isSidebarOpen={true}>
+                <Button disabled={!!projectId} variant="secondary" className="flex h-8 items-center gap-1 rounded-md pr-2 pl-1 text-xs hover:bg-black/10 focus-visible:ring-1 focus-visible:ring-blue-500 focus-visible:ring-offset-0 dark:text-white dark:hover:bg-white/10">
+                  <Plus />
+                  <span>Connect GitHub</span>
+                  <ChevronRight />
+                </Button>
+              </ConnectGithub>
+              :
               <Sheet>
                 <SheetTrigger asChild>
                   <Button disabled={!!projectId} variant="secondary" className="flex h-8 items-center gap-1 rounded-md pr-2 pl-1 text-xs hover:bg-black/10 focus-visible:ring-1 focus-visible:ring-blue-500 focus-visible:ring-offset-0 dark:text-white dark:hover:bg-white/10">
@@ -162,7 +177,9 @@ export default function AI_Prompt({ isActive, projectId, repository } : { isActi
                     ) : selectedRepository ? (
                       <span className="mx-1 truncate max-w-[60px] md:max-w-[200px]">{selectedRepository.name}</span>
                     ) : (
-                      <span className="mx-1">Select Repository</span>
+                      <>
+                      {<span className="mx-1">Select Repository</span>}
+                      </>
                     )}
                     <ChevronRight />
                   </Button>
@@ -175,7 +192,14 @@ export default function AI_Prompt({ isActive, projectId, repository } : { isActi
                     <SmoothTab items={items} defaultTabId="Repositories" />
                   </div>
                 </SheetContent>
-              </Sheet>
+              </Sheet> 
+              : 
+              <Button disabled={!!projectId} variant="secondary" className="flex h-8 items-center gap-1 rounded-md pr-2 pl-1 text-xs hover:bg-black/10 focus-visible:ring-1 focus-visible:ring-blue-500 focus-visible:ring-offset-0 dark:text-white dark:hover:bg-white/10">
+                <Loader2 className="animate-spin" />
+                <ShimmerText text="Authenticating..." className="text-xs -px-5" />
+                <ChevronRight />
+              </Button>
+              }
             </SignedIn>
             <SignedOut>
               <SignUpButton mode="modal">
