@@ -1,7 +1,6 @@
 import crypto from "crypto";
 import { prisma } from "@/lib/db";
-import { redirect } from 'next/navigation';
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { auth } from '@clerk/nextjs/server';
 import { Permission } from "@/generated/prisma/enums";
 
@@ -78,7 +77,7 @@ export async function GET(req: NextRequest) {
     const installUrl = new URL('https://github.com/apps/gitdocs-ai/installations/new');
     installUrl.searchParams.set('state', state);
 
-    redirect(installUrl.toString());
+    return NextResponse.redirect(installUrl.toString());
   } catch (error) {
     console.error('GitHub installation setup error:', error);
     return new Response('Internal server error', { status: 500 });
