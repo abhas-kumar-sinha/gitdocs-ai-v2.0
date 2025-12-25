@@ -45,11 +45,11 @@ const sidebarBottomItems = [
     label: "Templates",
     href: "/templates"
   },
-  {
-    icon: Briefcase,
-    label: "Learn",
-    href: "/learn"
-  }
+  // {
+  //   icon: Briefcase,
+  //   label: "Learn",
+  //   href: "/learn"
+  // }
 ]
 
 const Sidebar = () => {
@@ -227,7 +227,7 @@ const Sidebar = () => {
               <Inbox className="transition-transform duration-300 group-hover/button:scale-110" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent side="right" sideOffset={15} className="h-148 w-102" align="end">
+          <DropdownMenuContent side="right" sideOffset={15} className="h-148 w-102 pt-2" align="end">
             <SmoothTab items={items} defaultTabId="Inbox" />
           </DropdownMenuContent>
         </DropdownMenu>

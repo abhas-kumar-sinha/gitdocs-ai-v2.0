@@ -57,7 +57,7 @@ const SidebarItem = ({Item, isSidebarOpen, setIsCommandOpen} : SidebarItemProp) 
     </Tooltip>
     :
     <Button onClick={(e) => {handleClick(e)}} size="sm" variant="sidebarButton" className="w-full justify-start">
-        <Item.icon className="group-hover/button:scale-110" />
+        <Item.icon />
         <span className={cn("ms-1", isSidebarOpen ? "" : "hidden")}>
             {Item.label}
         </span>
