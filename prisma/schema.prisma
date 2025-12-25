@@ -265,6 +265,7 @@ model AiUsage {
   date      DateTime @db.Date
 
   count     Int      @default(0)
+  maxCount  Int      @default(5)
 
   tokensUsed Int?
   cost       Float?

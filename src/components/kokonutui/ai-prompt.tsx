@@ -79,9 +79,30 @@ export default function AI_Prompt({ isActive, projectId, repository } : { isActi
     },
   }));
 
+  const { data: aiUsage, isLoading: isAiUsageLoading } = useQuery(trpc.aiUsage.getUsage.queryOptions());
+
   const handleCreateMessage = () => {
     
-    if (!value.trim() || !isActive || !projectId || isGenerating) return;
+    if (!value.trim() || !isActive || !projectId || isGenerating || isAiUsageLoading) return;
+
+    if (!aiUsage || aiUsage.maxCount - aiUsage.count <= 0) {
+      toast.error(
+        <div className="flex flex-col gap-1">
+          <span className="font-medium text-base">You’re all set for today</span>
+          <span className="text-sm text-muted-foreground">
+            You’ve reached today’s usage limit.
+          </span>
+          <span className="text-sm text-muted-foreground">
+            New credits will be available tomorrow.
+          </span>
+          <span className="text-sm text-muted-foreground">
+            Take a break — we’ll be ready when you’re back 🙂
+          </span>
+        </div>
+      );
+
+      return;
+    }
 
     setIsGenerating(true);
     
@@ -96,10 +117,29 @@ export default function AI_Prompt({ isActive, projectId, repository } : { isActi
 
   const handleCreateProject = () => {
     
-    if (!value.trim() || !isActive || isGenerating) return;
+    if (!value.trim() || !isActive || isGenerating || isAiUsageLoading) return;
 
     if (!selectedRepository) {
       toast.error("Please select a repository");
+      return;
+    }
+
+    if (!aiUsage || aiUsage.maxCount - aiUsage.count <= 0) {
+      toast.error(
+        <div className="flex flex-col gap-1">
+          <span className="font-medium text-base">You’re all set for today</span>
+          <span className="text-sm text-muted-foreground">
+            You’ve reached today’s usage limit.
+          </span>
+          <span className="text-sm text-muted-foreground">
+            New credits will be available tomorrow.
+          </span>
+          <span className="text-sm text-muted-foreground">
+            Take a break — we’ll be ready when you’re back 🙂
+          </span>
+        </div>
+      );
+
       return;
     }
 
@@ -116,7 +156,7 @@ export default function AI_Prompt({ isActive, projectId, repository } : { isActi
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     
-    if (isGenerating) return;
+    if (!value.trim() || isGenerating || isAiUsageLoading) return;
     
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -221,7 +261,7 @@ export default function AI_Prompt({ isActive, projectId, repository } : { isActi
               "hover:bg-black/10 focus-visible:ring-1 focus-visible:ring-blue-500 focus-visible:ring-offset-0 dark:hover:bg-white/10",
               !value.trim() ? "opacity-30 cursor-not-allowed" : "cursor-pointer"
             )}
-            disabled={!value.trim() || isGenerating}
+            disabled={!value.trim() || isGenerating || isAiUsageLoading}
             type="button"
           >
             {isGenerating ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowRight

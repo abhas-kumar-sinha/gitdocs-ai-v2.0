@@ -1,6 +1,6 @@
+import { prisma } from '@/lib/db';
 import { clerkClient } from '@clerk/nextjs/server';
 import { createTRPCRouter, protectedProcedure } from '@/trpc/init';
-import { prisma } from '@/lib/db';
 
 export const userRouter = createTRPCRouter({
   getCurrent: protectedProcedure

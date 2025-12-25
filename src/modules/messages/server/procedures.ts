@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { prisma } from '@/lib/db';
 import { inngest } from '@/inngest/client';
-import { baseProcedure, createTRPCRouter } from '@/trpc/init';
+import { baseProcedure, createTRPCRouter, protectedProcedure } from '@/trpc/init';
 import { Prisma } from '@/generated/prisma/client';
 
 type messageWithFragment = 
@@ -12,7 +12,7 @@ type messageWithFragment =
   }>;
 
 export const messagesRouter = createTRPCRouter({
-  getMany: baseProcedure
+  getMany: protectedProcedure
     .input(z.object({ projectId: z.string() }))
     .query(async ({ input }) => {
       const messages: messageWithFragment[] = await prisma.message.findMany({
@@ -30,7 +30,7 @@ export const messagesRouter = createTRPCRouter({
       return messages;
     }),
   
-  create: baseProcedure
+  create: protectedProcedure
     .input(
       z.object({
         value: z.string()
@@ -40,7 +40,7 @@ export const messagesRouter = createTRPCRouter({
           .min(1, { message : "Project ID is Required" })
       }),
     )
-    .mutation(async ({ input }) => {
+    .mutation(async ({ ctx, input }) => {
         const newMessage = await prisma.message.create({
           data: {
             projectId: input.projectId,
@@ -54,7 +54,8 @@ export const messagesRouter = createTRPCRouter({
           name: "readme/chat.upgrade",
           data: {
             projectId: input.projectId,
-            messageId: newMessage.id
+            messageId: newMessage.id,
+            userId: ctx.auth.userId
           }
         })
 

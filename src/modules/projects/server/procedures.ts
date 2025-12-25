@@ -47,6 +47,7 @@ export const projectRouter = createTRPCRouter({
         name: 'readme/initial.build',
         data: {
           projectId: createdProject.id,
+          userId: ctx.auth.userId
         },
       });
 
@@ -98,13 +99,11 @@ export const projectRouter = createTRPCRouter({
   updateStarred: protectedProcedure
     .input(z.object({ id: z.string(), isStarred: z.boolean() }))
     .mutation(async ({ input }) => {
-      // First, get the current updatedAt value
       const currentProject = await prisma.project.findUnique({
         where: { id: input.id },
         select: { updatedAt: true }
       });
 
-      // Update with the old updatedAt value
       const project = await prisma.project.update({
         where: { id: input.id },
         data: { 

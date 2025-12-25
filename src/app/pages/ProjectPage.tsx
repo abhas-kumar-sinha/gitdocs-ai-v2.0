@@ -21,9 +21,9 @@ function ProjectsSkeleton() {
           
           <div className="flex gap-x-2">
             <div className="h-10 w-10 rounded-full bg-muted/50 animate-pulse" />
-            <div className="flex flex-col gap-y-1">
-              <div className="h-5 w-30 rounded-xl bg-muted/50 animate-pulse" />
-              <div className="h-5 w-40 rounded-xl bg-muted/50 animate-pulse" />
+            <div className="flex flex-col gap-y-1 mt-1">
+              <div className="h-4 w-30 rounded-xl bg-muted/50 animate-pulse" />
+              <div className="h-4 w-40 rounded-xl bg-muted/50 animate-pulse" />
             </div>
           </div>
         </div>

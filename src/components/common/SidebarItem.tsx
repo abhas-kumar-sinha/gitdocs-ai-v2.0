@@ -73,6 +73,7 @@ const GithubConnectionItem = ({ isSidebarOpen } : {isSidebarOpen : boolean}) => 
   const { repositories, setRepositories, setIsLoading } = useRepositoryContext();
 
   const { data: userInstallations, isLoading } = useQuery(trpc.installation.list.queryOptions());
+  const { data: aiUsage, isLoading: isAiUsageLoading } = useQuery(trpc.aiUsage.getUsage.queryOptions());
 
   useEffect(() => {
     setIsLoading(isLoading);
@@ -171,11 +172,22 @@ const GithubConnectionItem = ({ isSidebarOpen } : {isSidebarOpen : boolean}) => 
 
         <DropdownMenuLabel>
           <div className="flex flex-col bg-background/70 rounded-md p-3 -mx-1.5 -mt-2">
-            <div className="flex items-center justify-between">
-              <span>Credits</span>
-              <span className="text-foreground/70">5 left</span>
-            </div>
-            <Progress value={100} className="my-3 h-3" />
+            {isAiUsageLoading ? 
+              <>
+              <div className="flex items-center justify-between">
+                <span>Credits</span>
+                <span className="text-foreground/70 h-4 w-16 rounded-full animate-pulse bg-muted" />
+              </div>
+              <div className="my-3 h-3 animate-pulse rounded-full bg-accent/50" />
+            </> :
+            <>
+              <div className="flex items-center justify-between">
+                <span>Credits</span>
+                <span className="text-foreground/70">{(aiUsage?.maxCount || 5) - (aiUsage?.count || 0)} left</span>
+              </div>
+              <Progress value={(((aiUsage?.maxCount || 5) - (aiUsage?.count || 0))/(aiUsage?.maxCount || 5))*100} className="my-3 h-3" />
+            </>
+            }
             <div className="flex items-center gap-x-2">
               <div className="h-1.5 w-1.5 bg-foreground rounded-full" />
               <span className="text-xs text-foreground/70">Daily credits reset at midnight UTC</span>

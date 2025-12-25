@@ -8,6 +8,12 @@ import { getInstallationOctokit } from '@/lib/github/appAuth';
 import { contextDiscoveryPrompt, readmeGeneratePrompt } from '@/lib/prompts/PROMPTS';
 import { type ModelConfig, type RepositorySnapshot, type GitHubTreeItem, type FileContext, type ContextDiscoveryResult } from '@/types/readmeAi'
 
+const getTodayDate = () => {
+  const today = new Date();
+  today.setUTCHours(0, 0, 0, 0);
+  return today;
+};
+
 // ============= MODEL CONFIGS =============
 
 const Models = {
@@ -224,7 +230,56 @@ export const initialReadmeBuild = inngest.createFunction(
   },
   { event: 'readme/initial.build' },
   async ({ event, step }) => {
-    const { projectId } = event.data;
+    const { projectId, userId } = event.data;
+
+    const access = await step.run('check-access', async () => {
+      const today = getTodayDate();
+      
+      // Try to find today's usage
+      let usage = await prisma.aiUsage.findUnique({
+        where: {
+          userId_date: {
+            userId: userId,
+            date: today,
+          },
+        },
+      });
+
+      // If no usage exists for today, create one
+      if (!usage) {
+        usage = await prisma.aiUsage.create({
+          data: {
+            userId: userId,
+            date: today,
+            count: 0,
+            maxCount: 5,
+          },
+        });
+      }
+
+      if (usage.maxCount - usage.count > 0) {
+        return true
+      }
+      
+      return false
+    })
+
+    if (!access) {
+      // Save assistant message
+      const message = await prisma.message.create({
+        data: {
+          projectId,
+          content: "You’re all set for today \nYou’ve reached today’s usage limit.\nNew credits will be available tomorrow. \nTake a break — we’ll be ready when you’re back 🙂",
+          role: 'ASSISTANT',
+          type: 'ERROR',
+          model: "",
+        },
+      });
+
+      return {
+        message
+      }
+    }
 
     // ========== STEP 1: Fetch Project ==========
     const project = await step.run('fetch-project', async () => {
@@ -337,11 +392,33 @@ export const initialReadmeBuild = inngest.createFunction(
         },
       });
 
+      const today = getTodayDate();
+
+      // Upsert: increment count if exists, create if doesn't
+      const usage = await prisma.aiUsage.upsert({
+        where: {
+          userId_date: {
+            userId: userId,
+            date: today,
+          },
+        },
+        update: {
+          count: { increment: 1 }
+        },
+        create: {
+          userId: userId,
+          date: today,
+          count: 1,
+          maxCount: 5,
+        },
+      });
+
       return {
         messageId: message.id,
         thinking,
         summary,
         contextFilesUsed: contextFiles.length,
+        usage
       };
     });
 

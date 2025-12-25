@@ -14,7 +14,7 @@ import ContextPanel from "./tabs/ContextPanel";
 import PreviewPanel from "./tabs/PreviewPanel";
 import MessageContainer from "./MessageContainer"
 import { Fragment } from "@/generated/prisma/client";
-import { useSuspenseQuery } from "@tanstack/react-query"
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query"
 import { DropdownMenuSub } from "@radix-ui/react-dropdown-menu";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable"
 import { Check, ChevronDown, ChevronLeft, CodeXml, Form, GitPullRequestArrow, Globe, History, LaptopMinimal, LucideIcon, Palette, SquarePen, Star } from "lucide-react"
@@ -44,6 +44,8 @@ const ProjectView = ({projectId} : {projectId : string}) => {
   const { data: project } = useSuspenseQuery(trpc.project.getById.queryOptions({
     id: projectId
   }));
+
+  const { data: aiUsage, isLoading: isAiUsageLoading } = useQuery(trpc.aiUsage.getUsage.queryOptions());
   
   const [contextFiles, setContextFiles] = useState<string[]>(project.contextFiles);
 
@@ -80,11 +82,22 @@ const ProjectView = ({projectId} : {projectId : string}) => {
                 </DropdownMenuLabel>
                 <DropdownMenuLabel>
                   <div className="flex flex-col bg-background/70 rounded-md p-3 -mx-1.5 -mt-2">
-                    <div className="flex items-center justify-between">
-                      <span>Credits</span>
-                      <span className="text-foreground/70">5 left</span>
-                    </div>
-                    <Progress value={100} className="my-3 h-3" />
+                    {isAiUsageLoading ? 
+                      <>
+                      <div className="flex items-center justify-between">
+                        <span>Credits</span>
+                        <span className="text-foreground/70 h-4 w-16 rounded-full animate-pulse bg-muted" />
+                      </div>
+                      <div className="my-3 h-3 animate-pulse rounded-full bg-accent/50" />
+                    </> :
+                    <>
+                      <div className="flex items-center justify-between">
+                        <span>Credits</span>
+                        <span className="text-foreground/70">{(aiUsage?.maxCount || 5) - (aiUsage?.count || 0)} left</span>
+                      </div>
+                      <Progress value={(((aiUsage?.maxCount || 5) - (aiUsage?.count || 0))/(aiUsage?.maxCount || 5))*100} className="my-3 h-3" />
+                    </>
+                    }
                     <div className="flex items-center gap-x-2">
                       <div className="h-1.5 w-1.5 bg-foreground rounded-full" />
                       <span className="text-xs text-foreground/70">Daily credits reset at midnight UTC</span>
@@ -127,7 +140,7 @@ const ProjectView = ({projectId} : {projectId : string}) => {
           </div>
 
           <Button variant="ghost" size="icon-sm">
-              <History />
+            <History />
           </Button>
         </div>
 
