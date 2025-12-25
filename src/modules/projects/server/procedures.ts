@@ -44,7 +44,7 @@ export const projectRouter = createTRPCRouter({
       });
 
       await inngest.send({
-        name: 'ai/generate-response',
+        name: 'readme/initial.build',
         data: {
           projectId: createdProject.id,
         },

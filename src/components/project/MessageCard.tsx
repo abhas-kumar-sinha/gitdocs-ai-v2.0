@@ -139,7 +139,6 @@ const AssistantMessage = ({
         )}
       </div>
       
-      {/* ... Rest of your buttons (Copy, Thumbs up/down) ... */}
       <div className="flex items-center gap-x-1">
 
         <Tooltip>

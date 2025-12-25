@@ -51,9 +51,10 @@ export const messagesRouter = createTRPCRouter({
         })
 
         await inngest.send({
-          name: "ai/generate-response",
+          name: "readme/chat.upgrade",
           data: {
             projectId: input.projectId,
+            messageId: newMessage.id
           }
         })
 

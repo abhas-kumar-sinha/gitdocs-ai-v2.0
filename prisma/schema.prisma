@@ -154,25 +154,26 @@ model Repository {
 // ============= Projects & Messages =============
 
 model Project {
-  id        String   @id @default(cuid())
-  name      String
-  userId    String
-  repositoryId String?
+  id              String   @id @default(cuid())
+  name            String
+  userId          String
+  repositoryId    String?
   
   // Project metadata
-  description String?
-  isStarred Boolean @default(false)
+  description     String?
+  contextFiles    String[] @default([])
+  isStarred       Boolean @default(false)
   
   // README generation settings
-  autoUpdate  Boolean @default(false)
-  template    String?
+  autoUpdate      Boolean @default(false)
+  template        String?
   
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
-  user       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  repository Repository?  @relation(fields: [repositoryId], references: [id], onDelete: SetNull)
-  messages   Message[]
+  user            User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  repository      Repository?  @relation(fields: [repositoryId], references: [id], onDelete: SetNull)
+  messages        Message[]
   
   @@index([userId])
   @@index([repositoryId])

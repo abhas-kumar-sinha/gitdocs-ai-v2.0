@@ -3,6 +3,64 @@ import { Template } from "@/app/pages/TemplatePage";
 const params = {slug: "params.slug"};
 const user = {name: "user.name"};
 
+export type TemplateType = 'minimal' | 'standard' | 'api' | 'data-science' | 'documentation' | 'monorepo' | 'hackathon';
+
+export const TEMPLATE_PROMPTS: Record<TemplateType, string> = {
+  minimal: `Create a MINIMALIST README with:
+- Brief description (1-2 sentences)
+- Quick installation (one command)
+- Basic usage example
+- License`,
+
+  standard: `Create a STANDARD OPEN SOURCE README with:
+- Project badges (build, version, license)
+- Clear description with key features
+- Installation instructions
+- Usage examples with code blocks
+- Contributing guidelines
+- License`,
+
+  api: `Create a BACKEND API SERVICE README with:
+- API endpoint documentation
+- Authentication setup
+- Environment variables
+- Request/response examples
+- Docker deployment
+- Database schema`,
+
+  'data-science': `Create a DATA SCIENCE README with:
+- Problem statement
+- Dataset description
+- Dependencies with versions
+- Model architecture
+- Training instructions
+- Results and metrics`,
+
+  documentation: `Create a DOCUMENTATION README with:
+- Table of contents
+- Architecture overview
+- Detailed API reference
+- Multiple usage examples
+- Configuration options
+- Troubleshooting section`,
+
+  monorepo: `Create a MONOREPO README with:
+- Repository architecture
+- Package listing
+- Shared dependencies
+- Development workflow
+- Build commands per package`,
+
+  hackathon: `Create a HACKATHON README with:
+- Eye-catching name and tagline
+- Problem statement
+- Screenshots/GIFs
+- Tech stack badges
+- Quick start (<5 min)
+- Demo link
+- Team credits`
+};
+
 export const templates: Template[] = [
   {
     id: 'minimal',

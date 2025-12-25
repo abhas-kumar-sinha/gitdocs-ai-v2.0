@@ -29,7 +29,7 @@ const TemplateList = ({templates} : {templates: Template[]}) => {
               <div className="overflow-hidden">
                 <MarkdownPreview 
                   content={template.content || ""} 
-                  view="max"
+                  view="min-max"
                 />
               </div>
             </DialogContent>

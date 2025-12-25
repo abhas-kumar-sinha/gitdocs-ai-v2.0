@@ -8,6 +8,8 @@ import ProjectList from "@/components/project/ProjectList";
 import AnthropicDark from "@/components/kokonutui/anthropic-dark";
 import AuraBackground from "@/components/animated-backgrounds/AuraBackground";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import TemplateList from "@/components/template/TemplateList";
+import { templates } from "@/lib/constants/CONSTANTS";
 
 async function ProjectsGrid() {
   const projects = await caller.project.list();
@@ -96,7 +98,9 @@ const DashboardPage = () => {
               </Suspense>
             </TabsContent>
             <TabsContent value="templates">
-              Change your password here.
+              <div className="grid md:px-20 lg:px-0 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 mt-3">
+                <TemplateList templates={templates} />
+              </div>
             </TabsContent>
           </Tabs>
         </div>
