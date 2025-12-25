@@ -13,6 +13,7 @@ type RepositorySnapshot = {
   hasReadme: boolean;
   existingReadme: string | null;
   totalFiles: number;
+  allFiles: string[];
   directories: string[];
   fileTypes: Record<string, number>;
   frameworks: string[];

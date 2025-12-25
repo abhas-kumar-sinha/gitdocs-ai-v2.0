@@ -40,6 +40,7 @@ async function analyzeRepository(
     forks: repo.forks || 0,
     hasReadme: false,
     existingReadme: null,
+    allFiles: [],
     totalFiles: 0,
     directories: [],
     fileTypes: {},
@@ -85,6 +86,7 @@ async function analyzeRepository(
       .map((item) => item.path);
 
     snapshot.totalFiles = files.length;
+    snapshot.allFiles = files;
 
     // Extract directories and file types
     const dirSet = new Set<string>();
@@ -263,7 +265,7 @@ export const initialReadmeBuild = inngest.createFunction(
         project.template || 'standard'
       );
 
-    // ========== STEP 5: Fetch and Store Context Files ==========
+    // ========== STEP 5: Fetch and Store Context Files and All Files ==========
     const contextFiles = await step.run('fetch-context-files', async () => {
       const files = await fetchContextFiles(
         contextDiscovery.requiredFiles,
@@ -275,6 +277,7 @@ export const initialReadmeBuild = inngest.createFunction(
       await prisma.project.update({
         where: { id: projectId },
         data: {
+          allFiles: snapshot.allFiles,
           contextFiles: contextDiscovery.requiredFiles,
         },
       });

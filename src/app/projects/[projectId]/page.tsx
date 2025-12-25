@@ -1,8 +1,8 @@
 import { Suspense } from 'react';
 import { getQueryClient, trpc } from '@/trpc/server';
 import ProjectView from '@/components/project/ProjectView'
-import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import LoadingScreen from '@/components/common/LoadingScreen';
+import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 
 interface Props {
   params: Promise<{
@@ -16,12 +16,12 @@ const Page = async ({ params }: Props) => {
   const queryClient = getQueryClient();
 
   try {
-  await queryClient.prefetchQuery(trpc.message.getMany.queryOptions({
-      projectId
-    }))
-  await queryClient.prefetchQuery(trpc.project.getById.queryOptions({
-      id: projectId
-    }))
+    await queryClient.prefetchQuery(trpc.message.getMany.queryOptions({
+        projectId
+      }))
+    await queryClient.prefetchQuery(trpc.project.getById.queryOptions({
+        id: projectId
+      }))
   } catch (error) {
     console.error('Failed to prefetch projects:', error);
   }

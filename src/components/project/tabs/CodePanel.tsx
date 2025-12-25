@@ -5,6 +5,8 @@ import { useRef, useEffect, useState } from "react";
 import Editor from "@monaco-editor/react";
 import type * as Monaco from "monaco-editor";
 import { useScrollPosition } from "@/contexts/ScrollPositionContext";
+import { PixelatedCanvas } from "@/components/ui/pixelated-canvas";
+import ShimmerText from "@/components/kokonutui/shimmer-text";
 
 const RawPreview = ({ content }: { content: string }) => {
   const { rawScrollPosition, setRawScrollPosition } = useScrollPosition();
@@ -68,8 +70,28 @@ const RawPreview = ({ content }: { content: string }) => {
 
   if (!content) {
     return (
-      <div className="h-full flex items-center justify-center bg-foreground/5">
-        <p className="text-foreground/60">No Preview Available</p>
+      <div className="h-full flex flex-col gap-y-2 items-center justify-center bg-foreground/5">
+        <PixelatedCanvas
+          src="/logo.png"
+          width={200}
+          height={150}
+          cellSize={4}
+          dotScale={0.9}
+          shape="square"
+          backgroundColor=""
+          dropoutStrength={0}
+          interactive
+          distortionStrength={0.1}
+          distortionRadius={100}
+          distortionMode="repel"
+          followSpeed={0.2}
+          jitterStrength={4}
+          jitterSpeed={1}
+          sampleAverage
+        />
+        <div className="flex items-center gap-x-2 text-foreground/70 -my-8">
+          <ShimmerText text="Loading Project Preview..." className="text-lg -px-5" />
+        </div>
       </div>
     );
   }

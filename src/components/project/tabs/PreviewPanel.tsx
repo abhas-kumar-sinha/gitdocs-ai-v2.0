@@ -1,9 +1,12 @@
 "use client";
 
-import React, { useRef, useEffect, useState } from "react";
-import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import ReactMarkdown from "react-markdown";
+import React, { useRef, useEffect, useState } from "react";
+import { PixelatedCanvas } from "@/components/ui/pixelated-canvas";
 import { useScrollPosition } from "@/contexts/ScrollPositionContext";
+import { Loader2 } from "lucide-react";
+import ShimmerText from "@/components/kokonutui/shimmer-text";
 
 const MarkdownPreview = ({ content, view = "max" }: { content: string, view?: "max" | "min" | "min-max" }) => {
   const { markdownScrollPosition, setMarkdownScrollPosition } =
@@ -62,7 +65,7 @@ const MarkdownPreview = ({ content, view = "max" }: { content: string, view?: "m
         hasRestoredRef.current = true;
       }, 100);
     }
-  }, [content, markdownScrollPosition]);
+  }, [content, markdownScrollPosition, view]);
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const newPosition = e.currentTarget.scrollTop;
@@ -75,8 +78,28 @@ const MarkdownPreview = ({ content, view = "max" }: { content: string, view?: "m
 
   if (!content) {
     return (
-      <div className="h-full flex items-center justify-center bg-foreground/5">
-        <p className="text-foreground/60">No Preview Available</p>
+      <div className="h-full flex flex-col gap-y-2 items-center justify-center bg-foreground/5">
+        <PixelatedCanvas
+          src="/logo.png"
+          width={200}
+          height={150}
+          cellSize={4}
+          dotScale={0.9}
+          shape="square"
+          backgroundColor=""
+          dropoutStrength={0}
+          interactive
+          distortionStrength={0.1}
+          distortionRadius={100}
+          distortionMode="repel"
+          followSpeed={0.2}
+          jitterStrength={4}
+          jitterSpeed={1}
+          sampleAverage
+        />
+        <div className="flex items-center gap-x-2 text-foreground/70 -my-8">
+          <ShimmerText text="Loading Project Preview..." className="text-lg -px-5" />
+        </div>
       </div>
     );
   }
