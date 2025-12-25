@@ -209,67 +209,50 @@
 }
 
 /* =========================================
-   Markdown Preview Variables (Light/Dark)
+   CSS Variables - Dark Mode
    ========================================= */
-:root {
-  --md-fg-primary: #24292f;
-  --md-fg-secondary: #57606a;
-  --md-fg-accent: #0969da;
-  --md-bg-canvas: #ffffff;
-  --md-bg-canvas-subtle: #f6f8fa;
-  --md-border-default: #d0d7de;
-  --md-border-muted: #d8dee4;
-  --md-code-bg: #eff1f3;
-  --md-pre-bg: #f6f8fa;
-  --md-blockquote-border: #d0d7de;
-  --md-table-stripe: #f6f8fa;
-}
-
-/* Dark Mode Support (System preference or .dark class) */
 @media (prefers-color-scheme: dark) {
   :root {
-    --md-fg-primary: #c9d1d9;
+    --md-fg-primary: #e6edf3;
     --md-fg-secondary: #8b949e;
     --md-fg-accent: #58a6ff;
     --md-bg-canvas: #0d1117;
     --md-bg-canvas-subtle: #161b22;
     --md-border-default: #30363d;
     --md-border-muted: #21262d;
-    --md-code-bg: #343942;
+    --md-code-bg: rgba(110, 118, 129, 0.4);
     --md-pre-bg: #161b22;
     --md-blockquote-border: #30363d;
-    --md-table-stripe: #161b22;
+    --md-table-stripe: rgba(110, 118, 129, 0.05);
   }
 }
 
-/* Optional: Manual Dark Mode Toggle support using a parent class */
 [data-theme='dark'] {
-  --md-fg-primary: #c9d1d9;
+  --md-fg-primary: #e6edf3;
   --md-fg-secondary: #8b949e;
   --md-fg-accent: #58a6ff;
   --md-bg-canvas: #0d1117;
   --md-bg-canvas-subtle: #161b22;
   --md-border-default: #30363d;
   --md-border-muted: #21262d;
-  --md-code-bg: #343942;
+  --md-code-bg: rgba(110, 118, 129, 0.4);
   --md-pre-bg: #161b22;
   --md-blockquote-border: #30363d;
-  --md-table-stripe: #161b22;
+  --md-table-stripe: rgba(110, 118, 129, 0.05);
 }
 
 /* =========================================
-   Markdown Preview Base Styles
+   Markdown Preview - Full View
    ========================================= */
 .markdown-preview {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
   font-size: 16px;
   line-height: 1.6;
   color: var(--md-fg-primary);
-  background-color: var(--md-bg-canvas);
   word-wrap: break-word;
 }
 
-/* Headings */
+/* --- Headings --- */
 .markdown-preview h1,
 .markdown-preview h2,
 .markdown-preview h3,
@@ -284,53 +267,81 @@
 }
 
 .markdown-preview h1 {
-  font-size: 2.5em;
+  font-size: 2em;
   padding-bottom: 0.3em;
-  border-bottom: 1px solid var(--md-border-muted);
+  border-bottom: 1px solid var(--md-border-default);
+  margin-top: 0;
 }
 
 .markdown-preview h2 {
   font-size: 1.5em;
   padding-bottom: 0.3em;
-  border-bottom: 1px solid var(--md-border-muted);
+  border-bottom: 1px solid var(--md-border-default);
+  margin-top: 24px;
 }
 
-.markdown-preview h3 { font-size: 1.25em; }
-.markdown-preview h4 { font-size: 1em; }
+.markdown-preview h3 {
+  font-size: 1.25em;
+  margin-top: 24px;
+}
 
-/* Paragraphs & Text */
+.markdown-preview h4 {
+  font-size: 1em;
+  margin-top: 24px;
+}
+
+.markdown-preview h5 {
+  font-size: 0.875em;
+}
+
+.markdown-preview h6 {
+  font-size: 0.85em;
+  color: var(--md-fg-secondary);
+}
+
+/* --- Paragraphs & Text --- */
 .markdown-preview p {
   margin-top: 0;
   margin-bottom: 16px;
 }
 
+.markdown-preview strong,
+.markdown-preview b {
+  font-weight: 600;
+}
+
+.markdown-preview em,
+.markdown-preview i {
+  font-style: italic;
+}
+
+.markdown-preview del,
+.markdown-preview s {
+  text-decoration: line-through;
+}
+
+/* --- Links --- */
 .markdown-preview a {
   color: var(--md-fg-accent);
   text-decoration: none;
+  background-color: transparent;
 }
 
 .markdown-preview a:hover {
   text-decoration: underline;
 }
 
-.markdown-preview strong {
-  font-weight: 600;
-}
-
-.markdown-preview em {
-  font-style: italic;
-}
-
-/* Horizontal Rule */
+/* --- Horizontal Rule --- */
 .markdown-preview hr {
   height: 0.25em;
   padding: 0;
   margin: 24px 0;
   background-color: var(--md-border-default);
   border: 0;
+  overflow: hidden;
 }
 
-/* Blockquotes */
+/* --- Blockquotes --- */
 .markdown-preview blockquote {
   margin: 0 0 16px;
   padding: 0 1em;
@@ -338,12 +349,54 @@
   border-left: 0.25em solid var(--md-blockquote-border);
 }
 
-/* Lists */
+.markdown-preview blockquote > :first-child {
+  margin-top: 0;
+}
+
+.markdown-preview blockquote > :last-child {
+  margin-bottom: 0;
+}
+
+/* --- Lists --- */
 .markdown-preview ul,
 .markdown-preview ol {
   margin-top: 0;
   margin-bottom: 16px;
   padding-left: 2em;
+}
+
+.markdown-preview ul {
+  list-style-type: disc;
+}
+
+.markdown-preview ol {
+  list-style-type: decimal;
+}
+
+.markdown-preview ul ul {
+  list-style-type: circle;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.markdown-preview ul ul ul {
+  list-style-type: square;
+}
+
+.markdown-preview ol ol,
+.markdown-preview ul ol {
+  list-style-type: lower-roman;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.markdown-preview ul ul ol,
+.markdown-preview ul ol ol,
+.markdown-preview ol ul ol,
+.markdown-preview ol ol ol {
+  list-style-type: lower-alpha;
+  margin-top: 0;
+  margin-bottom: 0;
 }
 
 .markdown-preview li {
@@ -352,28 +405,36 @@
 
 .markdown-preview li > p {
   margin-top: 16px;
+  margin-bottom: 16px;
 }
 
 .markdown-preview li + li {
   margin-top: 0.25em;
 }
 
-/* Task Lists (remarkGfm) */
-.markdown-preview ul.contains-task-list {
+/* --- Task Lists --- */
+.markdown-preview .task-list-item,
+.markdown-preview ul.contains-task-list li {
   list-style-type: none;
-  padding-left: 0;
+}
+
+.markdown-preview .task-list-item + .task-list-item {
+  margin-top: 3px;
 }
 
 .markdown-preview input[type="checkbox"] {
-  margin-right: 0.5em;
+  margin: 0 0.5em 0.25em -1.6em;
+  vertical-align: middle;
+  pointer-events: none;
 }
 
-/* Code Blocks & Inline Code */
+/* --- Code --- */
 .markdown-preview code {
   padding: 0.2em 0.4em;
   margin: 0;
   font-size: 85%;
-  font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
+  white-space: break-spaces;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
   background-color: var(--md-code-bg);
   border-radius: 6px;
 }
@@ -387,34 +448,39 @@
   line-height: 1.45;
   background-color: var(--md-pre-bg);
   border-radius: 6px;
-  border: 1px solid var(--md-border-muted);
+  word-wrap: normal;
 }
 
 .markdown-preview pre code {
-  background-color: transparent;
+  display: inline;
+  max-width: auto;
   padding: 0;
   margin: 0;
+  overflow: visible;
+  line-height: inherit;
+  word-wrap: normal;
+  background-color: transparent;
+  border: 0;
   font-size: 100%;
-  word-break: normal;
   white-space: pre;
   border-radius: 0;
-  border: 0;
 }
 
-/* Tables (remarkGfm) */
+/* --- Tables --- */
 .markdown-preview table {
   border-spacing: 0;
   border-collapse: collapse;
+  display: block;
+  width: max-content;
+  max-width: 100%;
+  overflow: auto;
   margin-top: 0;
   margin-bottom: 16px;
-  width: 100%;
-  overflow: auto;
-  display: block; /* Allows scrolling on small screens */
 }
 
 .markdown-preview table tr {
-  background-color: var(--md-bg-canvas);
-  border-top: 1px solid var(--md-border-muted);
+  background-color: transparent;
+  border-top: 1px solid var(--md-border-default);
 }
 
 .markdown-preview table tr:nth-child(2n) {
@@ -429,67 +495,168 @@
 
 .markdown-preview table th {
   font-weight: 600;
-  background-color: var(--md-bg-canvas-subtle);
+  text-align: left;
 }
 
-/* Images */
+.markdown-preview table thead tr {
+  background-color: transparent;
+}
+
+.markdown-preview table tbody tr {
+  background-color: transparent;
+}
+
+.markdown-preview table tbody tr:nth-child(2n) {
+  background-color: var(--md-table-stripe);
+}
+
+.markdown-preview table img {
+  background-color: transparent;
+}
+
+/* --- Images --- */
 .markdown-preview img {
   max-width: 100%;
   box-sizing: content-box;
-  background-color: var(--md-bg-canvas);
+  background-color: transparent;
+  border-radius: 6px;
 }
 
-/* ===== badges inside your markdown preview ===== */
+.markdown-preview img[align="right"] {
+  padding-left: 20px;
+}
 
-/* target only shields.io badges */
+.markdown-preview img[align="left"] {
+  padding-right: 20px;
+}
+
+/* --- Badges (shields.io) --- */
 .markdown-preview img[src*="img.shields.io"] {
-  height: 20px;            /* badge height */
-  width: auto;             /* preserve aspect ratio */
-  max-width: none;         /* don't constrain by container width */
+  height: 20px;
+  width: auto;
+  max-width: none;
   display: inline-block;
-  vertical-align: middle;  /* align with text */
-  margin: 0 0.5rem 0 0;    /* spacing to the right */
-  border-radius: 6px;      /* subtle rounding (optional) */
+  vertical-align: middle;
+  margin: 0 0.5rem 0 0;
+  border-radius: 6px;
   background: transparent;
   box-shadow: none;
 }
 
-/* when badge is inside a link — keep it clickable and not stretched */
 .markdown-preview a img[src*="img.shields.io"] {
   display: inline-block;
   pointer-events: auto;
 }
 
-/* responsive rule: if container is very narrow, shrink badges proportionally */
-@media (max-width: 480px) {
-  .markdown-preview img[src*="img.shields.io"] {
-    height: 16px;
-    margin-right: 0.35rem;
-  }
+/* --- Keyboard Input --- */
+.markdown-preview kbd {
+  display: inline-block;
+  padding: 3px 5px;
+  font-size: 11px;
+  line-height: 10px;
+  color: var(--md-fg-primary);
+  vertical-align: middle;
+  background-color: var(--md-bg-canvas-subtle);
+  border: solid 1px var(--md-code-bg);
+  border-bottom-color: var(--md-code-bg);
+  border-radius: 6px;
+  box-shadow: inset 0 -1px 0 var(--md-code-bg);
 }
 
-/* dark-mode tweak: invert bright badges to look good on dark backgrounds.
-   Adjust or remove if your badges are already dark-theme-friendly. */
-.dark .markdown-preview img[src*="img.shields.io"] {
-  filter: brightness(0.95) invert(1) saturate(0.9);
+/* --- Details/Summary --- */
+.markdown-preview details {
+  display: block;
+  margin-bottom: 16px;
+}
+
+.markdown-preview summary {
+  display: list-item;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+/* --- Definition Lists --- */
+.markdown-preview dl {
+  padding: 0;
+}
+
+.markdown-preview dl dt {
+  padding: 0;
+  margin-top: 16px;
+  font-size: 1em;
+  font-style: italic;
+  font-weight: 600;
+}
+
+.markdown-preview dl dd {
+  padding: 0 16px;
+  margin-bottom: 16px;
+  margin-left: 0;
+}
+
+/* --- Footnotes --- */
+.markdown-preview .footnotes {
+  font-size: 0.875em;
+  color: var(--md-fg-secondary);
+  border-top: 1px solid var(--md-border-default);
+  margin-top: 24px;
+  padding-top: 24px;
+}
+
+.markdown-preview .footnotes ol {
+  padding-left: 1.5em;
+}
+
+.markdown-preview .footnotes li {
+  position: relative;
+}
+
+.markdown-preview .footnotes li:target::before {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  bottom: -8px;
+  left: -24px;
+  pointer-events: none;
+  content: "";
+  border: 2px solid var(--md-fg-accent);
+  border-radius: 6px;
+}
+
+/* --- First/Last Child --- */
+.markdown-preview > *:first-child {
+  margin-top: 0 !important;
+}
+
+.markdown-preview > *:last-child {
+  margin-bottom: 0 !important;
+}
+
+/* --- Clearfix --- */
+.markdown-preview::before,
+.markdown-preview::after {
+  display: table;
+  content: "";
+}
+
+.markdown-preview::after {
+  clear: both;
 }
 
 /* =========================================
-   Markdown Preview MINI (Micro/Thumbnail)
+   Markdown Preview MINI (Thumbnail View)
    ========================================= */
 .markdown-preview-mini {
-  /* Ultra-small base settings - essentially a minimap */
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-  font-size: 6px;       /* 6px base size */
-  line-height: 1.15;    /* Very tight lines */
+  font-size: 6px;
+  line-height: 1.15;
   color: var(--md-fg-primary);
-  background-color: var(--md-bg-canvas);
   word-wrap: break-word;
   overflow: hidden;
-  padding: 4px;         /* Tiny container padding */
+  padding: 4px;
 }
 
-/* Headings - Minimal vertical space */
+/* --- Headings --- */
 .markdown-preview-mini h1,
 .markdown-preview-mini h2,
 .markdown-preview-mini h3,
@@ -498,41 +665,56 @@
 .markdown-preview-mini h6 {
   margin-top: 6px;
   margin-bottom: 3px;
-  font-weight: 700; /* Bolder to remain visible at small sizes */
+  font-weight: 700;
   line-height: 1.1;
   color: var(--md-fg-primary);
 }
 
 .markdown-preview-mini h1 {
-  font-size: 12px; /* 2em */
+  font-size: 12px;
   padding-bottom: 2px;
   border-bottom: 1px solid var(--md-border-muted);
+  margin-top: 0;
 }
 
 .markdown-preview-mini h2 {
-  font-size: 9px; /* 1.5em */
+  font-size: 9px;
   padding-bottom: 1px;
   border-bottom: 1px solid var(--md-border-muted);
 }
 
-.markdown-preview-mini h3 { font-size: 7.5px; } /* 1.25em */
-.markdown-preview-mini h4 { font-size: 6px; font-weight: 700; }
+.markdown-preview-mini h3 {
+  font-size: 7.5px;
+}
 
-/* Paragraphs */
+.markdown-preview-mini h4 {
+  font-size: 6px;
+  font-weight: 700;
+}
+
+/* --- Text --- */
 .markdown-preview-mini p {
   margin-top: 0;
   margin-bottom: 4px;
 }
 
+.markdown-preview-mini strong,
+.markdown-preview-mini b {
+  font-weight: 700;
+}
+
+.markdown-preview-mini em,
+.markdown-preview-mini i {
+  font-style: italic;
+}
+
+/* --- Links --- */
 .markdown-preview-mini a {
   color: var(--md-fg-accent);
   text-decoration: none;
 }
 
-.markdown-preview-mini strong { font-weight: 700; }
-.markdown-preview-mini em { font-style: italic; }
-
-/* Horizontal Rule */
+/* --- Horizontal Rule --- */
 .markdown-preview-mini hr {
   height: 1px;
   margin: 6px 0;
@@ -540,7 +722,7 @@
   border: 0;
 }
 
-/* Blockquotes */
+/* --- Blockquotes --- */
 .markdown-preview-mini blockquote {
   margin: 0 0 4px;
   padding: 0 4px;
@@ -548,7 +730,7 @@
   border-left: 1.5px solid var(--md-blockquote-border);
 }
 
-/* Lists */
+/* --- Lists --- */
 .markdown-preview-mini ul,
 .markdown-preview-mini ol {
   margin-top: 0;
@@ -564,7 +746,11 @@
   margin-top: 2px;
 }
 
-/* Task Lists - Fix checkboxes being huge */
+.markdown-preview-mini li + li {
+  margin-top: 1px;
+}
+
+/* --- Task Lists --- */
 .markdown-preview-mini ul.contains-task-list {
   padding-left: 0;
   list-style-type: none;
@@ -574,10 +760,10 @@
   margin-right: 2px;
   vertical-align: middle;
   transform-origin: left center;
-  transform: scale(0.5); /* Force browser checkbox to look tiny */
+  transform: scale(0.5);
 }
 
-/* Code Blocks */
+/* --- Code --- */
 .markdown-preview-mini code {
   padding: 0 2px;
   margin: 0;
@@ -604,20 +790,23 @@
   white-space: pre;
   border: 0;
   padding: 0;
+  background-color: transparent;
 }
 
-/* Tables */
+/* --- Tables --- */
 .markdown-preview-mini table {
   border-spacing: 0;
   border-collapse: collapse;
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  overflow: auto;
   margin-top: 0;
   margin-bottom: 4px;
-  width: 100%;
-  display: table;
 }
 
 .markdown-preview-mini table tr {
-  background-color: var(--md-bg-canvas);
+  background-color: transparent;
   border-top: 1px solid var(--md-border-muted);
 }
 
@@ -634,25 +823,49 @@
 
 .markdown-preview-mini table th {
   font-weight: 700;
-  background-color: var(--md-bg-canvas-subtle);
+  text-align: left;
 }
 
-/* Images */
+.markdown-preview-mini table thead tr {
+  background-color: transparent;
+}
+
+.markdown-preview-mini table tbody tr:nth-child(2n) {
+  background-color: var(--md-table-stripe);
+}
+
+/* --- Images --- */
 .markdown-preview-mini img {
   max-width: 100%;
   box-sizing: content-box;
-  background-color: var(--md-bg-canvas);
+  background-color: transparent;
 }
 
-/* ===== Micro Badges ===== */
+/* --- Badges --- */
 .markdown-preview-mini img[src*="img.shields.io"] {
-  height: 7px;  /* Extremely small badge height */
+  height: 7px;
+  width: auto;
+  max-width: none;
   display: inline-block;
+  vertical-align: middle;
   margin: 0 2px 0 0;
   border-radius: 2px;
 }
 
-/* Adjust dark mode filter */
+/* =========================================
+   Responsive Adjustments
+   ========================================= */
+@media (max-width: 480px) {
+  .markdown-preview img[src*="img.shields.io"] {
+    height: 16px;
+    margin-right: 0.35rem;
+  }
+}
+
+/* =========================================
+   Dark Mode Badge Filter
+   ========================================= */
+.dark .markdown-preview img[src*="img.shields.io"],
 .dark .markdown-preview-mini img[src*="img.shields.io"] {
   filter: brightness(0.95) invert(1) saturate(0.9);
 }
@@ -762,3 +975,4 @@
   background-color: rgba(125, 125, 125, 0.1);
   font-weight: 600;
 }
+

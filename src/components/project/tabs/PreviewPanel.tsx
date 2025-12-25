@@ -5,7 +5,6 @@ import ReactMarkdown from "react-markdown";
 import React, { useRef, useEffect, useState } from "react";
 import { PixelatedCanvas } from "@/components/ui/pixelated-canvas";
 import { useScrollPosition } from "@/contexts/ScrollPositionContext";
-import { Loader2 } from "lucide-react";
 import ShimmerText from "@/components/kokonutui/shimmer-text";
 
 const MarkdownPreview = ({ content, view = "max" }: { content: string, view?: "max" | "min" | "min-max" }) => {
@@ -119,10 +118,10 @@ const MarkdownPreview = ({ content, view = "max" }: { content: string, view?: "m
       {/* Markdown content - hidden until ready */}
       <div
         ref={containerRef}
-        className={`h-full bg-transparent rounded-xl text-[#e0e3e7] focus:outline-none w-full p-4 resize-none rounded-b-lg transition-opacity duration-300 ${
+        className={`h-full rounded-xl text-[#e0e3e7] focus:outline-none w-full p-4 resize-none rounded-b-lg transition-opacity duration-300 ${
           isReady ? 'opacity-100' : 'opacity-0'
         } ${
-          (view === "max" || view === "min-max") ? 'markdown-preview overflow-y-auto' : 'markdown-preview-mini px-20! pt-6!'
+          (view === "max" || view === "min-max") ? `markdown-preview overflow-y-auto ${view === "min-max" ? "bg-muted" : "bg-transparent"}` : 'markdown-preview-mini px-20! pt-6! bg-muted/80'
         }`}
         onScroll={handleScroll}
       >
