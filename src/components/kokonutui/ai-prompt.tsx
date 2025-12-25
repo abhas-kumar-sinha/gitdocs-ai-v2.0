@@ -129,11 +129,11 @@ export default function AI_Prompt({ isActive, projectId, repository } : { isActi
   };
 
   return (
-    <div className="relative flex flex-col">
-      <div className="overflow-y-auto" style={{ maxHeight: "250px" }}>
+    <div className="relative flex flex-col bg-muted rounded-xl pt-4">
+      <div className="overflow-y-auto pe-3" style={{ maxHeight: "250px" }}>
         <Textarea
           className={cn(
-            "w-full text-base! resize-none rounded-xl rounded-b-none border-none bg-black/5 dark:bg-white/5 px-4 py-3 placeholder:text-black/70 focus-visible:ring-0 focus-visible:ring-offset-0 dark:text-white dark:placeholder:text-white/70",
+            "w-full text-base! resize-none rounded-xl rounded-b-none border-none bg-muted! pt-0! -mt-1.5 placeholder-shown:pt-1! placeholder:text-black/70 focus-visible:ring-0 focus-visible:ring-offset-0 dark:text-white dark:placeholder:text-white/60",
             "min-h-[62px]"
           )}
           id="ai-input-15"
@@ -148,7 +148,7 @@ export default function AI_Prompt({ isActive, projectId, repository } : { isActi
         />
       </div>
 
-      <div className="flex h-14 items-center rounded-b-xl bg-black/5 dark:bg-white/5">
+      <div className="flex h-14 items-center rounded-b-xl bg-muted!">
         <div className="absolute right-3 bottom-3 left-3 flex w-[calc(100%-24px)] items-center justify-between">
           <div className="flex items-center gap-2">
             <SignedIn>

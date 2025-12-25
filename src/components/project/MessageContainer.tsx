@@ -50,7 +50,7 @@ const MessageContainer = ({
 
   return (
     <div 
-      className="flex flex-col flex-1 w-full mt-14 mb-32 px-6 overflow-y-auto overflow-x-hidden pb-4 scroll-smooth"
+      className="flex flex-col flex-1 w-full mt-14 mb-36 px-6 overflow-y-auto overflow-x-hidden pb-4 scroll-smooth"
     >
       <Suspense fallback={<p className="text-center text-gray-500 mt-4">Loading Messages...</p>}>
         {messages?.map((message) => (

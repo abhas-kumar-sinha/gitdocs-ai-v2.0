@@ -133,7 +133,7 @@ const ProjectView = ({projectId} : {projectId : string}) => {
 
         <MessageContainer projectId={projectId} activeFragment={activeFragment} setActiveFragment={setActiveFragment} />
 
-        <div className="absolute bottom-2 w-[98%] mx-auto ms-1">
+        <div className="absolute bottom-2 w-[98%] ms-2.5">
           <AI_Prompt isActive={true} projectId={projectId} repository={project.repository ? project.repository : undefined} />
         </div>
       </ResizablePanel>
