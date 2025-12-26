@@ -1,5 +1,6 @@
 import { protectedProcedure } from "@/trpc/init";
 import { prisma } from "@/lib/db";
+import { TRPCError } from "@trpc/server";
 
 const getTodayDate = () => {
   const today = new Date();
@@ -23,7 +24,10 @@ export const aiUsageRouter = {
       })
 
       if (!user) {
-        return false
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "User not found"
+        });
       }
 
       // Try to find today's usage
@@ -43,12 +47,11 @@ export const aiUsageRouter = {
             userId: ctx.auth.userId,
             date: today,
             count: 0,
-            maxCount: user.bonusAiChatCredits +  user.dailyAiChatLimit,
+            maxCount: user.bonusAiChatCredits + user.dailyAiChatLimit,
           },
         });
       }
 
       return usage;
     }),
-
 };
