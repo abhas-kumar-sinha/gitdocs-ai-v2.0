@@ -10,8 +10,9 @@ import { CommandMenu } from "../common/CommandMenu";
 import SmoothTab, { TabItem } from "../kokonutui/smooth-tab";
 import { useSidebarContext } from "@/contexts/SidebarContext";
 import { SidebarItem, GithubConnectionItem } from "../common/SidebarItem";
-import { Blocks, Box, Briefcase, House, Inbox, Mail, PanelRight, Search, Star } from "lucide-react";
+import { Blocks, Box, Briefcase, Gift, House, Inbox, Mail, MessageSquareQuote, PanelRight, Search, Star } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { BackgroundGradient } from "../ui/background-gradient";
 
 const sidebarTopItems = [
   {
@@ -208,9 +209,43 @@ const Sidebar = () => {
         )
       })}
 
+      <div onClick={(e) => e.stopPropagation()} className={cn("w-full flex-col gap-y-2 -mb-8 mt-auto invisible", isSidebarOpen && "flex visible")}>
+        <div className="max-w-sm cursor-pointer rounded-lg p-4 bg-background flex items-center justify-between shrink-0 hover:bg-background/80 border border-transparent hover:border-foreground/20 transition-colors duration-200">
+          <div className="flex flex-col items-start shrink-0 gap-y-0.5">
+            <p className="text-foreground text-sm">
+              Feedback
+            </p>
+            <span className="text-foreground/70 text-xs">
+              Earn 5 free credits
+            </span>
+          </div>
+
+          <div className="h-9 w-9 border border-border flex items-center justify-center rounded-full bg-muted shrink-0">
+            <MessageSquareQuote size="16" />
+          </div>
+
+        </div>
+        
+        <BackgroundGradient className="max-w-sm cursor-pointer rounded-lg p-4 bg-background flex items-center justify-between shrink-0 hover:bg-background/90 transition-colors duration-200">
+          <div className="flex flex-col items-start shrink-0 gap-y-0.5">
+            <p className="text-foreground text-sm">
+              Share Gitdocs AI
+            </p>
+            <span className="text-foreground/70 text-xs">
+              Get 10 credits each
+            </span>
+          </div>
+
+          <div className="h-9 w-9 border border-border flex items-center justify-center rounded-full bg-muted shrink-0">
+            <Gift size="16" />
+          </div>
+
+        </BackgroundGradient>
+      </div>
+
 
       {/* Footer */}
-      <div onClick={(e) => e.stopPropagation()} className={cn("shrink-0 mt-auto w-10 md:flex items-center justify-center transition-all duration-300 -ms-0.5 hidden", isSidebarOpen && "translate-y-11")}>
+      <div onClick={(e) => e.stopPropagation()} className={cn("shrink-0 relative z-10 w-10 md:flex items-center justify-center transition-all duration-300 -ms-0.5 hidden", isSidebarOpen && "translate-y-11")}>
         <Button
           variant="sidebarButton"
           size="sm"

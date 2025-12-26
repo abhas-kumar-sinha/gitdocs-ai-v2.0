@@ -1,6 +1,8 @@
 "use client"
 
 import { useEffect } from "react"
+import { useRouter } from "next/navigation";
+import { Blocks, Box, Gift, House, MessageSquareQuote, Star } from "lucide-react";
 import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
 
 export function CommandMenu({ open, setOpen }: { open: boolean, setOpen: React.Dispatch<React.SetStateAction<boolean>> }) {
@@ -14,7 +16,9 @@ export function CommandMenu({ open, setOpen }: { open: boolean, setOpen: React.D
     }
     document.addEventListener("keydown", down)
     return () => document.removeEventListener("keydown", down)
-  });
+  }, [setOpen]) // <-- Add dependency array here
+  
+  const router = useRouter();
 
   return (
     <CommandDialog open={open} onOpenChange={setOpen}>
@@ -22,9 +26,27 @@ export function CommandMenu({ open, setOpen }: { open: boolean, setOpen: React.D
       <CommandList>
         <CommandEmpty>No results found.</CommandEmpty>
         <CommandGroup heading="Suggestions">
-          <CommandItem>Calendar</CommandItem>
-          <CommandItem>Search Emoji</CommandItem>
-          <CommandItem>Calculator</CommandItem>
+          <CommandItem onSelect={() => router.push("/")}> 
+            <House className="mr-2 h-4 w-4" /> Home
+          </CommandItem>
+          <CommandItem onSelect={() => router.push("/projects")}> 
+            <Blocks className="mr-2 h-4 w-4" /> All Projects
+          </CommandItem>
+          <CommandItem onSelect={() => router.push("/projects?filter=starred")}> 
+            <Star className="mr-2 h-4 w-4" /> Starred Projects
+          </CommandItem>
+          <CommandItem onSelect={() => router.push("/templates")}> 
+            <Box className="mr-2 h-4 w-4" /> Templates
+          </CommandItem>
+        </CommandGroup>
+
+        <CommandGroup heading="Gitdocs AI">
+          <CommandItem> 
+            <MessageSquareQuote className="mr-2 h-4 w-4" /> Feedback
+          </CommandItem>
+          <CommandItem> 
+            <Gift className="mr-2 h-4 w-4" /> Share With Friends
+          </CommandItem>
         </CommandGroup>
       </CommandList>
     </CommandDialog>
