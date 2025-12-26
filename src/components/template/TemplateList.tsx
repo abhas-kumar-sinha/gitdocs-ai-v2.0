@@ -19,7 +19,7 @@ const TemplateList = ({templates} : {templates: Template[]}) => {
               />
             </div>
             </DialogTrigger>
-            <DialogContent className="max-w-none! w-[calc(100vw-6rem)] h-[calc(100vh-6rem)]">
+            <DialogContent className="max-w-none! w-screen h-screen md:w-[calc(100vw-6rem)] md:h-[calc(100vh-6rem)]">
               <DialogHeader>
                 <DialogTitle>{template.title}</DialogTitle>
                 <DialogDescription>

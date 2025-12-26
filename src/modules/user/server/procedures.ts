@@ -1,6 +1,19 @@
+import { z } from 'zod';
 import { prisma } from '@/lib/db';
 import { clerkClient } from '@clerk/nextjs/server';
 import { createTRPCRouter, protectedProcedure } from '@/trpc/init';
+
+const FeedbackInputSchema = z.object({
+  intent: z.array(z.string()).min(1),
+  outcome: z.enum(["Yes, fully", "Partially", "Not really"]),
+  outputQuality: z.number().min(1).max(10),
+  friction: z.string().min(5),
+  insight: z.string().min(5),
+
+  repoType: z.array(z.string()),
+  missingFeature: z.string().optional(),
+  nps: z.number().min(1).max(10).optional(),
+});
 
 export const userRouter = createTRPCRouter({
   getCurrent: protectedProcedure
@@ -25,19 +38,55 @@ export const userRouter = createTRPCRouter({
       return user;
     }),
 
-  completeOnboarding: protectedProcedure
-    .mutation(async ({ ctx }) => {
-      const user = await prisma.user.update({
-        where: { id: ctx.auth.userId },
-        data: { onboardingCompleted: true },
+  completeFeedbackForm: protectedProcedure
+    .input(FeedbackInputSchema)
+    .mutation(async ({ ctx, input }) => {
+      const userId = ctx.auth.userId;
+
+      // First, complete the database transaction
+      const feedback = await prisma.$transaction(async (tx) => {
+        const user = await tx.user.findUnique({
+          where: { id: userId },
+          select: { feedbackRewarded: true },
+        });
+
+        if (!user) throw new Error("User not found");
+
+        // Save feedback (always)
+        const feedbackEntry = await tx.feedback.create({
+          data: {
+            userId,
+            ...input,
+          },
+        });
+
+        // Reward only once
+        if (!user.feedbackRewarded) {
+          await tx.user.update({
+            where: { id: userId },
+            data: {
+              bonusAiChatCredits: { increment: 5 },
+              feedbackRewarded: true,
+            },
+          });
+        }
+
+        return { feedbackEntry, shouldUpdateClerk: !user.feedbackRewarded };
       });
 
-      const client = await clerkClient()
-      
-      client.users.updateUserMetadata(ctx.auth.userId!, {
-        publicMetadata: { onboardingCompleted: true },
-      });
+      if (feedback.shouldUpdateClerk) {
+        try {
+          const client = await clerkClient();
+          await client.users.updateUserMetadata(ctx.auth.clerkId, {
+            publicMetadata: { feedbackRewarded: true },
+          });
+        } catch (clerkError) {
+          console.error("Failed to update Clerk metadata:", clerkError);
 
-      return user;
+        }
+      }
+
+      return feedback.feedbackEntry;
     }),
+
 });

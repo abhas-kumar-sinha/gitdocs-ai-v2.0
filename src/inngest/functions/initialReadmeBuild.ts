@@ -246,7 +246,21 @@ export const initialReadmeBuild = inngest.createFunction(
     await emitProgress('CHECKING_ACCESS', 10, 'Checking usage limits...');
     const access = await step.run('check-access', async () => {
       const today = getTodayDate();
-      
+
+      const user = await prisma.user.findUnique({
+        where: {
+          id: userId
+        }, 
+        select: {
+          bonusAiChatCredits: true,
+          dailyAiChatLimit: true
+        }
+      })
+
+      if (!user) {
+        return false
+      }
+
       // Try to find today's usage
       let usage = await prisma.aiUsage.findUnique({
         where: {
@@ -264,7 +278,7 @@ export const initialReadmeBuild = inngest.createFunction(
             userId: userId,
             date: today,
             count: 0,
-            maxCount: 5,
+            maxCount: user.bonusAiChatCredits + user.dailyAiChatLimit,
           },
         });
       }
@@ -417,23 +431,44 @@ export const initialReadmeBuild = inngest.createFunction(
 
       const today = getTodayDate();
 
-      // Upsert: increment count if exists, create if doesn't
-      const usage = await prisma.aiUsage.upsert({
-        where: {
-          userId_date: {
-            userId: userId,
-            date: today,
+      const usageUpdate = await prisma.$transaction(async (tx) => {
+        // 1️⃣ Get current usage
+        const usage = await tx.aiUsage.findUnique({
+          where: {
+            userId_date: {
+              userId,
+              date: today,
+            },
           },
-        },
-        update: {
-          count: { increment: 1 }
-        },
-        create: {
-          userId: userId,
-          date: today,
-          count: 1,
-          maxCount: 5,
-        },
+          select: { count: true },
+        });
+
+        if (!usage) {
+          throw new Error("Usage row missing");
+        }
+
+        // 2️⃣ Update usage count
+        await tx.aiUsage.update({
+          where: {
+            userId_date: {
+              userId,
+              date: today,
+            },
+          },
+          data: {
+            count: { increment: 1 },
+          },
+        });
+
+        // 3️⃣ If count >= 5, reduce bonus credits
+        if (usage.count >= 5) {
+          await tx.user.update({
+            where: { id: userId },
+            data: {
+              bonusAiChatCredits: { decrement: 1 },
+            },
+          });
+        }
       });
 
       return {
@@ -441,7 +476,7 @@ export const initialReadmeBuild = inngest.createFunction(
         thinking,
         summary,
         contextFilesUsed: contextFiles.length,
-        usage
+        usageUpdate
       };
     });
 

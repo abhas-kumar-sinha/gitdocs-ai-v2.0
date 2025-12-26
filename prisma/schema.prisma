@@ -18,21 +18,23 @@ model User {
   lastName  String?
   imageUrl  String?
   
-  // Onboarding
-  onboardingCompleted Boolean @default(false)
+  // Feedback
+  feedbackRewarded    Boolean @default(false)
 
   // per-user limit (default 5 chats/day)
-  dailyAiChatLimit Int @default(5)
+  dailyAiChatLimit    Int @default(5)
+  bonusAiChatCredits  Int @default(0)
   
   // Timestamps
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   
   // Relations
-  installations Installation[]
-  projects      Project[]
-  aiUsages      AiUsage[]
+  installations         Installation[]
+  projects              Project[]
+  aiUsages              AiUsage[]
   installationProcesses InstallationProcess[]
+  feedbacks             Feedback[]
 
   @@index([clerkId])
   @@index([email])
@@ -277,3 +279,26 @@ model AiUsage {
   @@index([userId])
   @@index([date])
 }
+
+// ============= Usage Feedback =============
+
+model Feedback {
+  id             String   @id @default(cuid())
+
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  intent         String[]
+  outcome        String
+  outputQuality  Int
+  friction       String
+  insight        String
+  repoType       String[]
+  missingFeature String?
+  nps            Int?
+
+  createdAt      DateTime @default(now())
+
+  @@index([userId])
+}
+
