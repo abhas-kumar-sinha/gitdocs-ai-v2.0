@@ -6,19 +6,19 @@ import { useTRPC } from "@/trpc/client"
 import CodePanel from "./tabs/CodePanel";
 import Toolbar from "../kokonutui/toolbar"
 import { Progress } from "../ui/progress";
-import { FaGithub } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import DesignPanel from "./tabs/DesignPanel";
 import AI_Prompt from "../kokonutui/ai-prompt";
 import ContextPanel from "./tabs/ContextPanel";
 import PreviewPanel from "./tabs/PreviewPanel";
-import MessageContainer from "./MessageContainer"
+import MessageContainer from "./MessageContainer";
 import { Fragment } from "@/generated/prisma/client";
-import { useQuery, useSuspenseQuery } from "@tanstack/react-query"
+import { GithubConnectionItem } from "../common/SidebarItem";
 import { DropdownMenuSub } from "@radix-ui/react-dropdown-menu";
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable"
-import { Check, ChevronDown, ChevronLeft, CodeXml, Form, GitPullRequestArrow, Globe, History, LaptopMinimal, LucideIcon, Palette, SquarePen, Star } from "lucide-react"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
+import { Check, ChevronDown, ChevronLeft, CodeXml, Form, Globe, History, LaptopMinimal, LucideIcon, Palette, SquarePen, Star } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 export interface ToolbarItem {
     id: string;
@@ -166,14 +166,8 @@ const ProjectView = ({projectId} : {projectId : string}) => {
               Save Changes
             </Button>}
             
-            <Button variant="outline" size="icon-sm" className="h-7 w-7">
-              <FaGithub />
-            </Button>
+            <GithubConnectionItem isSidebarOpen={false} showCommitButton />
 
-            <Button variant="default" size="sm" className="h-7">
-              <GitPullRequestArrow /> 
-              Commit Changes
-            </Button>
           </div>
         </div>
 

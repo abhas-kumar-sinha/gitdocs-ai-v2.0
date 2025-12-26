@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Check, ChevronRight, Copy, ThumbsDown, ThumbsUp } from "lucide-react"
+import { BookText, Check, ChevronRight, Copy, ThumbsDown, ThumbsUp } from "lucide-react"
 import { Fragment, Message, MessageType } from "@/generated/prisma/client"
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import ReactMarkdown from 'react-markdown';
@@ -102,12 +102,14 @@ const AssistantMessage = ({
   content, 
   type, 
   fragment, 
+  fragmentVersion,
   activeFragment, 
   setActiveFragment
 } : {
   content : string, 
   type : MessageType, 
   fragment : Fragment | null, 
+  fragmentVersion: number,
   activeFragment : Fragment | null, 
   setActiveFragment : (fragment : Fragment) => void
 }) => {
@@ -192,7 +194,10 @@ const AssistantMessage = ({
       <Card onClick={() => {setActiveFragment(fragment)}} className={cn("px-5 py-2.5 mt-4 w-3/4 max-w-[260px] transition-colors", fragment.id === activeFragment?.id ? "bg-accent/25 border-accent" : "hover:bg-foreground/20")}>
         <div className="whitespace-pre-wrap flex flex-col items-start gap-y-1 cursor-pointer">
           <div className="flex items-center justify-between w-full">
-            <span>Fragment Title</span>
+            <div className="flex items-center gap-x-2">
+              <BookText size="15" />
+              <span>Readme: v{fragmentVersion}</span>
+            </div>
             <ChevronRight size={16} />
           </div>
           <span className="text-sm text-foreground/50">{fragment.id === activeFragment?.id ? "Active Edit" : "Preview this version"}</span>
@@ -202,10 +207,10 @@ const AssistantMessage = ({
   )
 }
 
-const MessageCard = ({message, fragment, activeFragment, setActiveFragment} : {message : Message, fragment : Fragment | null, activeFragment : Fragment | null, setActiveFragment : (fragment : Fragment) => void}) => {
+const MessageCard = ({message, fragment, fragmentVersion, activeFragment, setActiveFragment} : {message : Message, fragment : Fragment | null, fragmentVersion : number, activeFragment : Fragment | null, setActiveFragment : (fragment : Fragment) => void}) => {
   if (message.role === "ASSISTANT") {
     return (
-      <AssistantMessage content={message.content} type={message.type} fragment={fragment} activeFragment={activeFragment} setActiveFragment={setActiveFragment}/>
+      <AssistantMessage content={message.content} type={message.type} fragment={fragment} fragmentVersion={fragmentVersion} activeFragment={activeFragment} setActiveFragment={setActiveFragment}/>
     )
   }
 

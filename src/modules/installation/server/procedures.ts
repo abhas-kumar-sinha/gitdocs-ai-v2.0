@@ -50,4 +50,35 @@ export const installationRouter = createTRPCRouter({
 
       return { success: true };
     }),
+
+  updateInstallationAccess: protectedProcedure
+    .input(z.object({ installationId: z.string().min(1, { message: "Installation ID is required" }) }))
+    .mutation( async ({ ctx, input }) => {
+      const installationPermissions = await prisma.installation.findFirst({
+        where: {
+          id: input.installationId,
+          userId: ctx.auth.userId,
+        },
+        select: {permissions: true}
+      });
+
+      if (!installationPermissions) {
+        throw new TRPCError({ code: 'NOT_FOUND', message: "Installation Not found" });
+      }
+
+      const updatedInstallation = await prisma.installation.update({
+      where: {
+        id: input.installationId,
+        userId: ctx.auth.userId,
+      },
+      data: {
+        permissions:
+          installationPermissions.permissions === "WRITE"
+            ? "READ"
+            : "WRITE",
+      },
+    });
+      
+    return updatedInstallation;
+    })
 });

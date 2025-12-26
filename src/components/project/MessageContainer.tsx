@@ -1,10 +1,10 @@
 "use client";
 import { useTRPC } from "@/trpc/client";
 import MessageCard from "./MessageCard";
-import { Suspense, useEffect, useRef } from "react";
+import { ProgressTracker } from "./ProgressTracker";
 import { Fragment } from "@/generated/prisma/client";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { ProgressTracker } from "./ProgressTracker";
+import { Suspense, useEffect, useRef } from "react";
 
 const MessageContainer = ({
   projectId,
@@ -18,13 +18,16 @@ const MessageContainer = ({
   const trpc = useTRPC();
   
   const bottomRef = useRef<HTMLDivElement>(null);
-  const previousMessageCountRef = useRef<number>(0); // Track previous count
+  const previousMessageCountRef = useRef<number>(0);
 
   const { data: messages } = useSuspenseQuery(
     trpc.message.getMany.queryOptions({
       projectId,
     })
   );
+
+  // Create array of fragment IDs from messages
+  const fragmentIds = messages?.map((message) => message.fragment?.id).filter(Boolean) || [];
 
   // Only scroll when message count increases (new message added)
   useEffect(() => {
@@ -54,15 +57,22 @@ const MessageContainer = ({
       className="flex flex-col flex-1 w-full mt-14 mb-34 px-6 overflow-y-auto overflow-x-hidden pb-4 scroll-smooth"
     >
       <Suspense fallback={<p className="text-center text-gray-500 mt-4">Loading Messages...</p>}>
-        {messages?.map((message) => (
-          <MessageCard
-            key={message.id}
-            message={message}
-            fragment={message.fragment}
-            activeFragment={activeFragment}
-            setActiveFragment={setActiveFragment}
-          />
-        ))}
+        {messages?.map((message) => {
+          const fragmentVersion = message.fragment?.id 
+            ? fragmentIds.indexOf(message.fragment.id) + 1
+            : -1;
+          
+          return (
+            <MessageCard
+              key={message.id}
+              message={message}
+              fragment={message.fragment}
+              fragmentVersion={fragmentVersion}
+              activeFragment={activeFragment}
+              setActiveFragment={setActiveFragment}
+            />
+          );
+        })}
       </Suspense>
       {messages[messages.length - 1].role === "USER" && 
       <ProgressTracker projectId={projectId} />

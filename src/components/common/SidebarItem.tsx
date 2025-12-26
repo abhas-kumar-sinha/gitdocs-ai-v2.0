@@ -8,13 +8,14 @@ import { FaGithub } from "react-icons/fa"
 import { useEffect, useMemo } from "react"
 import { useRouter } from "next/navigation"
 import ConnectGithub from "./ConnectGithub"
-import { useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { Progress } from "@/components/ui/progress"
 import { Repository } from "@/generated/prisma/client"
 import { useRepositoryContext } from "@/contexts/RepositoryContext"
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip"
-import { ChevronDown, Info, LucideIcon, Shield, Zap } from "lucide-react"
+import { ChevronDown, GitPullRequestArrow, Info, LucideIcon, Settings, Shield, UserRoundPlus, Zap } from "lucide-react"
 import {DropdownMenu, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger} from "@/components/ui/dropdown-menu"
+import { toast } from "sonner"
 
 interface SidebarItemProp {
     Item: {
@@ -67,13 +68,26 @@ const SidebarItem = ({Item, isSidebarOpen, setIsCommandOpen} : SidebarItemProp) 
   )
 }
 
-const GithubConnectionItem = ({ isSidebarOpen } : {isSidebarOpen : boolean}) => {
+const GithubConnectionItem = ({ isSidebarOpen, showCommitButton } : {isSidebarOpen : boolean, showCommitButton?: boolean}) => {
 
   const trpc = useTRPC();
+  const queryClient = useQueryClient();
   const { repositories, setRepositories, setIsLoading } = useRepositoryContext();
 
   const { data: userInstallations, isLoading } = useQuery(trpc.installation.list.queryOptions());
   const { data: aiUsage, isLoading: isAiUsageLoading } = useQuery(trpc.aiUsage.getUsage.queryOptions());
+
+  const updateInstallation = useMutation(trpc.installation.updateInstallationAccess.mutationOptions({
+    onError: () => {
+      toast.error("Access Update Failed!")
+    },
+    onSuccess: () => {
+      toast.success("Access Updated Successfully");
+      queryClient.invalidateQueries({
+        queryKey: [['installation', 'list']]
+      });
+    }
+  }))
 
   useEffect(() => {
     setIsLoading(isLoading);
@@ -117,96 +131,114 @@ const GithubConnectionItem = ({ isSidebarOpen } : {isSidebarOpen : boolean}) => 
     <>
     {!isLoading && userInstallations && userInstallations?.length > 0 
     ?
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild className="w-full outline-none focus:outline-none focus-visible:outline-none">
-        <button onClick={(e) => {e.stopPropagation()}} className="cursor-pointer w-full my-1.5 py-1 px-[4.5px] border border-neutral-700/50 group/button rounded-md bg-background hover:bg-neutral-300/50 dark:hover:bg-neutral-700/50 flex items-center text-foreground hover:text-foreground/90">
-          <div className="flex shrink-0 items-center justify-center p-0.5 rounded-md">
-            <Image src={userInstallations[0].accountAvatarUrl as string} className="rounded-md" alt="user" width={21} height={21} />
-          </div>
-          <span className={cn("ms-2 whitespace-nowrap text-sm", isSidebarOpen ? "" : "hidden")}>
-            {userInstallations[0].accountName || "No Name Configured"}
-          </span>
-          <ChevronDown className="ms-auto me-2" size={18} />
-        </button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent 
-        sideOffset={4} 
-        onClick={(e) => e.stopPropagation()} 
-        className={cn("w-64", isSidebarOpen ? "ms-1" : "ms-[10px]")}
-      >
-        <DropdownMenuLabel className="text-xs font-medium text-muted-foreground px-2 py-1.5">
-          <div className="flex items-center gap-x-2">
+    <div className="flex items-center w-full">
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild className="w-full outline-none focus:outline-none focus-visible:outline-none">
+          <button onClick={(e) => {e.stopPropagation()}} className="cursor-pointer w-full my-1.5 py-1 px-[4.5px] border border-neutral-700/50 group/button rounded-md bg-background hover:bg-neutral-300/50 dark:hover:bg-neutral-700/50 flex items-center text-foreground hover:text-foreground/90">
             <div className="flex shrink-0 items-center justify-center p-0.5 rounded-md">
-              <Image src={userInstallations[0].accountAvatarUrl as string} className="rounded-md cursor-pointer" alt="user" width={32} height={32} />
+              <Image src={userInstallations[0].accountAvatarUrl as string} className="rounded-md" alt="user" width={21} height={21} />
             </div>
-            <div className="flex flex-col items-start">
-              <span className="whitespace-nowrap text-sm text-foreground">
-                {userInstallations[0].accountName || "No Name Configured"}
-              </span>
-              <span className="text-xs text-muted-foreground">
-                Basic Plan • {userInstallations[0].permissions === "READ" ? "Read Only" : "Write Access"}
-              </span>
-            </div>
-          </div>
-        </DropdownMenuLabel>
-        
-        <DropdownMenuSeparator />
-        
-        <DropdownMenuLabel>
-          <div className="flex items-center justify-between bg-background/70 rounded-md p-3 -mx-1.5">
+            <span className={cn("ms-2 whitespace-nowrap text-sm", isSidebarOpen ? "" : "hidden")}>
+              {userInstallations[0].accountName || "No Name Configured"}
+            </span>
+            <ChevronDown className={cn("ms-auto me-2", isSidebarOpen ? "" : "hidden")} size={18} />
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent 
+          sideOffset={4} 
+          onClick={(e) => e.stopPropagation()} 
+          className={cn("w-64", isSidebarOpen ? "ms-1" : "ms-[10px]")}
+        >
+          <DropdownMenuLabel className="text-xs font-medium text-muted-foreground px-2 py-1.5">
             <div className="flex items-center gap-x-2">
-              <Zap size={18} fill="white" />
-              <span>Go Pro</span>
-              <Tooltip>
-                <TooltipTrigger>
-                  <Info className="h-2.5 w-2.5 cursor-pointer" />
-                </TooltipTrigger>
-                <TooltipContent side="top">
-                  <p>Configure and use your own API keys with a custom provider.</p>
-                </TooltipContent>
-              </Tooltip>
+              <div className="flex shrink-0 items-center justify-center p-0.5 rounded-md">
+                <Image src={userInstallations[0].accountAvatarUrl as string} className="rounded-md cursor-pointer" alt="user" width={32} height={32} />
+              </div>
+              <div className="flex flex-col items-start">
+                <span className="whitespace-nowrap text-sm text-foreground">
+                  {userInstallations[0].accountName || "No Name Configured"}
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  Basic Plan • {userInstallations[0].permissions === "READ" ? "Read Only" : "Write Access"}
+                </span>
+              </div>
             </div>
-            <Button className="h-7 border-primary bg-accent/30 hover:bg-accent/40 text-primary" >Request</Button>
-          </div>
-        </DropdownMenuLabel>
+          </DropdownMenuLabel>
 
-        <DropdownMenuLabel>
-          <div className="flex flex-col bg-background/70 rounded-md p-3 -mx-1.5 -mt-2">
-            {isAiUsageLoading ? 
+          <div className="flex items-center gap-x-2 my-2 px-1">
+            <Button onClick={() => updateInstallation.mutate({installationId: userInstallations[0].id})} variant="outline" size="sm" className="flex-1 border-none text-xs h-7">
+              <Settings className="h-3.5! w-3.5!" />
+              Update Access
+            </Button>
+            <Button disabled variant="outline" size="sm" className="w-24 border-none text-xs h-7">
+              <UserRoundPlus className="h-3.5! w-3.5!" />
+              Invite
+            </Button>
+          </div>
+          
+          <DropdownMenuSeparator />
+          
+          <DropdownMenuLabel>
+            <div className="flex items-center justify-between bg-background/70 rounded-md p-3 -mx-1.5">
+              <div className="flex items-center gap-x-2">
+                <Zap size={18} fill="white" />
+                <span>Go Pro</span>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <Info className="h-2.5 w-2.5 cursor-pointer" />
+                  </TooltipTrigger>
+                  <TooltipContent side="top">
+                    <p>Configure and use your own API keys with a custom provider.</p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+              <Button className="h-7 border-primary bg-accent/30 hover:bg-accent/40 text-primary" >Request</Button>
+            </div>
+          </DropdownMenuLabel>
+
+          <DropdownMenuLabel>
+            <div className="flex flex-col bg-background/70 rounded-md p-3 -mx-1.5 -mt-2">
+              {isAiUsageLoading ? 
+                <>
+                <div className="flex items-center justify-between">
+                  <span>Credits</span>
+                  <span className="text-foreground/70 h-4 w-16 rounded-full animate-pulse bg-muted" />
+                </div>
+                <div className="my-3 h-3 animate-pulse rounded-full bg-accent/50" />
+              </> :
               <>
-              <div className="flex items-center justify-between">
-                <span>Credits</span>
-                <span className="text-foreground/70 h-4 w-16 rounded-full animate-pulse bg-muted" />
+                <div className="flex items-center justify-between">
+                  <span>Credits</span>
+                  <span className="text-foreground/70">{(aiUsage?.maxCount || 5) - (aiUsage?.count || 0)} left</span>
+                </div>
+                <Progress value={(((aiUsage?.maxCount || 5) - (aiUsage?.count || 0))/(aiUsage?.maxCount || 5))*100} className="my-3 h-3" />
+              </>
+              }
+              <div className="flex items-center gap-x-2">
+                <div className="h-1.5 w-1.5 bg-foreground rounded-full" />
+                <span className="text-xs text-foreground/70">Daily credits reset at midnight UTC</span>
               </div>
-              <div className="my-3 h-3 animate-pulse rounded-full bg-accent/50" />
-            </> :
-            <>
-              <div className="flex items-center justify-between">
-                <span>Credits</span>
-                <span className="text-foreground/70">{(aiUsage?.maxCount || 5) - (aiUsage?.count || 0)} left</span>
-              </div>
-              <Progress value={(((aiUsage?.maxCount || 5) - (aiUsage?.count || 0))/(aiUsage?.maxCount || 5))*100} className="my-3 h-3" />
-            </>
-            }
-            <div className="flex items-center gap-x-2">
-              <div className="h-1.5 w-1.5 bg-foreground rounded-full" />
-              <span className="text-xs text-foreground/70">Daily credits reset at midnight UTC</span>
+            </div>
+          </DropdownMenuLabel>
+
+          <DropdownMenuSeparator />
+          
+          <div className="px-3 py-2.5 bg-muted/50">
+            <div className="flex items-start gap-2">
+              <Shield className="h-3.5 w-3.5 text-muted-foreground mt-0.5 shrink-0" />
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Gitdocs AI never pushes directly to your main branch. All changes are made via pull requests that you review and merge.
+              </p>
             </div>
           </div>
-        </DropdownMenuLabel>
-
-        <DropdownMenuSeparator />
-        
-        <div className="px-3 py-2.5 bg-muted/50">
-          <div className="flex items-start gap-2">
-            <Shield className="h-3.5 w-3.5 text-muted-foreground mt-0.5 shrink-0" />
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              Gitdocs AI never pushes directly to your main branch. All changes are made via pull requests that you review and merge.
-            </p>
-          </div>
-        </div>
-      </DropdownMenuContent>
-    </DropdownMenu>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      
+      <Button disabled={userInstallations[0].permissions === "READ"} variant="default" size="sm" className={cn("h-7", showCommitButton ? "visible ms-2" : "hidden")}>
+        <GitPullRequestArrow /> 
+        Commit Changes
+      </Button>
+    </div>
     :
     <ConnectGithub isSidebarOpen={isSidebarOpen}>
       <button onClick={(e) => {e.stopPropagation()}} className="cursor-pointer w-full my-1.5 py-1 px-[4.5px] border border-neutral-700/50 group/button rounded-md bg-background hover:bg-neutral-300/50 dark:hover:bg-neutral-700/50 flex items-center text-foreground hover:text-foreground/90">
@@ -216,7 +248,7 @@ const GithubConnectionItem = ({ isSidebarOpen } : {isSidebarOpen : boolean}) => 
         <span className={cn("ms-2 whitespace-nowrap text-sm font-semibold", isSidebarOpen ? "" : "hidden")}>
           Connect Github
         </span>
-        <ChevronDown className="ms-auto me-2" size={18} />
+        <ChevronDown className={cn("ms-auto me-2", isSidebarOpen ? "" : "hidden")} size={18} />
       </button>
     </ConnectGithub>
   }
