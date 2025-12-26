@@ -62,22 +62,11 @@ async function handleInstallation(data: any) {
 
   if (action === 'created') {
     // Installation created - trigger sync
-    await inngest.send({
-      name: 'github/installation-created',
-      data: {
-        installationId: installation.id,
-        accountLogin: installation.account.login,
-        accountType: installation.account.type,
-        accountId: installation.account.id,
-        senderId: sender.id,
-        repositories: repositories || [],
-      },
-    });
+    console.log("managed")
   } else if (action === 'deleted') {
     // Installation deleted - cleanup
-    await prisma.installation.update({
-      where: { installationId: installation.id.toString() },
-      data: { suspended: true, suspendedAt: new Date() },
+    await prisma.installation.delete({
+      where: { installationId: installation.id.toString() }
     });
   } else if (action === 'suspend') {
     await prisma.installation.update({
@@ -93,18 +82,16 @@ async function handleInstallation(data: any) {
 }
 
 async function handleInstallationRepositories(data: any) {
-  const { action, installation, repositories_added, repositories_removed } = data;
+  const { action, installation, repositories_removed } = data;
 
   if (action === 'added') {
     await inngest.send({
-      name: 'github/repositories-added',
+      name: 'github/sync-repositories',
       data: {
         installationId: installation.id,
-        repositories: repositories_added,
       },
     });
   } else if (action === 'removed') {
-    // Remove repositories from database
     const repoIds = repositories_removed.map((r: any) => r.id.toString());
     await prisma.repository.deleteMany({
       where: { githubId: { in: repoIds } },

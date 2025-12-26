@@ -504,7 +504,7 @@ export function TypeformFeedback({ onComplete, setIsFeedbackFormOpen }: { onComp
         ))}
       </div>
 
-      <div className="flex-1 flex flex-col justify-center min-h-[600px]">
+      <div className="flex-1 flex flex-col justify-center pt-4">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentStep}

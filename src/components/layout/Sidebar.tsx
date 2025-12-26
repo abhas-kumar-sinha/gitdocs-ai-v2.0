@@ -63,8 +63,7 @@ const Sidebar = () => {
   const trpc = useTRPC();
   const { user, isLoaded } = useUser();
   const [ isCommandOpen, setIsCommandOpen ] = useState(false);
-  const { isSidebarOpen, setIsSidebarOpen } = useSidebarContext();
-  const [isFeedbackFormOpen, setIsFeedbackFormOpen] = useState(false);
+  const { isSidebarOpen, setIsSidebarOpen, isFeedbackFormOpen, setIsFeedbackFormOpen } = useSidebarContext();
   const feedbackRewarded = user?.publicMetadata?.feedbackRewarded === true;
 
   const feedbackSubmission = useMutation(
@@ -250,7 +249,7 @@ const Sidebar = () => {
         {isLoaded && <Dialog open={isFeedbackFormOpen} onOpenChange={setIsFeedbackFormOpen}>
           <DialogTrigger asChild>
             <div onClick={(e) => e.stopPropagation()}>
-              <BackgroundGradient className="max-w-sm overflow-hidden cursor-pointer rounded-lg p-4 bg-background flex items-center shrink-0 hover:bg-background/80 border border-transparent hover:border-foreground/20 transition-colors duration-200">
+              <BackgroundGradient className="max-w-sm max-h-22 overflow-hidden cursor-pointer rounded-lg p-4 bg-background flex items-center shrink-0 hover:bg-background/80 border border-transparent hover:border-foreground/20 transition-colors duration-200">
                 <div className="flex flex-col items-start shrink-0 gap-y-0.5 max-w-4/5">
                   <p className="text-foreground text-sm">
                     Feedback

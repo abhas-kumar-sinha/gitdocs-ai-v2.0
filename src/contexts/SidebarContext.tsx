@@ -5,6 +5,8 @@ import React, { createContext, useContext, useState } from "react";
 type SidebarContextType = {
   isSidebarOpen: boolean;
   setIsSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  isFeedbackFormOpen: boolean;
+  setIsFeedbackFormOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const SidebarContext = createContext<SidebarContextType | undefined>(
@@ -19,9 +21,10 @@ export const SidebarProvider: React.FC<SidebarProviderProps> = ({
   children,
 }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
+  const [isFeedbackFormOpen, setIsFeedbackFormOpen] = useState(false);
 
   return (
-    <SidebarContext.Provider value={{ isSidebarOpen, setIsSidebarOpen }}>
+    <SidebarContext.Provider value={{ isSidebarOpen, setIsSidebarOpen, isFeedbackFormOpen, setIsFeedbackFormOpen }}>
       {children}
     </SidebarContext.Provider>
   );

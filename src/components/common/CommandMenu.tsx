@@ -4,9 +4,12 @@ import { useEffect } from "react"
 import { useRouter } from "next/navigation";
 import { Blocks, Box, Gift, House, MessageSquareQuote, Star } from "lucide-react";
 import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
+import { useSidebarContext } from "@/contexts/SidebarContext";
 
 export function CommandMenu({ open, setOpen }: { open: boolean, setOpen: React.Dispatch<React.SetStateAction<boolean>> }) {
   
+  const { setIsFeedbackFormOpen } = useSidebarContext();
+
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
       if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
@@ -41,7 +44,7 @@ export function CommandMenu({ open, setOpen }: { open: boolean, setOpen: React.D
         </CommandGroup>
 
         <CommandGroup heading="Gitdocs AI">
-          <CommandItem> 
+          <CommandItem onSelect={() => setIsFeedbackFormOpen(true)}> 
             <MessageSquareQuote className="mr-2 h-4 w-4" /> Feedback
           </CommandItem>
           <CommandItem> 
