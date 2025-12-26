@@ -18,9 +18,10 @@ import { DropdownMenuSub } from "@radix-ui/react-dropdown-menu";
 import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import { Check, ChevronDown, ChevronLeft, CodeXml, Form, Globe, History, LaptopMinimal, LucideIcon, Palette, SquarePen, Star } from "lucide-react";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuPortal, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import ProjectNameChangeForm from "../forms/projectNameChange";
 import { toast } from "sonner";
+import { useTheme } from "next-themes";
 
 export interface ToolbarItem {
     id: string;
@@ -44,6 +45,7 @@ const ProjectView = ({projectId} : {projectId : string}) => {
   const [activeFragment, setActiveFragment] = useState<Fragment | null>(null);
   const [isOpenNameChangeForm, setIsOpenNameChangeForm] = useState<boolean>(false);
   const queryClient = useQueryClient();
+  const { theme, setTheme } = useTheme();
 
   const { data: project } = useSuspenseQuery(trpc.project.getById.queryOptions({
     id: projectId
@@ -152,18 +154,21 @@ const ProjectView = ({projectId} : {projectId : string}) => {
                     <LaptopMinimal />
                     Appearance
                   </DropdownMenuSubTrigger>
-                  <DropdownMenuSubContent sideOffset={4}>
-                    <DropdownMenuItem>
-                      Light
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      Dark
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      System 
-                      <Check className="ms-auto" />
-                    </DropdownMenuItem>
-                  </DropdownMenuSubContent>
+                  <DropdownMenuPortal>
+                    <DropdownMenuSubContent sideOffset={4}>
+                      <DropdownMenuRadioGroup value={theme} onValueChange={setTheme}>
+                        <DropdownMenuRadioItem value="light">
+                          <span>Light</span>
+                        </DropdownMenuRadioItem>
+                        <DropdownMenuRadioItem value="dark">
+                          <span>Dark</span>
+                        </DropdownMenuRadioItem>
+                        <DropdownMenuRadioItem value="system">
+                          <span>System</span>
+                        </DropdownMenuRadioItem>
+                      </DropdownMenuRadioGroup>
+                    </DropdownMenuSubContent>
+                  </DropdownMenuPortal>
                 </DropdownMenuSub>
               </DropdownMenuContent>
             </DropdownMenu>

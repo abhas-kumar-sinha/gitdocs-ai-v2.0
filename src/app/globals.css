@@ -209,6 +209,23 @@
 }
 
 /* =========================================
+   CSS Variables - Light Mode (Default)
+   ========================================= */
+:root {
+  --md-fg-primary: #1f2328;
+  --md-fg-secondary: #656d76;
+  --md-fg-accent: #0969da;
+  --md-bg-canvas: #ffffff;
+  --md-bg-canvas-subtle: #f6f8fa;
+  --md-border-default: #d0d7de;
+  --md-border-muted: #d8dee4;
+  --md-code-bg: rgba(175, 184, 193, 0.2);
+  --md-pre-bg: #f6f8fa;
+  --md-blockquote-border: #d0d7de;
+  --md-table-stripe: rgba(234, 238, 242, 0.5);
+}
+
+/* =========================================
    CSS Variables - Dark Mode
    ========================================= */
 @media (prefers-color-scheme: dark) {
@@ -225,6 +242,20 @@
     --md-blockquote-border: #30363d;
     --md-table-stripe: rgba(110, 118, 129, 0.05);
   }
+}
+
+[data-theme='light'] {
+  --md-fg-primary: #1f2328;
+  --md-fg-secondary: #656d76;
+  --md-fg-accent: #0969da;
+  --md-bg-canvas: #ffffff;
+  --md-bg-canvas-subtle: #f6f8fa;
+  --md-border-default: #d0d7de;
+  --md-border-muted: #d8dee4;
+  --md-code-bg: rgba(175, 184, 193, 0.2);
+  --md-pre-bg: #f6f8fa;
+  --md-blockquote-border: #d0d7de;
+  --md-table-stripe: rgba(234, 238, 242, 0.5);
 }
 
 [data-theme='dark'] {
