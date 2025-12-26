@@ -1,5 +1,6 @@
 import { serve } from "inngest/next";
 import { inngest } from "@/inngest/client";
+import { createReadmePr } from "@/inngest/functions/commitReadme";
 import { syncRepositories } from "@/inngest/functions/syncRepositories";
 import { chatUpgradeReadme } from "@/inngest/functions/chatUpgradeReadme";
 import { initialReadmeBuild } from "@/inngest/functions/initialReadmeBuild";
@@ -12,5 +13,6 @@ export const { GET, POST, PUT } = serve({
     syncRepositories,
     initialReadmeBuild,
     chatUpgradeReadme,
+    createReadmePr,
   ],
 });

@@ -70,7 +70,7 @@ const ProjectView = ({projectId} : {projectId : string}) => {
             <DropdownMenu>
               <DropdownMenuTrigger asChild className="flex items-center gap-x-2">
                 <Button variant="ghost" size="sm" className="hover:bg-transparent!" suppressHydrationWarning>
-                  <span className="uppercase px-1.5 py-1 rounded-md bg-accent text-xs">{project?.name.slice(0, 2)}</span>
+                  <span className="uppercase px-1.5 py-1 rounded-md bg-accent text-xs tracking-tighter">{project?.name.slice(0, 2)}</span>
                   <span>{project?.name}</span>
                   <ChevronDown />
                 </Button>

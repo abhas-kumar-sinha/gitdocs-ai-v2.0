@@ -1,13 +1,13 @@
 import { prisma } from '@/lib/db';
 import { inngest } from '../client';
 import type { Octokit } from '@octokit/rest';
+import { publishProgress } from '@/lib/redis';
 import { lastAssistantTextMessage } from '../utils';
 import { Repository } from '@/generated/prisma/client';
 import { createAgent, openai } from '@inngest/agent-kit';
 import { readmeUpgradePrompt } from '@/lib/prompts/PROMPTS';
 import { getInstallationOctokit } from '@/lib/github/appAuth';
 import { type ModelConfig, type FileContext, type ConversationMessage } from '@/types/readmeAi';
-import { publishProgress } from '@/lib/redis';
 
 const getTodayDate = () => {
   const today = new Date();

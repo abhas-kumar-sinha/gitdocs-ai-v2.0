@@ -1,21 +1,21 @@
 "use client"
 
-import Image from "next/image"
-import { cn } from "@/lib/utils"
-import { Button } from "../ui/button"
-import { useTRPC } from "@/trpc/client"
-import { FaGithub } from "react-icons/fa"
-import { useEffect, useMemo } from "react"
-import { useRouter } from "next/navigation"
-import ConnectGithub from "./ConnectGithub"
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { Progress } from "@/components/ui/progress"
-import { Repository } from "@/generated/prisma/client"
-import { useRepositoryContext } from "@/contexts/RepositoryContext"
-import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip"
-import { ChevronDown, GitPullRequestArrow, Info, LucideIcon, Settings, Shield, UserRoundPlus, Zap } from "lucide-react"
-import {DropdownMenu, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger} from "@/components/ui/dropdown-menu"
-import { toast } from "sonner"
+import Image from "next/image";
+import { toast } from "sonner";
+import { cn } from "@/lib/utils";
+import { Button } from "../ui/button";
+import { useTRPC } from "@/trpc/client";
+import { FaGithub } from "react-icons/fa";
+import { useEffect, useMemo } from "react";
+import { useRouter } from "next/navigation";
+import ConnectGithub from "./ConnectGithub";
+import { Progress } from "@/components/ui/progress";
+import { Repository } from "@/generated/prisma/client";
+import { useRepositoryContext } from "@/contexts/RepositoryContext";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { ChevronDown, CircleFadingArrowUp, GitPullRequestArrow, Info, LucideIcon, Settings, Shield, Zap } from "lucide-react";
+import {DropdownMenu, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
 
 interface SidebarItemProp {
     Item: {
@@ -79,15 +79,27 @@ const GithubConnectionItem = ({ isSidebarOpen, showCommitButton } : {isSidebarOp
 
   const updateInstallation = useMutation(trpc.installation.updateInstallationAccess.mutationOptions({
     onError: () => {
-      toast.error("Access Update Failed!")
+      toast.error("App Access Update Failed!")
     },
     onSuccess: () => {
-      toast.success("Access Updated Successfully");
+      toast.success("App Access Updated Successfully");
       queryClient.invalidateQueries({
         queryKey: [['installation', 'list']]
       });
     }
   }))
+
+  const syncRepositories = useMutation(
+    trpc.installation.syncRepositories.mutationOptions({
+      onSuccess: () => {
+        toast.success("Repository sync in progress");
+      },
+      onError: () => {
+        toast.error("Failed to sync repository");
+      },
+    })
+  );
+
 
   useEffect(() => {
     setIsLoading(isLoading);
@@ -170,9 +182,9 @@ const GithubConnectionItem = ({ isSidebarOpen, showCommitButton } : {isSidebarOp
               <Settings className="h-3.5! w-3.5!" />
               Update Access
             </Button>
-            <Button disabled variant="outline" size="sm" className="w-24 border-none text-xs h-7">
-              <UserRoundPlus className="h-3.5! w-3.5!" />
-              Invite
+            <Button onClick={() => syncRepositories.mutate({installationId: userInstallations[0].id})} variant="outline" size="sm" className="w-24 border-none text-xs h-7">
+              <CircleFadingArrowUp className="h-3.5! w-3.5!" />
+              Sync
             </Button>
           </div>
           
