@@ -203,6 +203,7 @@ const ContextPanel = ({
   setContextFiles: React.Dispatch<React.SetStateAction<string[]>>;
   allFiles: string[];
 }) => {
+
   const fileTree = useMemo(() => buildFileTree(allFiles), [allFiles]);
   const selectedSet = useMemo(() => new Set(contextFiles), [contextFiles]);
 
@@ -244,7 +245,7 @@ const ContextPanel = ({
           sampleAverage
         />
         <div className="flex items-center gap-x-2 text-foreground/70 -my-8">
-          <ShimmerText text="Loading Project Preview..." className="text-lg -px-5" />
+          <ShimmerText text="Loading Project Preview..." className="text-xl -px-5 mt-8" />
         </div>
       </div>
     );

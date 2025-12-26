@@ -52,11 +52,25 @@ type ConversationMessage = {
   content: string;
 };
 
+type ProgressEvent = {
+  stage: string;
+  progress: number;
+  message: string;
+  timestamp: number;
+  completed?: boolean;
+  error?: boolean;
+  repoName?: string;
+  frameworks?: string[];
+  fileCount?: number;
+  [key: string]: unknown;
+}
+
 export { 
     type ModelConfig, 
     type RepositorySnapshot, 
     type GitHubTreeItem, 
     type FileContext, 
     type ContextDiscoveryResult,
-    type ConversationMessage 
+    type ConversationMessage,
+    type ProgressEvent 
 }

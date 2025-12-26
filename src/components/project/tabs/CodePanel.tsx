@@ -90,7 +90,7 @@ const RawPreview = ({ content }: { content: string }) => {
           sampleAverage
         />
         <div className="flex items-center gap-x-2 text-foreground/70 -my-8">
-          <ShimmerText text="Loading Project Preview..." className="text-lg -px-5" />
+          <ShimmerText text="Loading Project Preview..." className="text-xl -px-5 mt-8" />
         </div>
       </div>
     );

@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Providers } from "./providers";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "@/components/ui/sonner";
+import { AiProvider } from "@/contexts/AiContext";
 import { TRPCReactProvider } from "@/trpc/client";
 import { Geist, Geist_Mono } from "next/font/google";
 import { SidebarProvider } from "@/contexts/SidebarContext";
@@ -38,8 +39,10 @@ export default function RootLayout({
               <ScrollPositionProvider>
                 <RepositoryProvider>
                   <SidebarProvider>
-                    <Toaster />
-                    {children}
+                    <AiProvider>
+                      <Toaster />
+                      {children}
+                    </AiProvider>
                   </SidebarProvider>
                 </RepositoryProvider>
               </ScrollPositionProvider>

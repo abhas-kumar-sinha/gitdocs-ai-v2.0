@@ -7,6 +7,7 @@ import { createAgent, openai } from '@inngest/agent-kit';
 import { readmeUpgradePrompt } from '@/lib/prompts/PROMPTS';
 import { getInstallationOctokit } from '@/lib/github/appAuth';
 import { type ModelConfig, type FileContext, type ConversationMessage } from '@/types/readmeAi';
+import { publishProgress } from '@/lib/redis';
 
 const getTodayDate = () => {
   const today = new Date();
@@ -184,6 +185,17 @@ export const chatUpgradeReadme = inngest.createFunction(
   async ({ event, step }) => {
     const { projectId, messageId, userId } = event.data;
 
+    const emitProgress = async (stage: string, progress: number, message: string, data?: object) => {
+      await publishProgress(projectId, {
+        stage,
+        progress,
+        message,
+        timestamp: Date.now(),
+        ...data,
+      });
+    };
+
+    await emitProgress('CHECKING_ACCESS', 10, 'Checking usage limits...');
     const access = await step.run('check-access', async () => {
       const today = getTodayDate();
       
@@ -217,6 +229,7 @@ export const chatUpgradeReadme = inngest.createFunction(
     })
 
     if (!access) {
+      await emitProgress('ACCESS_DENIED', 100, 'Usage Limit Exceeded...');
       // Save assistant message
       const message = await prisma.message.create({
         data: {
@@ -233,6 +246,7 @@ export const chatUpgradeReadme = inngest.createFunction(
       }
     }
 
+    await emitProgress('FETCHING_PROJECT', 20, 'Loading project details...');
     // ========== STEP 1: Fetch Project with Full Context ==========
     const project = await step.run('fetch-project-context', async () => {
       const proj = await prisma.project.findUnique({
@@ -274,6 +288,9 @@ export const chatUpgradeReadme = inngest.createFunction(
       return msg.content;
     });
 
+    await emitProgress('ANALYZING_REPO', 35, 'Analyzing repository structure...', {
+      repoName: project?.repository?.fullName,
+    });
     // ========== STEP 4: Analyze Request Complexity ==========
     const complexity = analyzeRequestComplexity(userMessage);
     const selectedModel = selectChatModel(complexity);
@@ -327,6 +344,7 @@ export const chatUpgradeReadme = inngest.createFunction(
       project.template || 'standard'
     );
 
+    await emitProgress('GENERATING_README', 80, 'AI is writing your README...');
     // ========== STEP 9: Run Upgrade Agent ==========
     const agent = createAgent({
       name: 'readme-upgrade-assistant',
@@ -343,6 +361,7 @@ export const chatUpgradeReadme = inngest.createFunction(
 
     const agentResult = await agent.run(userMessage);
 
+    await emitProgress('SAVING_RESULTS', 95, 'Finalizing...');
     // ========== STEP 10: Parse and Save Response ==========
     const result = await step.run('parse-and-save-upgrade', async () => {
       const fullOutput = lastAssistantTextMessage(agentResult);
@@ -420,6 +439,11 @@ export const chatUpgradeReadme = inngest.createFunction(
         additionalFilesUsed: additionalContext.length,
         usage
       };
+    });
+
+    await emitProgress('COMPLETED', 100, 'README generated! 🎉', {
+      messageId: result.messageId,
+      completed: true,
     });
 
     return {

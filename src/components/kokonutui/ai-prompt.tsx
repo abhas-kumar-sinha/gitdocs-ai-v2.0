@@ -18,19 +18,20 @@ import TemplateList, { TemplateId } from "../project/context-selection/TemplateL
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import ShimmerText from "./shimmer-text";
 import ConnectGithub from "../common/ConnectGithub";
+import { useAiContext } from "@/contexts/AiContext";
 
 export default function AI_Prompt({ isActive, projectId, repository } : { isActive: boolean, projectId?: string, repository?: Repository }) {
   const trpc = useTRPC();
   const router = useRouter();
   const queryClient = useQueryClient();
   const [value, setValue] = useState("");
-  const [isGenerating, setIsGenerating] = useState(false);
+  const { isGenerating, setIsGenerating } = useAiContext();
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateId>("ai-gen");
   const { data: userInstallations, isLoading } = useQuery(trpc.installation.list.queryOptions());
   const [selectedRepository, setSelectedRepository] = useState<Repository | null>(repository ? repository : null);
 
   const { textareaRef, adjustHeight } = useAutoResizeTextarea({
-    minHeight: 62,
+    minHeight: 54,
     maxHeight: 250,
   });
 
@@ -174,7 +175,7 @@ export default function AI_Prompt({ isActive, projectId, repository } : { isActi
         <Textarea
           className={cn(
             "w-full text-base! resize-none rounded-xl rounded-b-none border-none bg-muted! pt-0! -mt-1.5 placeholder-shown:pt-1! placeholder:text-black/70 focus-visible:ring-0 focus-visible:ring-offset-0 dark:text-white dark:placeholder:text-white/60",
-            "min-h-[62px]"
+            "min-h-[54px]"
           )}
           id="ai-input-15"
           onChange={(e) => {

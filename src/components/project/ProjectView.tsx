@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "../ui/button"
 import { useTRPC } from "@/trpc/client"
 import CodePanel from "./tabs/CodePanel";
@@ -49,6 +49,10 @@ const ProjectView = ({projectId} : {projectId : string}) => {
   
   const [contextFiles, setContextFiles] = useState<string[]>(project.contextFiles);
 
+  useEffect(() => {
+    setContextFiles(project.contextFiles)
+  }, [project])
+
   const isSaveContextChange = useMemo(() => {
     const current = [...contextFiles].sort();
     const original = [...project.contextFiles].sort();
@@ -83,7 +87,7 @@ const ProjectView = ({projectId} : {projectId : string}) => {
                 <DropdownMenuLabel>
                   <div className="flex flex-col bg-background/70 rounded-md p-3 -mx-1.5 -mt-2">
                     {isAiUsageLoading ? 
-                      <>
+                    <>
                       <div className="flex items-center justify-between">
                         <span>Credits</span>
                         <span className="text-foreground/70 h-4 w-16 rounded-full animate-pulse bg-muted" />

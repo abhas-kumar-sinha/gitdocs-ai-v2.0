@@ -16,7 +16,7 @@ async function ProjectsGrid() {
 
   return (
     <div className="grid md:px-20 lg:px-0 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-        <ProjectList projects={projects} />
+        <ProjectList projects={projects.slice(0, 10)} />
     </div>
   );
 }

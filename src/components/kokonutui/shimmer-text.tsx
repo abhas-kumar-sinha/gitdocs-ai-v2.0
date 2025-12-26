@@ -13,7 +13,7 @@ export default function ShimmerText({
   className,
 }: TextProps) {
   return (
-    <div className="flex items-center justify-center p-8 px-2">
+    <div className="flex items-center px-2">
       <motion.div
         animate={{ opacity: 1, y: 0 }}
         className="relative overflow-hidden py-2"

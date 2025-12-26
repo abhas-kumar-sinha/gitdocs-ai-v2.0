@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/db';
 import { inngest } from '../client';
 import type { Octokit } from '@octokit/rest';
+import { publishProgress } from '@/lib/redis';
 import { lastAssistantTextMessage } from '../utils';
 import { Repository } from '@/generated/prisma/client';
 import { createAgent, openai } from '@inngest/agent-kit';
@@ -232,6 +233,17 @@ export const initialReadmeBuild = inngest.createFunction(
   async ({ event, step }) => {
     const { projectId, userId } = event.data;
 
+    const emitProgress = async (stage: string, progress: number, message: string, data?: object) => {
+      await publishProgress(projectId, {
+        stage,
+        progress,
+        message,
+        timestamp: Date.now(),
+        ...data,
+      });
+    };
+
+    await emitProgress('CHECKING_ACCESS', 10, 'Checking usage limits...');
     const access = await step.run('check-access', async () => {
       const today = getTodayDate();
       
@@ -265,6 +277,7 @@ export const initialReadmeBuild = inngest.createFunction(
     })
 
     if (!access) {
+      await emitProgress('ACCESS_DENIED', 100, 'Usage Limit Exceeded...');
       // Save assistant message
       const message = await prisma.message.create({
         data: {
@@ -281,6 +294,7 @@ export const initialReadmeBuild = inngest.createFunction(
       }
     }
 
+    await emitProgress('FETCHING_PROJECT', 20, 'Loading project details...');
     // ========== STEP 1: Fetch Project ==========
     const project = await step.run('fetch-project', async () => {
       const proj = await prisma.project.findUnique({
@@ -309,11 +323,18 @@ export const initialReadmeBuild = inngest.createFunction(
         parseInt(project.repository!.installation.installationId)
       );
 
+    await emitProgress('ANALYZING_REPO', 35, 'Analyzing repository structure...', {
+      repoName: project?.repository?.fullName,
+    });
     // ========== STEP 3: Analyze Repository ==========
     const snapshot = await step.run('analyze-repository', async () => {
       return await analyzeRepository(project.repository! as unknown as Repository, octokit as unknown as Octokit);
     });
 
+    await emitProgress('DISCOVERING_CONTEXT', 50, 'AI is analyzing your codebase...', {
+      totalFiles: snapshot.totalFiles,
+      frameworks: snapshot.frameworks,
+    });
     // ========== STEP 4: Discover Context Files with Agent ==========
     const contextDiscovery = await discoverContextFiles(
         snapshot,
@@ -340,6 +361,7 @@ export const initialReadmeBuild = inngest.createFunction(
       return files;
     });
 
+    await emitProgress('GENERATING_README', 80, 'AI is writing your README...');
     // ========== STEP 6: Build README with Agent ==========
     const selectedModel = selectReadmeModel(project.template || 'standard');
     
@@ -361,6 +383,7 @@ export const initialReadmeBuild = inngest.createFunction(
     const userMessage = project.messages[0]?.content || 'Generate a comprehensive README for this project.';
     const agentResult = await agent.run(userMessage);
 
+    await emitProgress('SAVING_RESULTS', 95, 'Finalizing...');
     // ========== STEP 7: Parse and Save ==========
     const result = await step.run('parse-and-save', async () => {
       const fullOutput = lastAssistantTextMessage(agentResult);
@@ -420,6 +443,11 @@ export const initialReadmeBuild = inngest.createFunction(
         contextFilesUsed: contextFiles.length,
         usage
       };
+    });
+
+    await emitProgress('COMPLETED', 100, 'README generated! 🎉', {
+      messageId: result.messageId,
+      completed: true,
     });
 
     return {

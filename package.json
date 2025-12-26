@@ -56,6 +56,7 @@
     "embla-carousel-react": "^8.6.0",
     "inngest": "^3.48.0",
     "input-otp": "^1.4.2",
+    "ioredis": "^5.8.2",
     "lucide-react": "^0.561.0",
     "motion": "^12.23.26",
     "next": "16.0.10",
