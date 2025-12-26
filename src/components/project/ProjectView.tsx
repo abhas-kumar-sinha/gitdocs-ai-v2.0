@@ -15,10 +15,12 @@ import MessageContainer from "./MessageContainer";
 import { Fragment } from "@/generated/prisma/client";
 import { GithubConnectionItem } from "../common/SidebarItem";
 import { DropdownMenuSub } from "@radix-ui/react-dropdown-menu";
-import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import { Check, ChevronDown, ChevronLeft, CodeXml, Form, Globe, History, LaptopMinimal, LucideIcon, Palette, SquarePen, Star } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import ProjectNameChangeForm from "../forms/projectNameChange";
+import { toast } from "sonner";
 
 export interface ToolbarItem {
     id: string;
@@ -40,14 +42,29 @@ const ProjectView = ({projectId} : {projectId : string}) => {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<string | null>("preview");
   const [activeFragment, setActiveFragment] = useState<Fragment | null>(null);
-  
+  const [isOpenNameChangeForm, setIsOpenNameChangeForm] = useState<boolean>(false);
+  const queryClient = useQueryClient();
+
   const { data: project } = useSuspenseQuery(trpc.project.getById.queryOptions({
     id: projectId
+  }));
+
+  const updateProjectStar = useMutation(trpc.project.updateStarred.mutationOptions({
+    onError: () => {
+      toast.error("Failed to update project");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [['project', 'getById'], { input: { id: projectId } }]
+      });
+      toast.success("Project updated successfully");
+    }
   }));
 
   const { data: aiUsage, isLoading: isAiUsageLoading } = useQuery(trpc.aiUsage.getUsage.queryOptions());
   
   const [contextFiles, setContextFiles] = useState<string[]>(project.contextFiles);
+  const [projectName, setProjectName] = useState<string>(project.name);
 
   useEffect(() => {
     setContextFiles(project.contextFiles)
@@ -112,13 +129,22 @@ const ProjectView = ({projectId} : {projectId : string}) => {
                 <DropdownMenuLabel className="text-xs text-foreground/70 mb-1">
                   Project
                 </DropdownMenuLabel>
-                <DropdownMenuItem>
-                  <SquarePen />
-                  Rename Project
-                </DropdownMenuItem>
-                <DropdownMenuItem>
+                <ProjectNameChangeForm isOpenNameChangeForm={isOpenNameChangeForm} setIsOpenNameChangeForm={setIsOpenNameChangeForm} value={projectName} setValue={setProjectName} projectId={projectId} >
+                  <DropdownMenuItem onClick={(e) => {e.preventDefault(); setIsOpenNameChangeForm(true)}}>
+                    <SquarePen />
+                    Rename Project
+                  </DropdownMenuItem>
+                </ProjectNameChangeForm>
+                <DropdownMenuItem onClick={() => updateProjectStar.mutate({ id: project.id, isStarred: !project.isStarred })}>
+                  {project.isStarred ? 
+                  <>
+                  <Star fill="#ededed" stroke="none" />
+                  Unstar Project
+                  </> :
+                  <>
                   <Star />
                   Star Project
+                  </>}
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuSub>

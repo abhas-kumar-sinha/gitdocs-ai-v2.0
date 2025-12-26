@@ -113,5 +113,24 @@ export const projectRouter = createTRPCRouter({
       });
       
       return project;
+    }),
+
+  updateName: protectedProcedure
+    .input(z.object({ id: z.string(), name: z.string().min(1).max(100) }))
+    .mutation(async ({ input }) => {
+      const currentProject = await prisma.project.findUnique({
+        where: { id: input.id },
+        select: { updatedAt: true }
+      });
+
+      const project = await prisma.project.update({
+        where: { id: input.id },
+        data: { 
+          name: input.name,
+          updatedAt: currentProject?.updatedAt
+        }
+      });
+      
+      return project;
     })
 });
