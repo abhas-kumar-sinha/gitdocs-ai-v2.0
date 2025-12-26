@@ -31,7 +31,7 @@ export default function AI_Prompt({ isActive, projectId, repository } : { isActi
   const [selectedRepository, setSelectedRepository] = useState<Repository | null>(repository ? repository : null);
 
   const { textareaRef, adjustHeight } = useAutoResizeTextarea({
-    minHeight: 54,
+    minHeight: isActive ? 54 : 70,
     maxHeight: 250,
   });
 
@@ -170,12 +170,12 @@ export default function AI_Prompt({ isActive, projectId, repository } : { isActi
   };
 
   return (
-    <div className="relative flex flex-col bg-muted rounded-xl pt-4">
+    <div className="relative flex flex-col bg-secondary rounded-xl pt-4">
       <div className="overflow-y-auto pe-3" style={{ maxHeight: "250px" }}>
         <Textarea
           className={cn(
-            "w-full text-base! resize-none rounded-xl rounded-b-none border-none bg-muted! pt-0! -mt-1.5 placeholder-shown:pt-1! placeholder:text-black/70 focus-visible:ring-0 focus-visible:ring-offset-0 dark:text-white dark:placeholder:text-white/60",
-            "min-h-[54px]"
+            "w-full text-base! resize-none rounded-xl bg-transparent! rounded-b-none border-none pt-0! -mt-1.5 placeholder-shown:pt-1! placeholder:text-black/70 focus-visible:ring-0 focus-visible:ring-offset-0 dark:text-white dark:placeholder:text-white/60",
+            isActive ? "min-h-[54px]" : "min-h-[70px]"
           )}
           id="ai-input-15"
           onChange={(e) => {
@@ -183,13 +183,13 @@ export default function AI_Prompt({ isActive, projectId, repository } : { isActi
             adjustHeight();
           }}
           onKeyDown={handleKeyDown}
-          placeholder={"What can I do for you?"}
+          placeholder={"Ask Gitdocs to Generate a new Readme..."}
           ref={textareaRef}
           value={value}
         />
       </div>
 
-      <div className="flex h-14 items-center rounded-b-xl bg-muted!">
+      <div className="flex h-14 items-center rounded-b-xl">
         <div className="absolute right-3 bottom-3 left-3 flex w-[calc(100%-24px)] items-center justify-between">
           <div className="flex items-center gap-2">
             <SignedIn>

@@ -38,19 +38,7 @@ const LandingPage = () => {
                 <div className="mx-auto relative w-9/10 max-w-2xl mt-3">
                     
                     <div className="py-4">
-                        <div className="rounded-2xl bg-black/5 p-1.5 pt-4 dark:bg-white/5">
-                        <div className="mx-2 mb-2.5 flex items-center gap-2">
-                            <div className="flex flex-1 items-center gap-2">
-                            <Anthropic className="h-3.5 w-3.5 text-black dark:hidden" />
-                            <AnthropicDark className="hidden h-3.5 w-3.5 dark:block" />
-                            <h3 className="text-black text-xs tracking-tighter dark:text-white/90">
-                                is free this weekend!
-                            </h3>
-                            </div>
-                            <p className="text-black text-xs tracking-tighter dark:text-white/90">
-                            Ship Now!
-                            </p>
-                        </div>
+                        <div className="rounded-2xl bg-black/5 p-1.5 dark:bg-white/5">
                         <AI_Prompt isActive={false} />
                         </div>
                     </div>
