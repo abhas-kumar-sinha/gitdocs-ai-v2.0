@@ -159,7 +159,7 @@ const GithubConnectionItem = ({ isSidebarOpen, showCommitButton } : {isSidebarOp
         <DropdownMenuContent 
           sideOffset={4} 
           onClick={(e) => e.stopPropagation()} 
-          className={cn("w-64", isSidebarOpen ? "ms-1" : "ms-[10px]")}
+          className={cn("w-64 bg-secondary", isSidebarOpen ? "ms-1" : "ms-[10px]")}
         >
           <DropdownMenuLabel className="text-xs font-medium text-muted-foreground px-2 py-1.5">
             <div className="flex items-center gap-x-2">

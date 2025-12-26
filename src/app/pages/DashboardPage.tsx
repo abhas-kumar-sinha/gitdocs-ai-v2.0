@@ -68,7 +68,7 @@ const DashboardPage = () => {
           </div>
         </div>
 
-        <div className="min-h-1/2 bg-background/60 p-6 rounded-2xl w-[94%] mx-auto -mt-24 mb-10 max-w-7xl">
+        <div className="min-h-1/2 bg-sidebar p-6 rounded-2xl w-[94%] mx-auto -mt-14 mb-10 max-w-7xl">
           <Tabs defaultValue="projects" className="w-fulll">
             <TabsList className="h-9 bg-transparent">
               <TabsTrigger value="projects" className="w-30">

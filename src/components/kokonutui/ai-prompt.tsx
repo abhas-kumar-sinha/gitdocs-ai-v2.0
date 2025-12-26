@@ -31,7 +31,7 @@ export default function AI_Prompt({ isActive, projectId, repository } : { isActi
   const [selectedRepository, setSelectedRepository] = useState<Repository | null>(repository ? repository : null);
 
   const { textareaRef, adjustHeight } = useAutoResizeTextarea({
-    minHeight: isActive ? 54 : 70,
+    minHeight: isActive ? 50 : 70,
     maxHeight: 250,
   });
 
@@ -171,11 +171,11 @@ export default function AI_Prompt({ isActive, projectId, repository } : { isActi
 
   return (
     <div className="relative flex flex-col bg-secondary rounded-xl pt-4">
-      <div className="overflow-y-auto pe-3" style={{ maxHeight: "250px" }}>
+      <div className="overflow-y-auto px-2" style={{ maxHeight: "250px" }}>
         <Textarea
           className={cn(
             "w-full text-base! resize-none rounded-xl bg-transparent! rounded-b-none border-none pt-0! -mt-1.5 placeholder-shown:pt-1! placeholder:text-black/70 focus-visible:ring-0 focus-visible:ring-offset-0 dark:text-white dark:placeholder:text-white/60",
-            isActive ? "min-h-[54px]" : "min-h-[70px]"
+            isActive ? "min-h-[50px]" : "min-h-[70px]"
           )}
           id="ai-input-15"
           onChange={(e) => {
