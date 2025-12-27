@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { caller } from "@/trpc/server";
 import Sidebar from "@/components/layout/Sidebar";
-import { ChevronRight, Heart } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import AI_Prompt from "@/components/kokonutui/ai-prompt";
 import ProjectList from "@/components/project/ProjectList";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -68,12 +68,12 @@ const DashboardPage = () => {
             </span>
 
             <h3 className="text-center text-xl md:text-2xl lg:text-3xl font-bold mt-8 md:mt-6 max-w-9/10 mx-auto">
-              What should we document today?
+              What should we <span className="font-handwriting text-2xl md:text-3xl lg:text-4xl">document</span> today?
             </h3>
 
             <div className="mx-auto relative w-9/10 max-w-2xl">
               <div className="py-4">
-                <div className="rounded-2xl bg-black/5 p-1.5 dark:bg-white/5">
+                <div className="rounded-3xl bg-black/5 p-1.5 dark:bg-white/5">
                   <AI_Prompt isActive={true} />
                 </div>
               </div>

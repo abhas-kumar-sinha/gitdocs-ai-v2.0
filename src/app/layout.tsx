@@ -5,14 +5,19 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "@/components/ui/sonner";
 import { AiProvider } from "@/contexts/AiContext";
 import { TRPCReactProvider } from "@/trpc/client";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist_Mono, Inter, Caveat } from "next/font/google";
 import { SidebarProvider } from "@/contexts/SidebarContext";
 import { RepositoryProvider } from "@/contexts/RepositoryContext";
 import { ScrollPositionProvider } from "@/contexts/ScrollPositionContext";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
   subsets: ["latin"],
+  variable: "--font-sans",
+});
+
+const caveat = Caveat({
+  subsets: ["latin"],
+  variable: "--font-caveat"
 });
 
 const geistMono = Geist_Mono({
@@ -35,7 +40,7 @@ export default function RootLayout({
       <TRPCReactProvider>
         <html lang="en" suppressHydrationWarning>
           <body
-            className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+            className={`${inter.variable} ${caveat.variable} ${geistMono.variable} antialiased`}
           >
             <Providers>
               <ScrollPositionProvider>

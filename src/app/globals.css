@@ -3,6 +3,19 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@theme {
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-handwriting: "Caveat", sans-serif;
+}
+
+@layer base {
+  body {
+    @apply font-sans antialiased;
+  }
+}
+
+
 :root {
   --background: rgb(250, 249, 245);
   --foreground: rgb(61, 57, 41);

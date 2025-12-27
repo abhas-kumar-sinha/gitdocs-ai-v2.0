@@ -30,14 +30,14 @@ const LandingPage = () => {
           </span>
 
           <h2 className="text-center text-3xl md:text-4xl lg:text-5xl font-semibold mt-2 max-w-9/10 mx-auto text-primary-foreground">
-            Make your repository explain itself
+            Make <span className="font-handwriting text-4xl md:text-5xl lg:text-6xl">repository</span> explain itself
           </h2>
-          <p className="text-foreground font-semibold text-xs md:text-base lg:text-lg text-center max-w-2/3 mx-auto">
+          <p className="text-foreground font-semibold text-xs -mt-4 md:text-base lg:text-lg text-center max-w-2/3 mx-auto">
             Create structured README files chatting with AI
           </p>
-          <div className="mx-auto relative w-9/10 max-w-2xl mt-3">
+          <div className="mx-auto relative w-9/10 max-w-3xl">
             <div className="py-4">
-              <div className="rounded-2xl bg-black/5 p-1.5 dark:bg-white/5">
+              <div className="rounded-3xl bg-black/5 p-1.5 dark:bg-white/5">
                 <AI_Prompt isActive={false} />
               </div>
             </div>

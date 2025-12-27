@@ -51,7 +51,7 @@ export default function AI_Prompt({
     useState<Repository | null>(repository ? repository : null);
 
   const { textareaRef, adjustHeight } = useAutoResizeTextarea({
-    minHeight: isActive ? 50 : 70,
+    minHeight: isActive ? 50 : 80,
     maxHeight: 250,
   });
 
@@ -210,12 +210,12 @@ export default function AI_Prompt({
   };
 
   return (
-    <div className="relative flex flex-col bg-sidebar rounded-xl pt-4">
+    <div className="relative flex flex-col bg-sidebar rounded-3xl pt-4">
       <div className="overflow-y-auto px-2" style={{ maxHeight: "250px" }}>
         <Textarea
           className={cn(
             "w-full text-base! resize-none rounded-xl bg-transparent! rounded-b-none border-none pt-0! -mt-1.5 placeholder-shown:pt-1! placeholder:text-black/70 focus-visible:ring-0 focus-visible:ring-offset-0 dark:text-white dark:placeholder:text-white/60",
-            isActive ? "min-h-[50px]" : "min-h-[70px]",
+            isActive ? "min-h-[50px]" : "min-h-[80px]",
           )}
           id="ai-input-15"
           onChange={(e) => {
@@ -252,7 +252,7 @@ export default function AI_Prompt({
                       <Button
                         disabled={!!projectId}
                         variant="outline"
-                        className="flex h-8 items-center gap-1 rounded-md pr-2 pl-1 text-xs hover:bg-black/10 focus-visible:ring-1 focus-visible:ring-blue-500 focus-visible:ring-offset-0 dark:text-white dark:hover:bg-white/10"
+                        className="flex h-8 items-center gap-1 rounded-full ps-4! pe-3! ms-1 text-xs hover:bg-black/10 focus-visible:ring-1 focus-visible:ring-blue-500 focus-visible:ring-offset-0 dark:text-white dark:hover:bg-white/10"
                       >
                         <Book className="h-3.5! w-3.5!" />
                         {selectedRepository &&
@@ -291,7 +291,7 @@ export default function AI_Prompt({
                 <Button
                   disabled={!!projectId}
                   variant="outline"
-                  className="flex h-8 items-center gap-1 rounded-md pr-2 pl-1 text-xs hover:bg-black/10 focus-visible:ring-1 focus-visible:ring-blue-500 focus-visible:ring-offset-0 dark:text-white dark:hover:bg-white/10"
+                  className="flex h-8 items-center gap-1 ps-4! pe-3! ms-1 text-xs hover:bg-black/10 focus-visible:ring-1 focus-visible:ring-blue-500 focus-visible:ring-offset-0 dark:text-white dark:hover:bg-white/10"
                 >
                   <Loader2 className="animate-spin" />
                   <ShimmerText
@@ -306,7 +306,7 @@ export default function AI_Prompt({
               <SignUpButton mode="modal">
                 <Button
                   variant="outline"
-                  className="flex h-8 items-center gap-1 rounded-md pr-2 pl-1 text-xs hover:bg-black/10 focus-visible:ring-1 focus-visible:ring-blue-500 focus-visible:ring-offset-0 dark:text-white dark:hover:bg-white/10"
+                  className="flex h-8 items-center gap-1 rounded-full ps-4! pe-3! ms-1 text-xs hover:bg-black/10 focus-visible:ring-1 focus-visible:ring-blue-500 focus-visible:ring-offset-0 dark:text-white dark:hover:bg-white/10"
                 >
                   <Book className="h-3.5! w-3.5!" />
                   <span className="mx-1">Select Repository</span>
@@ -319,13 +319,13 @@ export default function AI_Prompt({
             aria-label="Send message"
             onClick={projectId ? handleCreateMessage : handleCreateProject}
             className={cn(
-              "rounded-lg bg-black/5 p-2 dark:bg-white/5",
+              "rounded-full bg-black/5 p-2 dark:bg-white/5",
               "hover:bg-black/10 focus-visible:ring-1 focus-visible:ring-blue-500 focus-visible:ring-offset-0 dark:hover:bg-white/10",
               !value.trim()
                 ? "opacity-30 cursor-not-allowed"
                 : "cursor-pointer",
             )}
-            disabled={!value.trim() || isGenerating || isAiUsageLoading}
+            disabled={!value.trim() || isGenerating || isAiUsageLoading || !isActive}
             type="button"
           >
             {isGenerating ? (
