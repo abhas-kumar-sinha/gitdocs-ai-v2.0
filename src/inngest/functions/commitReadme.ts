@@ -39,7 +39,9 @@ export const createReadmePr = inngest.createFunction(
       const project = await prisma.project.findUnique({
         where: { id: projectId },
         include: {
-          repository: true
+          repository: {
+            include: { installation: true },
+          }
         }
       });
 
@@ -63,7 +65,7 @@ export const createReadmePr = inngest.createFunction(
     }
 
     // Step 2: Get GitHub installation client
-    const octokit = await getInstallationOctokit(Number(repository.installationId));
+    const octokit = await getInstallationOctokit(parseInt(repository.installation.installationId));
 
     // Step 3: Get default branch reference
     const defaultBranch = await step.run('get-default-branch', async (): Promise<string> => {

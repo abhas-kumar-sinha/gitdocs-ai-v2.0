@@ -7,8 +7,8 @@ const FeedbackInputSchema = z.object({
   intent: z.array(z.string()).min(1),
   outcome: z.enum(["Yes, fully", "Partially", "Not really"]),
   outputQuality: z.number().min(1).max(10),
-  friction: z.string().min(5),
-  insight: z.string().min(5),
+  friction: z.string().min(1),
+  insight: z.string().min(1),
 
   repoType: z.array(z.string()),
   missingFeature: z.string().optional(),

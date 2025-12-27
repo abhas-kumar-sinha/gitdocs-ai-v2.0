@@ -132,5 +132,21 @@ export const projectRouter = createTRPCRouter({
       });
       
       return project;
+    }),
+
+  createPr: protectedProcedure
+    .input(z.object({ id: z.string(), commitMessage: z.string().min(1).max(100), commitBranch: z.string().min(1), fragmentId: z.string().min(1) }))
+    .mutation(async ({ input }) => {
+      const response = await inngest.send({
+        name: 'readme/create.pr',
+        data: {
+          projectId: input.id,
+          commitMessage: input.commitMessage,
+          commitBranch: input.commitBranch,
+          fragmentId: input.fragmentId
+        },
+      });
+
+      return response;
     })
 });

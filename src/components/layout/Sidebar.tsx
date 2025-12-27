@@ -69,7 +69,12 @@ const Sidebar = () => {
   const feedbackSubmission = useMutation(
     trpc.user.completeFeedbackForm.mutationOptions({
       onSuccess: async () => {
-        toast.success("Thank you for your feedback. It has been recorded successfully.");
+        toast.success(
+          feedbackRewarded
+            ? "Thank you for your feedback. Free credits will be added in tomorrow’s session."
+            : "Thank you for your feedback. You’ve earned 5 free credits!"
+        );
+
         await user?.reload();
       },
       onError: () => {

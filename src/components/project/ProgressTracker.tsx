@@ -38,7 +38,7 @@ export function ProgressTracker({ projectId }: { projectId: string }) {
   }, [isComplete, router, projectId, queryClient, error, setIsGenerating]);
 
   return (
-    <div className="w-full max-w-92 me-auto font-sans antialiased mb-10 mt-4">
+    <div className="w-full max-w-93.5 me-auto font-sans antialiased mb-10 mt-4">
       <div className="rounded-xl bg-sidebar/40 pt-3 pb-4 px-3 text-gray-200 border border-[#2d2d2d] shadow-xl">
         
         {/* Header Section */}

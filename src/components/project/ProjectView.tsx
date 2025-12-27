@@ -1,27 +1,27 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 import { Button } from "../ui/button"
 import { useTRPC } from "@/trpc/client"
+import { useTheme } from "next-themes";
 import CodePanel from "./tabs/CodePanel";
-import Toolbar from "../kokonutui/toolbar"
 import { Progress } from "../ui/progress";
+import Toolbar from "../kokonutui/toolbar"
 import { useRouter } from "next/navigation";
 import DesignPanel from "./tabs/DesignPanel";
 import AI_Prompt from "../kokonutui/ai-prompt";
 import ContextPanel from "./tabs/ContextPanel";
 import PreviewPanel from "./tabs/PreviewPanel";
 import MessageContainer from "./MessageContainer";
+import { useMemo, useState } from "react";
 import { Fragment } from "@/generated/prisma/client";
 import { GithubConnectionItem } from "../common/SidebarItem";
-import { DropdownMenuSub } from "@radix-ui/react-dropdown-menu";
-import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
-import { Check, ChevronDown, ChevronLeft, CodeXml, Form, Globe, History, LaptopMinimal, LucideIcon, Palette, SquarePen, Star } from "lucide-react";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuPortal, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import ProjectNameChangeForm from "../forms/projectNameChange";
-import { toast } from "sonner";
-import { useTheme } from "next-themes";
+import { DropdownMenuSub } from "@radix-ui/react-dropdown-menu";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
+import { ChevronDown, ChevronLeft, CodeXml, Form, Globe, History, LaptopMinimal, LucideIcon, Palette, SquarePen, Star } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuPortal, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 export interface ToolbarItem {
     id: string;
@@ -42,12 +42,14 @@ const ProjectView = ({projectId} : {projectId : string}) => {
   const trpc = useTRPC();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<string | null>("preview");
+  const [fragmentIds, setFragmentIds] = useState<(string | undefined)[]>([]);
   const [activeFragment, setActiveFragment] = useState<Fragment | null>(null);
   const [isOpenNameChangeForm, setIsOpenNameChangeForm] = useState<boolean>(false);
   const queryClient = useQueryClient();
   const { theme, setTheme } = useTheme();
 
-  const { data: project } = useSuspenseQuery(trpc.project.getById.queryOptions({
+  // Changed from useSuspenseQuery to useQuery for better loading performance
+  const { data: project, isLoading: isProjectLoading } = useQuery(trpc.project.getById.queryOptions({
     id: projectId
   }));
 
@@ -65,32 +67,44 @@ const ProjectView = ({projectId} : {projectId : string}) => {
 
   const { data: aiUsage, isLoading: isAiUsageLoading } = useQuery(trpc.aiUsage.getUsage.queryOptions());
   
-  const [contextFiles, setContextFiles] = useState<string[]>(project.contextFiles);
-  const [projectName, setProjectName] = useState<string>(project.name);
-
-  useEffect(() => {
-    setContextFiles(project.contextFiles)
-  }, [project])
+  // Derive state directly from project data to avoid cascading renders
+  const [projectName, setProjectName] = useState<string>(project?.name || "");
+  const [localContextFiles, setLocalContextFiles] = useState<string[]>([]);
+  
+  // ✅ Adjust state during rendering (React-recommended pattern)
+  // Store previous contextFiles to detect changes
+  const [prevContextFiles, setPrevContextFiles] = useState<string[]>([]);
+  
+  if (project?.contextFiles && project.contextFiles !== prevContextFiles) {
+    // Update when project.contextFiles changes
+    setPrevContextFiles(project.contextFiles);
+    setLocalContextFiles(project.contextFiles);
+  }
 
   const isSaveContextChange = useMemo(() => {
-    const current = [...contextFiles].sort();
+    if (!project) return false;
+    
+    const current = [...localContextFiles].sort();
     const original = [...project.contextFiles].sort();
 
     if (current.length !== original.length) return true;
 
     return current.some((file, index) => file !== original[index]);
-  }, [contextFiles, project.contextFiles]);
+  }, [localContextFiles, project]);
 
   return (
     <ResizablePanelGroup direction="horizontal" id="project-view-panels">
       <ResizablePanel id="left-panel" className="h-screen relative flex flex-col" defaultSize={33} minSize={33}>
         <div className="flex items-center justify-between px-2 absolute w-full top-0 h-12">
           <div className="flex items-center">
+            {isProjectLoading || !project ? (
+              <div className="h-9 w-48 bg-muted animate-pulse rounded-md" />
+            ) : (
             <DropdownMenu>
               <DropdownMenuTrigger asChild className="flex items-center gap-x-2">
                 <Button variant="ghost" size="sm" className="hover:bg-transparent!" suppressHydrationWarning>
-                  <span className="uppercase px-1.5 py-1 rounded-md bg-accent text-xs tracking-tighter">{project?.name.slice(0, 2)}</span>
-                  <span>{project?.name}</span>
+                  <span className="uppercase px-1.5 py-1 rounded-md bg-accent text-xs tracking-tighter">{project.name.slice(0, 2)}</span>
+                  <span>{project.name}</span>
                   <ChevronDown />
                 </Button>
               </DropdownMenuTrigger>
@@ -172,6 +186,7 @@ const ProjectView = ({projectId} : {projectId : string}) => {
                 </DropdownMenuSub>
               </DropdownMenuContent>
             </DropdownMenu>
+            )}
           </div>
 
           <Button variant="ghost" size="icon-sm">
@@ -179,10 +194,10 @@ const ProjectView = ({projectId} : {projectId : string}) => {
           </Button>
         </div>
 
-        <MessageContainer projectId={projectId} activeFragment={activeFragment} setActiveFragment={setActiveFragment} />
+        <MessageContainer projectId={projectId} activeFragment={activeFragment} setActiveFragment={setActiveFragment} fragmentIds={fragmentIds} setFragmentIds={setFragmentIds} />
 
         <div className="absolute bottom-2 w-[98%] ms-2.5">
-          <AI_Prompt isActive={true} projectId={projectId} repository={project.repository ? project.repository : undefined} />
+          <AI_Prompt isActive={true} projectId={projectId} repository={project?.repository ? project.repository : undefined} />
         </div>
       </ResizablePanel>
 
@@ -197,7 +212,7 @@ const ProjectView = ({projectId} : {projectId : string}) => {
               Save Changes
             </Button>}
             
-            <GithubConnectionItem isSidebarOpen={false} showCommitButton />
+            <GithubConnectionItem isSidebarOpen={false} showCommitButton activeFragmentId={activeFragment?.id} fragmentIds={fragmentIds} project={project} />
 
           </div>
         </div>
@@ -206,7 +221,7 @@ const ProjectView = ({projectId} : {projectId : string}) => {
           {activeTab === "preview" && <PreviewPanel content={activeFragment?.readme ? activeFragment?.readme : ""} />}
           {activeTab === "design" && <DesignPanel content={activeFragment?.readme ? activeFragment?.readme : ""} />}
           {activeTab === "code" && <CodePanel content={activeFragment?.readme ? activeFragment?.readme : ""} />}
-          {activeTab === "context" && <ContextPanel initialContextFiles={project.contextFiles} contextFiles={contextFiles} setContextFiles={setContextFiles} allFiles={project.allFiles} />}
+          {activeTab === "context" && project && <ContextPanel initialContextFiles={project.contextFiles} contextFiles={localContextFiles} setContextFiles={setLocalContextFiles} allFiles={project.allFiles} />}
         </div>
       </ResizablePanel>
     </ResizablePanelGroup>

@@ -10,10 +10,14 @@ const MessageContainer = ({
   projectId,
   activeFragment,
   setActiveFragment,
+  fragmentIds,
+  setFragmentIds
 }: {
   projectId: string;
   activeFragment: Fragment | null;
   setActiveFragment: (fragment: Fragment) => void;
+  fragmentIds: (string | undefined)[],
+  setFragmentIds: (fragments: (string | undefined)[]) => void;
 }) => {
   const trpc = useTRPC();
   
@@ -27,7 +31,9 @@ const MessageContainer = ({
   );
 
   // Create array of fragment IDs from messages
-  const fragmentIds = messages?.map((message) => message.fragment?.id).filter(Boolean) || [];
+  useEffect(() => {
+    setFragmentIds(messages?.map((message) => message.fragment?.id).filter(Boolean) || [])
+  }, [messages, setFragmentIds])
 
   // Only scroll when message count increases (new message added)
   useEffect(() => {

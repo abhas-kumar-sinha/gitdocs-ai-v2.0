@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
 import { useTRPC } from "@/trpc/client";
 import { FaGithub } from "react-icons/fa";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import ConnectGithub from "./ConnectGithub";
 import { Progress } from "@/components/ui/progress";
@@ -14,8 +14,11 @@ import { Repository } from "@/generated/prisma/client";
 import { useRepositoryContext } from "@/contexts/RepositoryContext";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ChevronDown, CircleFadingArrowUp, GitPullRequestArrow, Info, LucideIcon, Settings, Shield, Zap } from "lucide-react";
+import { Sheet, SheetClose, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import { AlertCircle, ChevronDown, CircleFadingArrowUp, Files, GitBranch, GitPullRequestArrow, Info, LucideIcon, MessageSquare, Settings, Shield, Zap } from "lucide-react";
 import {DropdownMenu, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
+import { ProjectWithChildren } from "@/modules/projects/server/procedures";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 interface SidebarItemProp {
     Item: {
@@ -68,11 +71,14 @@ const SidebarItem = ({Item, isSidebarOpen, setIsCommandOpen} : SidebarItemProp) 
   )
 }
 
-const GithubConnectionItem = ({ isSidebarOpen, showCommitButton } : {isSidebarOpen : boolean, showCommitButton?: boolean}) => {
+const GithubConnectionItem = ({ isSidebarOpen, showCommitButton, fragmentIds, activeFragmentId, project } : {isSidebarOpen : boolean, showCommitButton?: boolean, fragmentIds?: (string | undefined)[], activeFragmentId?: string ,project?: ProjectWithChildren}) => {
 
   const trpc = useTRPC();
   const queryClient = useQueryClient();
   const { repositories, setRepositories, setIsLoading } = useRepositoryContext();
+  const [branchName, setBranchName] = useState<string>("");
+  const [commitMessage, setCommitMessage] = useState<string>("");
+  const [commitVersion, setCommitVersion] = useState<string>(activeFragmentId || "");
 
   const { data: userInstallations, isLoading } = useQuery(trpc.installation.list.queryOptions());
   const { data: aiUsage, isLoading: isAiUsageLoading } = useQuery(trpc.aiUsage.getUsage.queryOptions());
@@ -99,6 +105,30 @@ const GithubConnectionItem = ({ isSidebarOpen, showCommitButton } : {isSidebarOp
       },
     })
   );
+
+  const createPr = useMutation(trpc.project.createPr.mutationOptions({
+    onSuccess: () => {
+      toast.success("Job in Progress")
+    },
+    onError: () => {
+      toast.error("Job failed")
+    }
+  }))
+
+  const handleCreatePr = () => {
+
+    if (!project || !commitMessage || !commitVersion || !branchName) {
+      toast.error("Please fill all the details");
+      return;
+    }
+
+    createPr.mutate({
+      id: project.id,
+      commitMessage,
+      commitBranch: branchName,
+      fragmentId: commitVersion
+    })
+  }
 
 
   useEffect(() => {
@@ -246,10 +276,130 @@ const GithubConnectionItem = ({ isSidebarOpen, showCommitButton } : {isSidebarOp
         </DropdownMenuContent>
       </DropdownMenu>
       
-      <Button disabled={userInstallations[0].permissions === "READ"} variant="default" size="sm" className={cn("h-7", showCommitButton ? "visible ms-2" : "hidden")}>
-        <GitPullRequestArrow /> 
-        Commit Changes
-      </Button>
+      <Sheet>
+        <SheetTrigger asChild>
+          <Button disabled={userInstallations[0].permissions === "READ"} variant="default" size="sm" className={cn("h-7", showCommitButton ? "visible ms-2" : "hidden")}>
+            <GitPullRequestArrow /> 
+            Commit Changes
+          </Button>
+        </SheetTrigger>
+        <SheetContent>
+          <SheetHeader>
+            <SheetTitle>Commit Changes</SheetTitle>
+            <SheetDescription>Update documentation for {project?.repository?.fullName}</SheetDescription>
+          </SheetHeader>
+            <div className="h-px w-full bg-foreground/10 -mt-4" />
+            <div className="px-4 gap-y-6 flex flex-col overflow-y-scroll">
+              {/* Alerts Section */}
+              <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg flex gap-3">
+                <AlertCircle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-amber-200">New Branch Required</p>
+                  <p className="text-xs text-amber-200/70 mt-0.5">
+                    Direct commits to <code className="bg-amber-500/20 px-1 rounded">{project?.repository?.defaultBranch}</code> are restricted. This action will create a new branch and open a Pull Request.
+                  </p>
+                </div>
+              </div>
+
+              {/* Repository Details */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 text-xs font-semibold text-zinc-500 uppercase tracking-wider">
+                  <Info className="w-3.5 h-3.5" />
+                  Repository Context
+                </div>
+                <div className="bg-white/5 border border-white/10 rounded-lg p-4 space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-zinc-400 shrink-0">Target Repo</span>
+                    <span className="text-zinc-100 font-mono text-end ms-2">{project?.repository?.fullName}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-zinc-400">Base Branch</span>
+                    <span className="text-zinc-100 font-mono text-end ms-2">{project?.repository?.defaultBranch}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Branch Name */}
+              <div className="space-y-3">
+                <label className="flex items-center gap-2 text-xs font-semibold text-zinc-500 uppercase tracking-wider">
+                  <GitBranch className="w-3.5 h-3.5" />
+                  New Branch Name
+                </label>
+                <input
+                  type="text"
+                  value={branchName}
+                  onChange={(e) => setBranchName(e.target.value)}
+                  className="w-full bg-[#1a1a1a] border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
+                  placeholder="e.g. docs/update-readme"
+                  required
+                />
+              </div>
+
+              {/* README Version Selection */}
+              <div className="space-y-3">
+                <label className="flex items-center gap-2 text-xs font-semibold text-zinc-500 uppercase tracking-wider">
+                  <Files className="w-3.5 h-3.5" />
+                  Select Version to Commit
+                </label>
+                <Select value={commitVersion} onValueChange={setCommitVersion}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select Readme version" />
+                  </SelectTrigger>
+
+                  <SelectContent>
+                    {fragmentIds?.map((id, idx) => (
+                      <SelectItem key={id} value={id ?? ""}>
+                        Readme Version: {idx + 1}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+              </div>
+
+              {/* Commit Message */}
+              <div className="space-y-3">
+                <label className="flex items-center gap-2 text-xs font-semibold text-zinc-500 uppercase tracking-wider">
+                  <MessageSquare className="w-3.5 h-3.5" />
+                  Commit Message
+                </label>
+                <textarea
+                  value={commitMessage}
+                  onChange={(e) => setCommitMessage(e.target.value)}
+                  className="w-full bg-[#1a1a1a] border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all min-h-[100px] resize-none"
+                  placeholder="Describe the changes..."
+                  required
+                />
+              </div>
+
+              {/* Actions */}
+              <div className="-mt-2 mb-10 flex gap-x-2">
+                <Button
+                  onClick={handleCreatePr}
+                  disabled={createPr.isPending}
+                  className={`bg-blue-600 flex-1 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-all shadow-lg shadow-blue-900/20 flex items-center justify-center gap-2`}
+                >
+                  {createPr.isPending ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      Committing...
+                    </>
+                  ) : (
+                    'Confirm & Create Pull Request'
+                  )}
+                </Button>
+                <SheetClose asChild>
+                  <Button
+                    className="bg-transparent border border-white/10 hover:bg-white/5 text-zinc-300 font-medium rounded-lg transition-all"
+                  >
+                    Cancel
+                  </Button>
+                </SheetClose>
+              </div>
+
+            </div>
+        </SheetContent>
+      </Sheet>
     </div>
     :
     <ConnectGithub isSidebarOpen={isSidebarOpen}>
