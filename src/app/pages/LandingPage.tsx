@@ -1,6 +1,4 @@
 import AI_Prompt from "@/components/kokonutui/ai-prompt"
-import Anthropic from "@/components/kokonutui/anthropic"
-import AnthropicDark from "@/components/kokonutui/anthropic-dark"
 import BentoGrid from "@/components/kokonutui/bento-grid"
 import Footer from "@/components/layout/Footer"
 import Navbar from "@/components/layout/Navbar"
