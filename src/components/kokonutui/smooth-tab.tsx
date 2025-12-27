@@ -121,7 +121,7 @@ export default function SmoothTab({
         className={cn(
           "relative mb-4 flex items-center justify-between gap-1 py-1",
           "mx-auto w-full bg-background",
-          "rounded-xl border",
+          "rounded-xl",
           "transition-all duration-200",
           className,
         )}
@@ -184,7 +184,7 @@ export default function SmoothTab({
       </div>
       {/* Card Content Area */}
       <div className="relative mb-4 flex-1">
-        <div className="relative h-full w-full rounded-lg border bg-card">
+        <div className="relative h-full w-full rounded-lg bg-card">
           <div className="absolute inset-0 overflow-hidden rounded-lg">
             <AnimatePresence
               custom={direction}
