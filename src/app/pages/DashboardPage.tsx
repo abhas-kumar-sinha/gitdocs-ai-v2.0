@@ -4,10 +4,10 @@ import Sidebar from "@/components/layout/Sidebar";
 import { ChevronRight, Heart } from "lucide-react";
 import AI_Prompt from "@/components/kokonutui/ai-prompt";
 import ProjectList from "@/components/project/ProjectList";
-import AuraBackground from "@/components/animated-backgrounds/AuraBackground";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import TemplateList from "@/components/template/TemplateList";
 import { templates } from "@/lib/constants/CONSTANTS";
+import BgMain from "@/components/animated-backgrounds/bgMain";
 
 async function ProjectsGrid() {
   const projects = await caller.project.list();
@@ -45,7 +45,7 @@ const DashboardPage = () => {
       <Sidebar />
 
       <div className="relative flex-1 overflow-y-scroll overflow-x-hidden">
-        <AuraBackground source="landing" />
+        <BgMain />
         <div className="h-screen max-h-[768px] flex items-center justify-center">
           <div className="flex flex-col gap-y-2 w-full -mt-14">
             <span className="mx-auto text-sm text-foreground/70 border border-foreground/10 ps-4 pe-3 py-1 rounded-full bg-background/90 flex items-center gap-x-2 cursor-pointer group transition-colors duration-300 hover:scale-102 animate-all hover:text-foreground hover:border-foreground/30">
