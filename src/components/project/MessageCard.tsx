@@ -217,13 +217,13 @@ const AssistantMessage = ({
           className={cn(
             "px-5 py-2.5 mt-4 w-3/4 max-w-[260px] transition-colors",
             fragment.id === activeFragment?.id
-              ? "bg-accent/25 border-accent"
-              : "hover:bg-foreground/20",
+              ? "bg-primary/25 border border-primary"
+              : "hover:bg-sidebar/80 border-transparent",
           )}
         >
           <div className="whitespace-pre-wrap flex flex-col items-start gap-y-1 cursor-pointer">
             <div className="flex items-center justify-between w-full">
-              <div className="flex items-center gap-x-2">
+              <div className="flex items-center font-semibold gap-x-2">
                 <BookText size="15" />
                 <span>Readme: v{fragmentVersion}</span>
               </div>
