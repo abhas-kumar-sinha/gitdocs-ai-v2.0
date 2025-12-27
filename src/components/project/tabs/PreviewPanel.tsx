@@ -163,7 +163,7 @@ const MarkdownPreview = ({
         } ${
           view === "max" || view === "min-max"
             ? `markdown-preview overflow-y-auto`
-            : "markdown-preview-mini px-20! pt-6!"
+            : "markdown-preview-mini px-20! pt-6! bg-sidebar-accent"
         }`}
         onScroll={handleScroll}
       >
