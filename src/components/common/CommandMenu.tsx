@@ -43,7 +43,7 @@ export function CommandMenu({
   const router = useRouter();
 
   return (
-    <CommandDialog open={open} onOpenChange={setOpen}>
+    <CommandDialog className="border-none" open={open} onOpenChange={setOpen}>
       <CommandInput placeholder="Type a command or search..." />
       <CommandList>
         <CommandEmpty>No results found.</CommandEmpty>
