@@ -277,7 +277,7 @@ export default function AI_Prompt({
                         <ChevronRight />
                       </Button>
                     </SheetTrigger>
-                    <SheetContent>
+                    <SheetContent className="bg-sidebar">
                       <SheetHeader>
                         <SheetTitle>Documentation Setup</SheetTitle>
                       </SheetHeader>

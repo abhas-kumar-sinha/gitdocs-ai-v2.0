@@ -206,8 +206,8 @@ export default function RepositoryList({
 
       {/* Footer - Fixed at bottom  */}
       {userInstallations && userInstallations.length > 0 && (
-        <div className="sticky bottom-0 z-10 py-1 text-sm mx-auto">
-          <span className="text-foreground/70">Missing Git repository?</span>
+        <div className="sticky bottom-0 z-10 text-sm mx-auto py-1">
+          <span className="text-foreground">Missing Git repository?</span>
           <ConnectGithub isSidebarOpen={false} update={true}>
             <span> Adjust GitHub App Permissions → </span>
           </ConnectGithub>

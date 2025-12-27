@@ -48,10 +48,23 @@ const DashboardPage = () => {
         <BgMain />
         <div className="h-screen max-h-[768px] flex items-center justify-center">
           <div className="flex flex-col gap-y-2 w-full -mt-14">
-            <span className="mx-auto text-sm text-foreground/70 border border-foreground/10 ps-4 pe-3 py-1 rounded-full bg-background/90 flex items-center gap-x-2 cursor-pointer group transition-colors duration-300 hover:scale-102 animate-all hover:text-foreground hover:border-foreground/30">
-              <Heart size={13} />
+            <span className="mx-auto text-sm text-foreground border border-foreground/10 ps-4 pe-3 py-3 rounded-full bg-white/5 backdrop-blur-lg flex items-center gap-x-2 cursor-pointer group transition-colors duration-300 hover:scale-102 animate-all hover:text-foreground hover:border-foreground/30">
+              <span className="scale-120">💖</span>
+
               <span>Introducing GitDocs AI v2.0</span>
-              <ChevronRight className="opacity-0 size-0 translate-x-[-4px] transition-all duration-300 group-hover:opacity-100 group-hover:size-3.5 group-hover:translate-x-0" />
+
+              <ChevronRight
+                className="
+                          opacity-0
+                          size-0
+                          translate-x-[-4px]
+                          transition-all
+                          duration-300
+                          group-hover:opacity-100
+                          group-hover:size-4
+                          group-hover:translate-x-0
+                          "
+              />
             </span>
 
             <h3 className="text-center text-xl md:text-2xl lg:text-3xl font-bold mt-8 md:mt-6 max-w-9/10 mx-auto">
