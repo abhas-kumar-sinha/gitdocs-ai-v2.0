@@ -28,7 +28,7 @@ export const isAuthorized = t.middleware(async ({ next, ctx }) => {
   });
 
   if (!user) {
-    throw new TRPCError({ code: "UNAUTHORIZED", message: "Not authenticated" });
+    throw new TRPCError({ code: "UNAUTHORIZED", message: "User not found" });
   }
 
   return next({
