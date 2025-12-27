@@ -351,7 +351,7 @@ const ContextPanel = ({
             </Button>
 
             <Button
-              variant="outline"
+              variant="destructive"
               size="sm"
               onClick={clearAll}
               className="h-8 text-xs px-2 hover:text-destructive hover:border-destructive/50!"
@@ -361,7 +361,7 @@ const ContextPanel = ({
             </Button>
 
             <Button
-              variant="secondary"
+              variant="ghost"
               size="sm"
               onClick={resetToDefault}
               className="h-8 text-xs bg-muted/80 hover:bg-muted"

@@ -291,7 +291,7 @@ const GithubConnectionItem = ({
               sideOffset={4}
               onClick={(e) => e.stopPropagation()}
               className={cn(
-                "w-64 bg-secondary",
+                "w-64 bg-popover",
                 isSidebarOpen ? "ms-1" : "ms-[10px]",
               )}
             >

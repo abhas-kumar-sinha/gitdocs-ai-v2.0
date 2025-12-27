@@ -210,7 +210,7 @@ export default function AI_Prompt({
   };
 
   return (
-    <div className="relative flex flex-col bg-secondary rounded-xl pt-4">
+    <div className="relative flex flex-col bg-sidebar rounded-xl pt-4">
       <div className="overflow-y-auto px-2" style={{ maxHeight: "250px" }}>
         <Textarea
           className={cn(
@@ -238,7 +238,7 @@ export default function AI_Prompt({
                   <ConnectGithub isSidebarOpen={true}>
                     <Button
                       disabled={!!projectId}
-                      variant="secondary"
+                      variant="outline"
                       className="flex h-8 items-center gap-1 rounded-md pr-2 pl-1 text-xs hover:bg-black/10 focus-visible:ring-1 focus-visible:ring-blue-500 focus-visible:ring-offset-0 dark:text-white dark:hover:bg-white/10"
                     >
                       <Plus />
@@ -251,7 +251,7 @@ export default function AI_Prompt({
                     <SheetTrigger asChild>
                       <Button
                         disabled={!!projectId}
-                        variant="secondary"
+                        variant="outline"
                         className="flex h-8 items-center gap-1 rounded-md pr-2 pl-1 text-xs hover:bg-black/10 focus-visible:ring-1 focus-visible:ring-blue-500 focus-visible:ring-offset-0 dark:text-white dark:hover:bg-white/10"
                       >
                         <Book className="h-3.5! w-3.5!" />
@@ -290,7 +290,7 @@ export default function AI_Prompt({
               ) : (
                 <Button
                   disabled={!!projectId}
-                  variant="secondary"
+                  variant="outline"
                   className="flex h-8 items-center gap-1 rounded-md pr-2 pl-1 text-xs hover:bg-black/10 focus-visible:ring-1 focus-visible:ring-blue-500 focus-visible:ring-offset-0 dark:text-white dark:hover:bg-white/10"
                 >
                   <Loader2 className="animate-spin" />
@@ -305,7 +305,7 @@ export default function AI_Prompt({
             <SignedOut>
               <SignUpButton mode="modal">
                 <Button
-                  variant="secondary"
+                  variant="outline"
                   className="flex h-8 items-center gap-1 rounded-md pr-2 pl-1 text-xs hover:bg-black/10 focus-visible:ring-1 focus-visible:ring-blue-500 focus-visible:ring-offset-0 dark:text-white dark:hover:bg-white/10"
                 >
                   <Book className="h-3.5! w-3.5!" />
