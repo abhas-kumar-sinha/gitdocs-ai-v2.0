@@ -5,15 +5,15 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "@/components/ui/sonner";
 import { AiProvider } from "@/contexts/AiContext";
 import { TRPCReactProvider } from "@/trpc/client";
-import { Geist_Mono, Inter, Caveat } from "next/font/google";
+import { Geist_Mono, Caveat, Nunito } from "next/font/google";
 import { SidebarProvider } from "@/contexts/SidebarContext";
 import { RepositoryProvider } from "@/contexts/RepositoryContext";
 import { ScrollPositionProvider } from "@/contexts/ScrollPositionContext";
 
-const inter = Inter({
+const nunito = Nunito({
   subsets: ["latin"],
-  variable: "--font-sans",
-});
+  variable: "--font-nunito"
+})
 
 const caveat = Caveat({
   subsets: ["latin"],
@@ -40,7 +40,7 @@ export default function RootLayout({
       <TRPCReactProvider>
         <html lang="en" suppressHydrationWarning>
           <body
-            className={`${inter.variable} ${caveat.variable} ${geistMono.variable} antialiased`}
+            className={`${caveat.variable} ${geistMono.variable} ${nunito.variable} antialiased`}
           >
             <Providers>
               <ScrollPositionProvider>

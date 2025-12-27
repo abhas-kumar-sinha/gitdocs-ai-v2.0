@@ -4,14 +4,14 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  --font-sans: var(--font-sans);
   --font-mono: var(--font-geist-mono);
   --font-handwriting: "Caveat", sans-serif;
+  --font-global: "Nunito", sans-serif;
 }
 
 @layer base {
   body {
-    @apply font-sans antialiased;
+    @apply font-global antialiased;
   }
 }
 
