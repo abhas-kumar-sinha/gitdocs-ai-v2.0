@@ -2,7 +2,7 @@
 
 import remarkGfm from "remark-gfm";
 import ReactMarkdown from "react-markdown";
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, useMemo } from "react";
 import { PixelatedCanvas } from "@/components/ui/pixelated-canvas";
 import { useScrollPosition } from "@/contexts/ScrollPositionContext";
 import ShimmerText from "@/components/kokonutui/shimmer-text";
@@ -20,21 +20,40 @@ const MarkdownPreview = ({
 
   const containerRef = useRef<HTMLDivElement>(null);
   const hasRestoredRef = useRef(false);
+  const scrollPositionRef = useRef(markdownScrollPosition);
+  const rafRef = useRef<number | null>(null);
 
   // Clean and preprocess content
-  const cleanContent = content
-    .replace(/\\n/g, "\n")
-    .replace(/\\`\\`\\`/g, "```")
-    .trim();
+  const cleanContent = useMemo(
+    () =>
+      content
+        .replace(/\\n/g, "\n")
+        .replace(/\\`\\`\\`/g, "```")
+        .trim(),
+    [content]
+  );
+
+  // Memoize the ReactMarkdown component to prevent unnecessary re-renders
+  const memoizedMarkdown = useMemo(
+    () => (
+      <ReactMarkdown remarkPlugins={[remarkGfm]}>
+        {cleanContent}
+      </ReactMarkdown>
+    ),
+    [cleanContent]
+  );
 
   // Explicitly save scroll position when component unmounts
   useEffect(() => {
     return () => {
-      if (containerRef.current) {
-        const currentPos = containerRef.current.scrollTop;
-        if (currentPos > 0) {
-          setMarkdownScrollPosition(currentPos);
-        }
+      // Cancel any pending RAF
+      if (rafRef.current !== null) {
+        cancelAnimationFrame(rafRef.current);
+      }
+      
+      // Save current scroll position
+      if (scrollPositionRef.current > 0) {
+        setMarkdownScrollPosition(scrollPositionRef.current);
       }
       hasRestoredRef.current = false;
       setIsReady(false);
@@ -53,6 +72,7 @@ const MarkdownPreview = ({
       const timer = setTimeout(() => {
         if (containerRef.current && markdownScrollPosition > 0) {
           containerRef.current.scrollTop = markdownScrollPosition;
+          scrollPositionRef.current = markdownScrollPosition;
           hasRestoredRef.current = true;
         }
 
@@ -72,12 +92,23 @@ const MarkdownPreview = ({
     }
   }, [content, markdownScrollPosition, view]);
 
+  // Optimized scroll handler using refs and RAF
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const newPosition = e.currentTarget.scrollTop;
-    const difference = Math.abs(newPosition - markdownScrollPosition);
+    scrollPositionRef.current = newPosition;
 
+    // Cancel previous RAF if it exists
+    if (rafRef.current !== null) {
+      cancelAnimationFrame(rafRef.current);
+    }
+
+    // Throttle updates to context - only update if difference is significant
+    const difference = Math.abs(newPosition - markdownScrollPosition);
     if (difference > 20) {
-      setMarkdownScrollPosition(newPosition);
+      rafRef.current = requestAnimationFrame(() => {
+        setMarkdownScrollPosition(newPosition);
+        rafRef.current = null;
+      });
     }
   };
 
@@ -127,18 +158,16 @@ const MarkdownPreview = ({
       {/* Markdown content - hidden until ready */}
       <div
         ref={containerRef}
-        className={`h-full rounded-xl focus:outline-none w-full p-4 resize-none rounded-b-lg transition-opacity duration-300 ${
+        className={`h-full rounded-xl focus:outline-none w-full p-4 px-10! resize-none rounded-b-lg transition-opacity duration-300 ${
           isReady ? "opacity-100" : "opacity-0"
         } ${
           view === "max" || view === "min-max"
-            ? `markdown-preview overflow-y-auto ${view === "min-max" ? "bg-muted" : "bg-transparent"}`
-            : "markdown-preview-mini px-20! pt-6! bg-muted/80"
+            ? `markdown-preview overflow-y-auto`
+            : "markdown-preview-mini px-20! pt-6!"
         }`}
         onScroll={handleScroll}
       >
-        <ReactMarkdown remarkPlugins={[remarkGfm]}>
-          {cleanContent}
-        </ReactMarkdown>
+        {memoizedMarkdown}
       </div>
     </div>
   );

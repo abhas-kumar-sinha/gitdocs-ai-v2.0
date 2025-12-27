@@ -164,15 +164,6 @@
   --shadow-2xl: var(--shadow-2xl);
 }
 
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
-}
-
 /* ================================
    Custom Scrollbar (Global)
    ================================ */
@@ -208,84 +199,25 @@
   background: transparent;
 }
 
-/* =========================================
-   CSS Variables - Light Mode (Default)
-   ========================================= */
-:root {
-  --md-fg-primary: #1f2328;
-  --md-fg-secondary: #656d76;
-  --md-fg-accent: #0969da;
-  --md-bg-canvas: #ffffff;
-  --md-bg-canvas-subtle: #f6f8fa;
-  --md-border-default: #d0d7de;
-  --md-border-muted: #d8dee4;
-  --md-code-bg: rgba(175, 184, 193, 0.2);
-  --md-pre-bg: #f6f8fa;
-  --md-blockquote-border: #d0d7de;
-  --md-table-stripe: rgba(234, 238, 242, 0.5);
-}
-
-/* =========================================
-   CSS Variables - Dark Mode
-   ========================================= */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --md-fg-primary: #e6edf3;
-    --md-fg-secondary: #8b949e;
-    --md-fg-accent: #58a6ff;
-    --md-bg-canvas: #0d1117;
-    --md-bg-canvas-subtle: #161b22;
-    --md-border-default: #30363d;
-    --md-border-muted: #21262d;
-    --md-code-bg: rgba(110, 118, 129, 0.4);
-    --md-pre-bg: #161b22;
-    --md-blockquote-border: #30363d;
-    --md-table-stripe: rgba(110, 118, 129, 0.05);
-  }
-}
-
-[data-theme="light"] {
-  --md-fg-primary: #1f2328;
-  --md-fg-secondary: #656d76;
-  --md-fg-accent: #0969da;
-  --md-bg-canvas: #ffffff;
-  --md-bg-canvas-subtle: #f6f8fa;
-  --md-border-default: #d0d7de;
-  --md-border-muted: #d8dee4;
-  --md-code-bg: rgba(175, 184, 193, 0.2);
-  --md-pre-bg: #f6f8fa;
-  --md-blockquote-border: #d0d7de;
-  --md-table-stripe: rgba(234, 238, 242, 0.5);
-}
-
-[data-theme="dark"] {
-  --md-fg-primary: #e6edf3;
-  --md-fg-secondary: #8b949e;
-  --md-fg-accent: #58a6ff;
-  --md-bg-canvas: #0d1117;
-  --md-bg-canvas-subtle: #161b22;
-  --md-border-default: #30363d;
-  --md-border-muted: #21262d;
-  --md-code-bg: rgba(110, 118, 129, 0.4);
-  --md-pre-bg: #161b22;
-  --md-blockquote-border: #30363d;
-  --md-table-stripe: rgba(110, 118, 129, 0.05);
-}
-
-/* =========================================
-   Markdown Preview - Full View
-   ========================================= */
+/* ==================== MARKDOWN PREVIEW - NORMAL SIZE ==================== */
 .markdown-preview {
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica,
-    Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
   font-size: 16px;
   line-height: 1.6;
-  color: var(--md-fg-primary);
   word-wrap: break-word;
 }
 
-/* --- Headings --- */
+/* Light theme */
+.markdown-preview {
+  color: #1f2328;
+}
+
+/* Dark theme */
+.dark .markdown-preview {
+  color: #e6edf3;
+}
+
+/* Headings */
 .markdown-preview h1,
 .markdown-preview h2,
 .markdown-preview h3,
@@ -296,31 +228,34 @@
   margin-bottom: 16px;
   font-weight: 600;
   line-height: 1.25;
-  color: var(--md-fg-primary);
 }
 
 .markdown-preview h1 {
   font-size: 2em;
   padding-bottom: 0.3em;
-  border-bottom: 1px solid var(--md-border-default);
-  margin-top: 0;
+  border-bottom: 1px solid #d0d7de;
+}
+
+.dark .markdown-preview h1 {
+  border-bottom-color: #30363d;
 }
 
 .markdown-preview h2 {
   font-size: 1.5em;
   padding-bottom: 0.3em;
-  border-bottom: 1px solid var(--md-border-default);
-  margin-top: 24px;
+  border-bottom: 1px solid #d0d7de;
+}
+
+.dark .markdown-preview h2 {
+  border-bottom-color: #30363d;
 }
 
 .markdown-preview h3 {
   font-size: 1.25em;
-  margin-top: 24px;
 }
 
 .markdown-preview h4 {
   font-size: 1em;
-  margin-top: 24px;
 }
 
 .markdown-preview h5 {
@@ -329,68 +264,20 @@
 
 .markdown-preview h6 {
   font-size: 0.85em;
-  color: var(--md-fg-secondary);
+  color: #59636e;
 }
 
-/* --- Paragraphs & Text --- */
+.dark .markdown-preview h6 {
+  color: #848d97;
+}
+
+/* Paragraphs */
 .markdown-preview p {
   margin-top: 0;
   margin-bottom: 16px;
 }
 
-.markdown-preview strong,
-.markdown-preview b {
-  font-weight: 600;
-}
-
-.markdown-preview em,
-.markdown-preview i {
-  font-style: italic;
-}
-
-.markdown-preview del,
-.markdown-preview s {
-  text-decoration: line-through;
-}
-
-/* --- Links --- */
-.markdown-preview a {
-  color: var(--md-fg-accent);
-  text-decoration: none;
-  background-color: transparent;
-}
-
-.markdown-preview a:hover {
-  text-decoration: underline;
-}
-
-/* --- Horizontal Rule --- */
-.markdown-preview hr {
-  height: 0.25em;
-  padding: 0;
-  margin: 24px 0;
-  background-color: var(--md-border-default);
-  border: 0;
-  overflow: hidden;
-}
-
-/* --- Blockquotes --- */
-.markdown-preview blockquote {
-  margin: 0 0 16px;
-  padding: 0 1em;
-  color: var(--md-fg-secondary);
-  border-left: 0.25em solid var(--md-blockquote-border);
-}
-
-.markdown-preview blockquote > :first-child {
-  margin-top: 0;
-}
-
-.markdown-preview blockquote > :last-child {
-  margin-bottom: 0;
-}
-
-/* --- Lists --- */
+/* Lists */
 .markdown-preview ul,
 .markdown-preview ol {
   margin-top: 0;
@@ -402,508 +289,545 @@
   list-style-type: disc;
 }
 
-.markdown-preview ol {
-  list-style-type: decimal;
-}
-
 .markdown-preview ul ul {
   list-style-type: circle;
-  margin-top: 0;
-  margin-bottom: 0;
 }
 
 .markdown-preview ul ul ul {
   list-style-type: square;
 }
 
-.markdown-preview ol ol,
-.markdown-preview ul ol {
-  list-style-type: lower-roman;
-  margin-top: 0;
-  margin-bottom: 0;
+.markdown-preview ol {
+  list-style-type: decimal;
 }
 
-.markdown-preview ul ul ol,
-.markdown-preview ul ol ol,
-.markdown-preview ol ul ol,
-.markdown-preview ol ol ol {
+.markdown-preview ol ol {
   list-style-type: lower-alpha;
-  margin-top: 0;
-  margin-bottom: 0;
+}
+
+.markdown-preview ol ol ol {
+  list-style-type: lower-roman;
 }
 
 .markdown-preview li {
-  word-wrap: break-all;
+  margin-top: 0.25em;
 }
 
 .markdown-preview li > p {
   margin-top: 16px;
-  margin-bottom: 16px;
 }
 
 .markdown-preview li + li {
   margin-top: 0.25em;
 }
 
-/* --- Task Lists --- */
-.markdown-preview .task-list-item,
-.markdown-preview ul.contains-task-list li {
-  list-style-type: none;
-}
-
-.markdown-preview .task-list-item + .task-list-item {
-  margin-top: 3px;
-}
-
+/* Task lists */
 .markdown-preview input[type="checkbox"] {
-  margin: 0 0.5em 0.25em -1.6em;
+  margin-right: 0.5em;
   vertical-align: middle;
-  pointer-events: none;
 }
 
-/* --- Code --- */
-.markdown-preview code {
-  padding: 0.2em 0.4em;
-  margin: 0;
-  font-size: 85%;
-  white-space: break-spaces;
-  font-family:
-    ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono",
-    monospace;
-  background-color: var(--md-code-bg);
-  border-radius: 6px;
+/* Links */
+.markdown-preview a {
+  color: #0969da;
+  text-decoration: none;
 }
 
+.markdown-preview a:hover {
+  text-decoration: underline;
+}
+
+.dark .markdown-preview a {
+  color: #4493f8;
+}
+
+/* Code blocks */
 .markdown-preview pre {
-  margin-top: 0;
-  margin-bottom: 16px;
   padding: 16px;
   overflow: auto;
   font-size: 85%;
   line-height: 1.45;
-  background-color: var(--md-pre-bg);
+  background-color: #f6f8fa;
   border-radius: 6px;
-  word-wrap: normal;
-}
-
-.markdown-preview pre code {
-  display: inline;
-  max-width: auto;
-  padding: 0;
-  margin: 0;
-  overflow: visible;
-  line-height: inherit;
-  word-wrap: normal;
-  background-color: transparent;
-  border: 0;
-  font-size: 100%;
-  white-space: pre;
-  border-radius: 0;
-}
-
-/* --- Tables --- */
-.markdown-preview table {
-  border-spacing: 0;
-  border-collapse: collapse;
-  display: block;
-  width: max-content;
-  max-width: 100%;
-  overflow: auto;
   margin-top: 0;
   margin-bottom: 16px;
 }
 
-.markdown-preview table tr {
-  background-color: transparent;
-  border-top: 1px solid var(--md-border-default);
+.dark .markdown-preview pre {
+  background-color: #161b22;
 }
 
-.markdown-preview table tr:nth-child(2n) {
-  background-color: var(--md-table-stripe);
+.markdown-preview code {
+  padding: 0.2em 0.4em;
+  margin: 0;
+  font-size: 85%;
+  background-color: "#F6F8FA";
+  border-radius: 6px;
+  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+}
+
+
+.markdown-preview pre code {
+  padding: 0;
+  margin: 0;
+  font-size: 100%;
+  background-color: transparent;
+  border: 0;
+  display: block;
+  overflow-x: auto;
+}
+
+/* Blockquotes */
+.markdown-preview blockquote {
+  margin: 0 0 16px 0;
+  padding: 0 1em;
+  color: #59636e;
+  border-left: 0.25em solid #d0d7de;
+}
+
+.dark .markdown-preview blockquote {
+  color: #848d97;
+  border-left-color: #30363d;
+}
+
+.markdown-preview blockquote > :first-child {
+  margin-top: 0;
+}
+
+.markdown-preview blockquote > :last-child {
+  margin-bottom: 0;
+}
+
+/* Horizontal rules */
+.markdown-preview hr {
+  height: 0.25em;
+  padding: 0;
+  margin: 24px 0;
+  background-color: #d0d7de;
+  border: 0;
+}
+
+.dark .markdown-preview hr {
+  background-color: #30363d;
+}
+
+/* Tables */
+.markdown-preview table {
+  border-spacing: 0;
+  border-collapse: collapse;
+  margin-top: 0;
+  margin-bottom: 16px;
+  width: max-content;
+  max-width: 100%;
+  overflow: auto;
+  display: block;
 }
 
 .markdown-preview table th,
 .markdown-preview table td {
   padding: 6px 13px;
-  border: 1px solid var(--md-border-default);
+  border: 1px solid #d0d7de;
+}
+
+.dark .markdown-preview table th,
+.dark .markdown-preview table td {
+  border-color: #30363d;
 }
 
 .markdown-preview table th {
   font-weight: 600;
-  text-align: left;
+  background-color: #f6f8fa;
 }
 
-.markdown-preview table thead tr {
-  background-color: transparent;
+.dark .markdown-preview table th {
+  background-color: #161b22;
 }
 
-.markdown-preview table tbody tr {
-  background-color: transparent;
+.markdown-preview table tr {
+  background-color: #ffffff;
+  border-top: 1px solid #d1d9e0;
 }
 
-.markdown-preview table tbody tr:nth-child(2n) {
-  background-color: var(--md-table-stripe);
+.dark .markdown-preview table tr {
+  background-color: #0d1117;
+  border-top-color: #30363d;
 }
 
-.markdown-preview table img {
-  background-color: transparent;
+.markdown-preview table tr:nth-child(2n) {
+  background-color: #f6f8fa;
 }
 
-/* --- Images --- */
+.dark .markdown-preview table tr:nth-child(2n) {
+  background-color: #161b22;
+}
+
+/* Images */
 .markdown-preview img {
   max-width: 100%;
   box-sizing: content-box;
-  background-color: transparent;
-  border-radius: 6px;
+  background-color: #ffffff;
 }
 
-.markdown-preview img[align="right"] {
-  padding-left: 20px;
+.dark .markdown-preview img {
+  background-color: #0d1117;
 }
 
-.markdown-preview img[align="left"] {
-  padding-right: 20px;
-}
-
-/* --- Badges (shields.io) --- */
-.markdown-preview img[src*="img.shields.io"] {
-  height: 20px;
-  width: auto;
-  max-width: none;
-  display: inline-block;
-  vertical-align: middle;
-  margin: 0 0.5rem 0 0;
-  border-radius: 6px;
-  background: transparent;
-  box-shadow: none;
-}
-
-.markdown-preview a img[src*="img.shields.io"] {
-  display: inline-block;
-  pointer-events: auto;
-}
-
-/* --- Keyboard Input --- */
-.markdown-preview kbd {
-  display: inline-block;
-  padding: 3px 5px;
-  font-size: 11px;
-  line-height: 10px;
-  color: var(--md-fg-primary);
-  vertical-align: middle;
-  background-color: var(--md-bg-canvas-subtle);
-  border: solid 1px var(--md-code-bg);
-  border-bottom-color: var(--md-code-bg);
-  border-radius: 6px;
-  box-shadow: inset 0 -1px 0 var(--md-code-bg);
-}
-
-/* --- Details/Summary --- */
-.markdown-preview details {
-  display: block;
-  margin-bottom: 16px;
-}
-
-.markdown-preview summary {
-  display: list-item;
-  cursor: pointer;
+/* Strong/Bold */
+.markdown-preview strong {
   font-weight: 600;
 }
 
-/* --- Definition Lists --- */
-.markdown-preview dl {
-  padding: 0;
-}
-
-.markdown-preview dl dt {
-  padding: 0;
-  margin-top: 16px;
-  font-size: 1em;
+/* Emphasis/Italic */
+.markdown-preview em {
   font-style: italic;
-  font-weight: 600;
 }
 
-.markdown-preview dl dd {
-  padding: 0 16px;
-  margin-bottom: 16px;
-  margin-left: 0;
+/* Strikethrough */
+.markdown-preview del {
+  text-decoration: line-through;
 }
 
-/* --- Footnotes --- */
-.markdown-preview .footnotes {
-  font-size: 0.875em;
-  color: var(--md-fg-secondary);
-  border-top: 1px solid var(--md-border-default);
-  margin-top: 24px;
-  padding-top: 24px;
-}
-
-.markdown-preview .footnotes ol {
-  padding-left: 1.5em;
-}
-
-.markdown-preview .footnotes li {
-  position: relative;
-}
-
-.markdown-preview .footnotes li:target::before {
-  position: absolute;
-  top: -8px;
-  right: -8px;
-  bottom: -8px;
-  left: -24px;
-  pointer-events: none;
-  content: "";
-  border: 2px solid var(--md-fg-accent);
-  border-radius: 6px;
-}
-
-/* --- First/Last Child --- */
-.markdown-preview > *:first-child {
-  margin-top: 0 !important;
-}
-
-.markdown-preview > *:last-child {
-  margin-bottom: 0 !important;
-}
-
-/* --- Clearfix --- */
-.markdown-preview::before,
-.markdown-preview::after {
-  display: table;
-  content: "";
-}
-
-.markdown-preview::after {
-  clear: both;
-}
-
-/* =========================================
-   Markdown Preview MINI (Thumbnail View)
-   ========================================= */
+/* ==================== MARKDOWN PREVIEW MINI - 6PX BASE ==================== */
 .markdown-preview-mini {
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
   font-size: 6px;
-  line-height: 1.15;
-  color: var(--md-fg-primary);
+  line-height: 1.6;
   word-wrap: break-word;
-  overflow: hidden;
-  padding: 4px;
 }
 
-/* --- Headings --- */
+/* Light theme */
+.markdown-preview-mini {
+  color: #1f2328;
+}
+
+/* Dark theme */
+.dark .markdown-preview-mini {
+  color: #e6edf3;
+}
+
+/* Headings */
 .markdown-preview-mini h1,
 .markdown-preview-mini h2,
 .markdown-preview-mini h3,
 .markdown-preview-mini h4,
 .markdown-preview-mini h5,
 .markdown-preview-mini h6 {
-  margin-top: 6px;
-  margin-bottom: 3px;
-  font-weight: 700;
-  line-height: 1.1;
-  color: var(--md-fg-primary);
+  margin-top: 9px;
+  margin-bottom: 6px;
+  font-weight: 600;
+  line-height: 1.25;
 }
 
 .markdown-preview-mini h1 {
-  font-size: 12px;
-  padding-bottom: 2px;
-  border-bottom: 1px solid var(--md-border-muted);
-  margin-top: 0;
+  font-size: 2em;
+  padding-bottom: 0.3em;
+  border-bottom: 0.4px solid #d0d7de;
+}
+
+.dark .markdown-preview-mini h1 {
+  border-bottom-color: #30363d;
 }
 
 .markdown-preview-mini h2 {
-  font-size: 9px;
-  padding-bottom: 1px;
-  border-bottom: 1px solid var(--md-border-muted);
+  font-size: 1.5em;
+  padding-bottom: 0.3em;
+  border-bottom: 0.4px solid #d0d7de;
+}
+
+.dark .markdown-preview-mini h2 {
+  border-bottom-color: #30363d;
 }
 
 .markdown-preview-mini h3 {
-  font-size: 7.5px;
+  font-size: 1.25em;
 }
 
 .markdown-preview-mini h4 {
-  font-size: 6px;
-  font-weight: 700;
+  font-size: 1em;
 }
 
-/* --- Text --- */
+.markdown-preview-mini h5 {
+  font-size: 0.875em;
+}
+
+.markdown-preview-mini h6 {
+  font-size: 0.85em;
+  color: #59636e;
+}
+
+.dark .markdown-preview-mini h6 {
+  color: #848d97;
+}
+
+/* Paragraphs */
 .markdown-preview-mini p {
   margin-top: 0;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
 }
 
-.markdown-preview-mini strong,
-.markdown-preview-mini b {
-  font-weight: 700;
-}
-
-.markdown-preview-mini em,
-.markdown-preview-mini i {
-  font-style: italic;
-}
-
-/* --- Links --- */
-.markdown-preview-mini a {
-  color: var(--md-fg-accent);
-  text-decoration: none;
-}
-
-/* --- Horizontal Rule --- */
-.markdown-preview-mini hr {
-  height: 1px;
-  margin: 6px 0;
-  background-color: var(--md-border-default);
-  border: 0;
-}
-
-/* --- Blockquotes --- */
-.markdown-preview-mini blockquote {
-  margin: 0 0 4px;
-  padding: 0 4px;
-  color: var(--md-fg-secondary);
-  border-left: 1.5px solid var(--md-blockquote-border);
-}
-
-/* --- Lists --- */
+/* Lists */
 .markdown-preview-mini ul,
 .markdown-preview-mini ol {
   margin-top: 0;
-  margin-bottom: 4px;
-  padding-left: 10px;
+  margin-bottom: 6px;
+  padding-left: 0.75em;
+}
+
+.markdown-preview-mini ul {
+  list-style-type: disc;
+}
+
+.markdown-preview-mini ul ul {
+  list-style-type: circle;
+}
+
+.markdown-preview-mini ul ul ul {
+  list-style-type: square;
+}
+
+.markdown-preview-mini ol {
+  list-style-type: decimal;
+}
+
+.markdown-preview-mini ol ol {
+  list-style-type: lower-alpha;
+}
+
+.markdown-preview-mini ol ol ol {
+  list-style-type: lower-roman;
 }
 
 .markdown-preview-mini li {
-  word-wrap: break-all;
+  margin-top: 0.1em;
 }
 
 .markdown-preview-mini li > p {
-  margin-top: 2px;
+  margin-top: 6px;
 }
 
 .markdown-preview-mini li + li {
-  margin-top: 1px;
+  margin-top: 0.1em;
 }
 
-/* --- Task Lists --- */
-.markdown-preview-mini ul.contains-task-list {
-  padding-left: 0;
-  list-style-type: none;
-}
-
+/* Task lists */
 .markdown-preview-mini input[type="checkbox"] {
-  margin-right: 2px;
+  margin-right: 0.2em;
   vertical-align: middle;
-  transform-origin: left center;
-  transform: scale(0.5);
+  width: 4px;
+  height: 4px;
 }
 
-/* --- Code --- */
-.markdown-preview-mini code {
-  padding: 0 2px;
-  margin: 0;
-  font-size: 5.5px;
-  font-family: ui-monospace, monospace;
-  background-color: var(--md-code-bg);
-  border-radius: 2px;
+/* Links */
+.markdown-preview-mini a {
+  color: #0969da;
+  text-decoration: none;
 }
 
+.markdown-preview-mini a:hover {
+  text-decoration: underline;
+}
+
+.dark .markdown-preview-mini a {
+  color: #4493f8;
+}
+
+/* Code blocks */
 .markdown-preview-mini pre {
-  margin-top: 0;
-  margin-bottom: 4px;
-  padding: 4px;
-  overflow: hidden;
-  font-size: 5.5px;
-  line-height: 1.1;
-  background-color: var(--md-pre-bg);
+  padding: 6px;
+  overflow: auto;
+  font-size: 85%;
+  line-height: 1.45;
+  background-color: #f6f8fa;
   border-radius: 2px;
-  border: 1px solid var(--md-border-muted);
+  margin-top: 0;
+  margin-bottom: 6px;
+}
+
+.dark .markdown-preview-mini pre {
+  background-color: #161b22;
+}
+
+.markdown-preview-mini code {
+  padding: 0.1em 0.2em;
+  margin: 0;
+  font-size: 85%;
+  background-color: rgba(175, 184, 193, 0.2);
+  border-radius: 2px;
+  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+}
+
+.dark .markdown-preview-mini code {
+  background-color: rgba(110, 118, 129, 0.4);
 }
 
 .markdown-preview-mini pre code {
-  font-size: 100%;
-  white-space: pre;
-  border: 0;
   padding: 0;
+  margin: 0;
+  font-size: 100%;
   background-color: transparent;
+  border: 0;
+  display: block;
+  overflow-x: auto;
 }
 
-/* --- Tables --- */
+/* Blockquotes */
+.markdown-preview-mini blockquote {
+  margin: 0 0 6px 0;
+  padding: 0 0.4em;
+  color: #59636e;
+  border-left: 0.1em solid #d0d7de;
+}
+
+.dark .markdown-preview-mini blockquote {
+  color: #848d97;
+  border-left-color: #30363d;
+}
+
+.markdown-preview-mini blockquote > :first-child {
+  margin-top: 0;
+}
+
+.markdown-preview-mini blockquote > :last-child {
+  margin-bottom: 0;
+}
+
+/* Horizontal rules */
+.markdown-preview-mini hr {
+  height: 0.1em;
+  padding: 0;
+  margin: 9px 0;
+  background-color: #d0d7de;
+  border: 0;
+}
+
+.dark .markdown-preview-mini hr {
+  background-color: #30363d;
+}
+
+/* Tables */
 .markdown-preview-mini table {
   border-spacing: 0;
   border-collapse: collapse;
-  display: block;
-  width: 100%;
+  margin-top: 0;
+  margin-bottom: 6px;
+  width: max-content;
   max-width: 100%;
   overflow: auto;
-  margin-top: 0;
-  margin-bottom: 4px;
-}
-
-.markdown-preview-mini table tr {
-  background-color: transparent;
-  border-top: 1px solid var(--md-border-muted);
-}
-
-.markdown-preview-mini table tr:nth-child(2n) {
-  background-color: var(--md-table-stripe);
+  display: block;
 }
 
 .markdown-preview-mini table th,
 .markdown-preview-mini table td {
-  padding: 1px 3px;
-  border: 1px solid var(--md-border-default);
-  font-size: 5px;
+  padding: 2px 5px;
+  border: 0.4px solid #d0d7de;
+}
+
+.dark .markdown-preview-mini table th,
+.dark .markdown-preview-mini table td {
+  border-color: #30363d;
 }
 
 .markdown-preview-mini table th {
-  font-weight: 700;
-  text-align: left;
+  font-weight: 600;
+  background-color: #f6f8fa;
 }
 
-.markdown-preview-mini table thead tr {
-  background-color: transparent;
+.dark .markdown-preview-mini table th {
+  background-color: #161b22;
 }
 
-.markdown-preview-mini table tbody tr:nth-child(2n) {
-  background-color: var(--md-table-stripe);
+.markdown-preview-mini table tr {
+  background-color: #ffffff;
+  border-top: 0.4px solid #d1d9e0;
 }
 
-/* --- Images --- */
+.dark .markdown-preview-mini table tr {
+  background-color: #0d1117;
+  border-top-color: #30363d;
+}
+
+.markdown-preview-mini table tr:nth-child(2n) {
+  background-color: #f6f8fa;
+}
+
+.dark .markdown-preview-mini table tr:nth-child(2n) {
+  background-color: #161b22;
+}
+
+/* Images */
 .markdown-preview-mini img {
   max-width: 100%;
   box-sizing: content-box;
-  background-color: transparent;
+  background-color: #ffffff;
 }
 
-/* --- Badges --- */
-.markdown-preview-mini img[src*="img.shields.io"] {
-  height: 7px;
-  width: auto;
-  max-width: none;
+.dark .markdown-preview-mini img {
+  background-color: #0d1117;
+}
+
+/* Strong/Bold */
+.markdown-preview-mini strong {
+  font-weight: 600;
+}
+
+/* Emphasis/Italic */
+.markdown-preview-mini em {
+  font-style: italic;
+}
+
+/* Strikethrough */
+.markdown-preview-mini del {
+  text-decoration: line-through;
+}
+
+/* ==================== BADGES - NORMAL PREVIEW ==================== */
+.markdown-preview img[src*="shields.io"],
+.markdown-preview img[src*="badge"],
+.markdown-preview img[src*="img.shields"],
+.markdown-preview img[src*="badgen.net"],
+.markdown-preview img[alt*="badge" i],
+.markdown-preview img[alt*="shield" i] {
   display: inline-block;
+  margin: 0 4px 4px 0;
   vertical-align: middle;
-  margin: 0 2px 0 0;
-  border-radius: 2px;
+  max-height: 20px;
+  width: auto;
 }
 
-/* =========================================
-   Responsive Adjustments
-   ========================================= */
-@media (max-width: 480px) {
-  .markdown-preview img[src*="img.shields.io"] {
-    height: 16px;
-    margin-right: 0.35rem;
-  }
+/* Keep badges in a single line container */
+.markdown-preview p:has(img[src*="shields.io"]),
+.markdown-preview p:has(img[src*="badge"]),
+.markdown-preview p:has(img[src*="badgen.net"]) {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 16px;
 }
 
-/* =========================================
-   Dark Mode Badge Filter
-   ========================================= */
-.dark .markdown-preview img[src*="img.shields.io"],
-.dark .markdown-preview-mini img[src*="img.shields.io"] {
-  filter: brightness(0.95) invert(1) saturate(0.9);
+/* ==================== BADGES - MINI PREVIEW ==================== */
+.markdown-preview-mini img[src*="shields.io"],
+.markdown-preview-mini img[src*="badge"],
+.markdown-preview-mini img[src*="img.shields"],
+.markdown-preview-mini img[src*="badgen.net"],
+.markdown-preview-mini img[alt*="badge" i],
+.markdown-preview-mini img[alt*="shield" i] {
+  display: inline-block;
+  margin: 0 1px 1px 0;
+  vertical-align: middle;
+  max-height: 4px;
+  width: auto;
+}
+
+/* Keep badges in a single line container - mini */
+.markdown-preview-mini p:has(img[src*="shields.io"]),
+.markdown-preview-mini p:has(img[src*="badge"]),
+.markdown-preview-mini p:has(img[src*="badgen.net"]) {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1px;
+  margin-bottom: 6px;
 }
 
 /* =========================================
