@@ -434,12 +434,12 @@ const GithubConnectionItem = ({
                 variant="default"
                 size="sm"
                 className={cn(
-                  "h-7",
+                  "h-8",
                   showCommitButton ? "visible ms-2" : "hidden",
                 )}
               >
                 <GitPullRequestArrow />
-                Commit Changes
+                <span className="-mt-0.5">Commit Changes</span>
               </Button>
             </SheetTrigger>
             <SheetContent>
@@ -452,15 +452,15 @@ const GithubConnectionItem = ({
               <div className="h-px w-full bg-foreground/10 -mt-4" />
               <div className="px-4 gap-y-6 flex flex-col overflow-y-scroll">
                 {/* Alerts Section */}
-                <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg flex gap-3">
-                  <AlertCircle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
+                <div className="p-3 bg-amber-100 dark:bg-amber-500/10 border border-amber-300 dark:border-amber-500/20 rounded-lg flex gap-3">
+                  <AlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-500 shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-sm font-medium text-amber-200">
+                    <p className="text-sm font-medium text-amber-900 dark:text-amber-200">
                       New Branch Required
                     </p>
-                    <p className="text-xs text-amber-200/70 mt-0.5">
+                    <p className="text-xs text-amber-700 dark:text-amber-200/70 mt-0.5">
                       Direct commits to{" "}
-                      <code className="bg-amber-500/20 px-1 rounded">
+                      <code className="bg-amber-200 dark:bg-amber-500/20 px-1 rounded text-amber-900 dark:text-amber-200">
                         {project?.repository?.defaultBranch}
                       </code>{" "}
                       are restricted. This action will create a new branch and
@@ -471,22 +471,22 @@ const GithubConnectionItem = ({
 
                 {/* Repository Details */}
                 <div className="space-y-3">
-                  <div className="flex items-center gap-2 text-xs font-semibold text-zinc-500 uppercase tracking-wider">
+                  <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                     <Info className="w-3.5 h-3.5" />
                     Repository Context
                   </div>
-                  <div className="bg-white/5 border border-white/10 rounded-lg p-4 space-y-2">
+                  <div className="bg-accent/50 border border-border rounded-lg p-4 space-y-2">
                     <div className="flex justify-between text-sm">
-                      <span className="text-zinc-400 shrink-0">
+                      <span className="text-muted-foreground shrink-0">
                         Target Repo
                       </span>
-                      <span className="text-zinc-100 font-mono text-end ms-2">
+                      <span className="text-foreground font-mono text-end ms-2">
                         {project?.repository?.fullName}
                       </span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-zinc-400">Base Branch</span>
-                      <span className="text-zinc-100 font-mono text-end ms-2">
+                      <span className="text-muted-foreground">Base Branch</span>
+                      <span className="text-foreground font-mono text-end ms-2">
                         {project?.repository?.defaultBranch}
                       </span>
                     </div>
@@ -495,7 +495,7 @@ const GithubConnectionItem = ({
 
                 {/* Branch Name */}
                 <div className="space-y-3">
-                  <label className="flex items-center gap-2 text-xs font-semibold text-zinc-500 uppercase tracking-wider">
+                  <label className="flex items-center gap-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                     <GitBranch className="w-3.5 h-3.5" />
                     New Branch Name
                   </label>
@@ -503,7 +503,7 @@ const GithubConnectionItem = ({
                     type="text"
                     value={branchName}
                     onChange={(e) => setBranchName(e.target.value)}
-                    className="w-full bg-[#1a1a1a] border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
+                    className="w-full bg-background border border-border rounded-lg px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition-all"
                     placeholder="e.g. docs/update-readme"
                     required
                   />
@@ -511,7 +511,7 @@ const GithubConnectionItem = ({
 
                 {/* README Version Selection */}
                 <div className="space-y-3">
-                  <label className="flex items-center gap-2 text-xs font-semibold text-zinc-500 uppercase tracking-wider">
+                  <label className="flex items-center gap-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                     <Files className="w-3.5 h-3.5" />
                     Select Version to Commit
                   </label>
@@ -535,14 +535,14 @@ const GithubConnectionItem = ({
 
                 {/* Commit Message */}
                 <div className="space-y-3">
-                  <label className="flex items-center gap-2 text-xs font-semibold text-zinc-500 uppercase tracking-wider">
+                  <label className="flex items-center gap-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                     <MessageSquare className="w-3.5 h-3.5" />
                     Commit Message
                   </label>
                   <textarea
                     value={commitMessage}
                     onChange={(e) => setCommitMessage(e.target.value)}
-                    className="w-full bg-[#1a1a1a] border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all min-h-[100px] resize-none"
+                    className="w-full bg-background border border-border rounded-lg px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition-all min-h-[100px] resize-none"
                     placeholder="Describe the changes..."
                     required
                   />
@@ -565,7 +565,7 @@ const GithubConnectionItem = ({
                     )}
                   </Button>
                   <SheetClose asChild>
-                    <Button className="bg-transparent border border-white/10 hover:bg-white/5 text-zinc-300 font-medium rounded-lg transition-all">
+                    <Button variant="outline" >
                       Cancel
                     </Button>
                   </SheetClose>
