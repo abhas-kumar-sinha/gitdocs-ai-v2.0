@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { createContext, useContext, useState } from "react";
 
@@ -9,9 +9,7 @@ type SidebarContextType = {
   setIsFeedbackFormOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const SidebarContext = createContext<SidebarContextType | undefined>(
-  undefined
-);
+const SidebarContext = createContext<SidebarContextType | undefined>(undefined);
 
 type SidebarProviderProps = {
   children: React.ReactNode;
@@ -24,7 +22,14 @@ export const SidebarProvider: React.FC<SidebarProviderProps> = ({
   const [isFeedbackFormOpen, setIsFeedbackFormOpen] = useState(false);
 
   return (
-    <SidebarContext.Provider value={{ isSidebarOpen, setIsSidebarOpen, isFeedbackFormOpen, setIsFeedbackFormOpen }}>
+    <SidebarContext.Provider
+      value={{
+        isSidebarOpen,
+        setIsSidebarOpen,
+        isFeedbackFormOpen,
+        setIsFeedbackFormOpen,
+      }}
+    >
       {children}
     </SidebarContext.Provider>
   );

@@ -37,7 +37,7 @@ type GitHubTreeItem = {
 type FileContext = {
   path: string;
   content: string;
-  type: 'full' | 'summary';
+  type: "full" | "summary";
   size: number;
 };
 
@@ -48,7 +48,7 @@ type ContextDiscoveryResult = {
 };
 
 type ConversationMessage = {
-  role: 'user' | 'assistant';
+  role: "user" | "assistant";
   content: string;
 };
 
@@ -63,14 +63,14 @@ type ProgressEvent = {
   frameworks?: string[];
   fileCount?: number;
   [key: string]: unknown;
-}
+};
 
-export { 
-    type ModelConfig, 
-    type RepositorySnapshot, 
-    type GitHubTreeItem, 
-    type FileContext, 
-    type ContextDiscoveryResult,
-    type ConversationMessage,
-    type ProgressEvent 
-}
+export {
+  type ModelConfig,
+  type RepositorySnapshot,
+  type GitHubTreeItem,
+  type FileContext,
+  type ContextDiscoveryResult,
+  type ConversationMessage,
+  type ProgressEvent,
+};

@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { createContext, useContext, useState } from "react";
 
@@ -7,17 +7,13 @@ type AiContextType = {
   setIsGenerating: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const AiContext = createContext<AiContextType | undefined>(
-  undefined
-);
+const AiContext = createContext<AiContextType | undefined>(undefined);
 
 type AiProviderProps = {
   children: React.ReactNode;
 };
 
-export const AiProvider: React.FC<AiProviderProps> = ({
-  children,
-}) => {
+export const AiProvider: React.FC<AiProviderProps> = ({ children }) => {
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
 
   return (
@@ -36,5 +32,3 @@ export const useAiContext = (): AiContextType => {
 };
 
 export { AiContext };
-
-

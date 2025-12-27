@@ -14,7 +14,7 @@ async function ProjectsGrid() {
 
   return (
     <div className="grid md:px-20 lg:px-0 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-        <ProjectList projects={projects.slice(0, 10)} />
+      <ProjectList projects={projects.slice(0, 10)} />
     </div>
   );
 }
@@ -25,7 +25,7 @@ function ProjectsSkeleton() {
       {[...Array(6)].map((_, i) => (
         <div key={i} className="flex flex-col gap-y-2">
           <div className="h-48 w-full rounded-xl bg-muted/50 animate-pulse" />
-          
+
           <div className="flex gap-x-2">
             <div className="h-10 w-10 rounded-full bg-muted/50 animate-pulse" />
             <div className="flex flex-col gap-y-1 mt-1">

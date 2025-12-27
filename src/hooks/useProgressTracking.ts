@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { ProgressEvent } from '@/types/readmeAi';
-import { useEffect, useState, useRef } from 'react';
+import { ProgressEvent } from "@/types/readmeAi";
+import { useEffect, useState, useRef } from "react";
 
 export function useProgressTracking(projectId: string) {
   const [progress, setProgress] = useState<ProgressEvent | null>(null);
@@ -21,8 +21,8 @@ export function useProgressTracking(projectId: string) {
     eventSource.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data) as ProgressEvent;
-        
-        if (data.type === 'connected') {
+
+        if (data.type === "connected") {
           return;
         }
 
@@ -36,7 +36,7 @@ export function useProgressTracking(projectId: string) {
           setError(data.message);
         }
       } catch (e) {
-        console.error('Failed to parse SSE data:', e);
+        console.error("Failed to parse SSE data:", e);
       }
     };
 

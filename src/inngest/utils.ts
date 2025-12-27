@@ -3,8 +3,12 @@ import { AgentResult, Message } from "@inngest/agent-kit";
 /**
  * Type guard to check if a message has content
  */
-function hasContent(message: Message): message is Message & { content: string | Array<{ type: string; text: string }> } {
-  return 'content' in message && message.content !== undefined;
+function hasContent(
+  message: Message,
+): message is Message & {
+  content: string | Array<{ type: string; text: string }>;
+} {
+  return "content" in message && message.content !== undefined;
 }
 
 /**
@@ -13,7 +17,7 @@ function hasContent(message: Message): message is Message & { content: string | 
  */
 export function extractAgentText(result: AgentResult): string | undefined {
   const assistantMessages = result.output.filter(
-    (message) => message.role === "assistant" && hasContent(message)
+    (message) => message.role === "assistant" && hasContent(message),
   );
 
   if (assistantMessages.length === 0) {
@@ -22,7 +26,7 @@ export function extractAgentText(result: AgentResult): string | undefined {
 
   const textContent = assistantMessages
     .map((message) => {
-      if (!hasContent(message)) return '';
+      if (!hasContent(message)) return "";
 
       const content = message.content;
 
@@ -34,15 +38,15 @@ export function extractAgentText(result: AgentResult): string | undefined {
       // Handle array of content blocks
       if (Array.isArray(content)) {
         return content
-          .filter((block) => block.type === 'text')
+          .filter((block) => block.type === "text")
           .map((block) => block.text)
-          .join('\n');
+          .join("\n");
       }
 
-      return '';
+      return "";
     })
     .filter(Boolean)
-    .join('\n\n');
+    .join("\n\n");
 
   return textContent || undefined;
 }
@@ -50,9 +54,11 @@ export function extractAgentText(result: AgentResult): string | undefined {
 /**
  * Get only the last assistant message text (original function)
  */
-export function lastAssistantTextMessage(result: AgentResult): string | undefined {
+export function lastAssistantTextMessage(
+  result: AgentResult,
+): string | undefined {
   const lastAssistantMessageIndex = result.output.findLastIndex(
-    (message) => message.role === "assistant" && hasContent(message)
+    (message) => message.role === "assistant" && hasContent(message),
   );
 
   if (lastAssistantMessageIndex === -1) {
@@ -75,9 +81,9 @@ export function lastAssistantTextMessage(result: AgentResult): string | undefine
   // Handle array of content blocks
   if (Array.isArray(content)) {
     return content
-      .filter((block) => block.type === 'text')
+      .filter((block) => block.type === "text")
       .map((block) => block.text)
-      .join('\n');
+      .join("\n");
   }
 
   return undefined;

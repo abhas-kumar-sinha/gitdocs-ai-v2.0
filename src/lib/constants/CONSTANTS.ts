@@ -1,9 +1,16 @@
 import { Template } from "@/app/pages/TemplatePage";
 
-const params = {slug: "params.slug"};
-const user = {name: "user.name"};
+const params = { slug: "params.slug" };
+const user = { name: "user.name" };
 
-export type TemplateType = 'minimal' | 'standard' | 'api' | 'data-science' | 'documentation' | 'monorepo' | 'hackathon';
+export type TemplateType =
+  | "minimal"
+  | "standard"
+  | "api"
+  | "data-science"
+  | "documentation"
+  | "monorepo"
+  | "hackathon";
 
 export const TEMPLATE_PROMPTS: Record<TemplateType, string> = {
   minimal: `Create a MINIMALIST README with:
@@ -28,7 +35,7 @@ export const TEMPLATE_PROMPTS: Record<TemplateType, string> = {
 - Docker deployment
 - Database schema`,
 
-  'data-science': `Create a DATA SCIENCE README with:
+  "data-science": `Create a DATA SCIENCE README with:
 - Problem statement
 - Dataset description
 - Dependencies with versions
@@ -58,14 +65,15 @@ export const TEMPLATE_PROMPTS: Record<TemplateType, string> = {
 - Tech stack badges
 - Quick start (<5 min)
 - Demo link
-- Team credits`
+- Team credits`,
 };
 
 export const templates: Template[] = [
   {
-    id: 'minimal',
+    id: "minimal",
     title: "Minimalist",
-    description: "Clean and simple. Perfect for small utilities, scripts, or personal configurations.",
+    description:
+      "Clean and simple. Perfect for small utilities, scripts, or personal configurations.",
     tags: ["Scripts", "Config", "Small Libs"],
     content: `
 # Project Title
@@ -151,12 +159,13 @@ If there are any simple settings, list them here:
 ## License
 
 MIT - Feel free to use this however you'd like.
-`
+`,
   },
   {
-    id: 'standard',
+    id: "standard",
     title: "Standard Open Source",
-    description: "The gold standard. Includes installation, usage, badges, and contribution guidelines.",
+    description:
+      "The gold standard. Includes installation, usage, badges, and contribution guidelines.",
     tags: ["NPM Packages", "Libraries", "Tools"],
     content: `
 # Project Name
@@ -501,12 +510,13 @@ Distributed under the MIT License. See [LICENSE](./LICENSE) for more information
 - Inspired by [axios](https://github.com/axios/axios) and [ky](https://github.com/sindresorhus/ky)
 - Built with [Zod](https://github.com/colinhacks/zod)
 - Thanks to all our [contributors](https://github.com/user/repo/graphs/contributors)!
-`
+`,
   },
   {
-    id: 'api',
+    id: "api",
     title: "Backend API Service",
-    description: "Focuses on API endpoints, authentication, environment variables, and deployment.",
+    description:
+      "Focuses on API endpoints, authentication, environment variables, and deployment.",
     tags: ["REST", "GraphQL", "Docker"],
     content: `
 # Backend API Service
@@ -1113,12 +1123,13 @@ MIT License - see [LICENSE](./LICENSE)
 - 📧 Email: dev-support@example.com
 - 💬 Slack: #api-support
 - 🐛 Issues: [GitHub Issues](https://github.com/org/repo/issues)
-`
+`,
   },
   {
-    id: 'data-science',
+    id: "data-science",
     title: "Data Science / ML",
-    description: "Tailored for notebooks, model descriptions, dataset sources, and analysis results.",
+    description:
+      "Tailored for notebooks, model descriptions, dataset sources, and analysis results.",
     tags: ["Python", "Jupyter", "Research"],
     content: `
 # Customer Churn Prediction using Machine Learning
@@ -1955,12 +1966,13 @@ This project is licensed under the MIT License - see [LICENSE](./LICENSE) file f
 **Last Updated**: December 2024  
 **Project Status**: ✅ Complete and Deployed  
 **Maintained**: Yes, active development
-`
+`,
   },
   {
-    id: 'documentation',
+    id: "documentation",
     title: "Documentation Heavy",
-    description: "Features a table of contents, deep API references, and extensive examples.",
+    description:
+      "Features a table of contents, deep API references, and extensive examples.",
     tags: ["Frameworks", "Complex Apps", "SaaS"],
     content: `
 # MegaFramework Documentation
@@ -2703,12 +2715,13 @@ For the complete API reference, visit: https://docs.megaframework.com/api
 - 💬 [Discord Community](https://discord.gg/megaframework)
 - 🐦 [Twitter Updates](https://twitter.com/megaframework)
 - 📧 Email: support@megaframework.com
-`
+`,
   },
   {
-    id: 'monorepo',
+    id: "monorepo",
     title: "Monorepo / Workspace",
-    description: "Structured for multiple packages with links to sub-directories and shared architecture.",
+    description:
+      "Structured for multiple packages with links to sub-directories and shared architecture.",
     tags: ["Turborepo", "Yarn Workspaces"],
     content: `
 # ACME Corp Monorepo
@@ -3572,12 +3585,13 @@ Unauthorized copying, distribution, or use is strictly prohibited.
 
 **Last Updated**: December 2024  
 **Maintainers**: @platform-team
-`
+`,
   },
   {
-    id: 'hackathon',
+    id: "hackathon",
     title: "Hackathon / MVP",
-    description: "High energy, visual-first. Focuses on screenshots, the 'pitch', and how to run it fast.",
+    description:
+      "High energy, visual-first. Focuses on screenshots, the 'pitch', and how to run it fast.",
     tags: ["Prototype", "Demo", "Event"],
     content: `
 # 🚀 Project SuperNova
@@ -4054,6 +4068,6 @@ Built with 💙, 😴, and an unhealthy amount of ☕ by Team SuperNova
 **Code Quality:** 🎢 It's a roller coaster  
 **Cat Approval Rating:** 🐱🐱🐱🐱 (4/5 cats)  
 **Would Build Again:** Maybe with more sleep
-`
-  }
+`,
+  },
 ];

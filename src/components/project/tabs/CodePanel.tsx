@@ -12,17 +12,23 @@ const RawPreview = ({ content }: { content: string }) => {
   const { rawScrollPosition, setRawScrollPosition } = useScrollPosition();
   const { theme, resolvedTheme } = useTheme();
   const [isReady, setIsReady] = useState(false);
-  
+
   const editorRef = useRef<Monaco.editor.IStandaloneCodeEditor | null>(null);
   const hasRestoredRef = useRef(false);
   const scrollListenerRef = useRef<Monaco.IDisposable | null>(null);
 
-  const handleEditorDidMount = (editorInstance: Monaco.editor.IStandaloneCodeEditor) => {
+  const handleEditorDidMount = (
+    editorInstance: Monaco.editor.IStandaloneCodeEditor,
+  ) => {
     editorRef.current = editorInstance;
 
     // Wait for editor to be fully rendered and scroll position to be restored
     setTimeout(() => {
-      if (editorRef.current && rawScrollPosition > 0 && !hasRestoredRef.current) {
+      if (
+        editorRef.current &&
+        rawScrollPosition > 0 &&
+        !hasRestoredRef.current
+      ) {
         editorRef.current.setScrollTop(rawScrollPosition);
         hasRestoredRef.current = true;
       }
@@ -35,14 +41,19 @@ const RawPreview = ({ content }: { content: string }) => {
 
     // Add scroll listener with throttling to save position
     scrollListenerRef.current = editorInstance.onDidScrollChange(
-      (e: { scrollTop: number; scrollLeft: number; scrollWidth: number; scrollHeight: number }) => {
+      (e: {
+        scrollTop: number;
+        scrollLeft: number;
+        scrollWidth: number;
+        scrollHeight: number;
+      }) => {
         const newPosition = e.scrollTop;
         const difference = Math.abs(newPosition - rawScrollPosition);
 
         if (difference > 20 || newPosition === 0) {
           setRawScrollPosition(newPosition);
         }
-      }
+      },
     );
   };
 
@@ -67,7 +78,6 @@ const RawPreview = ({ content }: { content: string }) => {
     };
   }, [setRawScrollPosition]);
 
-
   if (!content) {
     return (
       <div className="h-full flex flex-col gap-y-2 items-center justify-center bg-foreground/5">
@@ -90,7 +100,10 @@ const RawPreview = ({ content }: { content: string }) => {
           sampleAverage
         />
         <div className="flex items-center gap-x-2 text-foreground/70 -my-8">
-          <ShimmerText text="Loading Project Preview..." className="text-xl -px-5 mt-8" />
+          <ShimmerText
+            text="Loading Project Preview..."
+            className="text-xl -px-5 mt-8"
+          />
         </div>
       </div>
     );
@@ -109,9 +122,11 @@ const RawPreview = ({ content }: { content: string }) => {
           </div>
         </div>
       )}
-      
+
       {/* Editor - hidden until ready */}
-      <div className={`h-full transition-opacity duration-300 ${isReady ? 'opacity-100' : 'opacity-0'}`}>
+      <div
+        className={`h-full transition-opacity duration-300 ${isReady ? "opacity-100" : "opacity-0"}`}
+      >
         <Editor
           height="calc(100vh - 2rem)"
           defaultLanguage="markdown"

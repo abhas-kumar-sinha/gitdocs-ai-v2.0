@@ -1,7 +1,7 @@
 import crypto from "crypto";
 import { prisma } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from '@clerk/nextjs/server';
+import { auth } from "@clerk/nextjs/server";
 import { Permission } from "@/generated/prisma/enums";
 
 export async function GET(req: NextRequest) {
@@ -9,16 +9,16 @@ export async function GET(req: NextRequest) {
     const { userId } = await auth();
 
     if (!userId) {
-      return new Response('Unauthorized', { status: 401 });
+      return new Response("Unauthorized", { status: 401 });
     }
 
     const user = await prisma.user.findUnique({
       where: { clerkId: userId },
-      select: { id: true }
+      select: { id: true },
     });
 
     if (!user) {
-      return new Response('Unauthorized', { status: 401 });
+      return new Response("Unauthorized", { status: 401 });
     }
 
     const { searchParams } = new URL(req.url);
@@ -30,13 +30,13 @@ export async function GET(req: NextRequest) {
     if (permissionsParam === "existing") {
       const existing = await prisma.installation.findFirst({
         where: { userId: user.id },
-        select: { permissions: true }
+        select: { permissions: true },
       });
 
       if (!existing || !existing.permissions) {
         return new Response(
-          'No existing installation found. Cannot use existing permissions.', 
-          { status: 400 }
+          "No existing installation found. Cannot use existing permissions.",
+          { status: 400 },
         );
       }
 
@@ -56,11 +56,11 @@ export async function GET(req: NextRequest) {
       await tx.installationProcess.updateMany({
         where: {
           userId: user.id,
-          status: "PENDING"
+          status: "PENDING",
         },
         data: {
-          status: "FAILED"
-        }
+          status: "FAILED",
+        },
       });
 
       // Create new pending process
@@ -69,17 +69,19 @@ export async function GET(req: NextRequest) {
           userId: user.id,
           state,
           permissions: permissionToSet,
-          status: "PENDING"
-        }
+          status: "PENDING",
+        },
       });
     });
 
-    const installUrl = new URL('https://github.com/apps/gitdocs-ai/installations/new');
-    installUrl.searchParams.set('state', state);
+    const installUrl = new URL(
+      "https://github.com/apps/gitdocs-ai/installations/new",
+    );
+    installUrl.searchParams.set("state", state);
 
     return NextResponse.redirect(installUrl.toString());
   } catch (error) {
-    console.error('GitHub installation setup error:', error);
-    return new Response('Internal server error', { status: 500 });
+    console.error("GitHub installation setup error:", error);
+    return new Response("Internal server error", { status: 500 });
   }
 }

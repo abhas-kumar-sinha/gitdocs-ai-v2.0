@@ -1,12 +1,18 @@
-import { z } from 'zod';
-import { createTRPCRouter, protectedProcedure } from '@/trpc/init';
-import { TRPCError } from '@trpc/server';
-import { prisma } from '@/lib/db';
-import { inngest } from '@/inngest/client';
+import { z } from "zod";
+import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
+import { TRPCError } from "@trpc/server";
+import { prisma } from "@/lib/db";
+import { inngest } from "@/inngest/client";
 
 export const repositoryRouter = createTRPCRouter({
   syncRepositories: protectedProcedure
-    .input(z.object({ installationId: z.string().min(1, { message: 'Installation ID is required' }) }))
+    .input(
+      z.object({
+        installationId: z
+          .string()
+          .min(1, { message: "Installation ID is required" }),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       const installation = await prisma.installation.findFirst({
         where: {
@@ -16,11 +22,11 @@ export const repositoryRouter = createTRPCRouter({
       });
 
       if (!installation) {
-        throw new TRPCError({ code: 'NOT_FOUND' });
+        throw new TRPCError({ code: "NOT_FOUND" });
       }
 
       await inngest.send({
-        name: 'github/sync-repositories',
+        name: "github/sync-repositories",
         data: {
           installationId: installation.id,
         },

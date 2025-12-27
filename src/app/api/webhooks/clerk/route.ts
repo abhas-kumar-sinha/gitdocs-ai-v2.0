@@ -1,14 +1,12 @@
-import { prisma } from '@/lib/db';
-import { NextRequest } from 'next/server'
-import { verifyWebhook } from '@clerk/nextjs/webhooks'
+import { prisma } from "@/lib/db";
+import { NextRequest } from "next/server";
+import { verifyWebhook } from "@clerk/nextjs/webhooks";
 
 export async function POST(req: NextRequest) {
-
-  const evt = await verifyWebhook(req)
+  const evt = await verifyWebhook(req);
   const eventType = evt.type;
 
-  if (eventType === 'user.created') {
-    
+  if (eventType === "user.created") {
     const { id, email_addresses, first_name, last_name, image_url } = evt.data;
 
     try {
@@ -22,14 +20,14 @@ export async function POST(req: NextRequest) {
         },
       });
 
-      console.log('✅ User created:', id);
+      console.log("✅ User created:", id);
     } catch (error) {
-      console.error('Error creating user:', error);
-      return new Response('User creation failed', { status: 500 });
+      console.error("Error creating user:", error);
+      return new Response("User creation failed", { status: 500 });
     }
   }
 
-  if (eventType === 'user.updated') {
+  if (eventType === "user.updated") {
     const { id, email_addresses, first_name, last_name, image_url } = evt.data;
 
     await prisma.user.update({
@@ -43,15 +41,15 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  if (eventType === 'user.deleted') {
+  if (eventType === "user.deleted") {
     const { id } = evt.data;
 
     await prisma.user.delete({
       where: { clerkId: id },
     });
 
-    console.log('🗑️ User deleted:', id);
+    console.log("🗑️ User deleted:", id);
   }
 
-  return new Response('Webhook processed', { status: 200 });
+  return new Response("Webhook processed", { status: 200 });
 }

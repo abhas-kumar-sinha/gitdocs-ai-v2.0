@@ -7,6 +7,6 @@ const Page = () => {
     <Suspense fallback={<LoadingScreen />}>
       <GitHubInstallPage />
     </Suspense>
-  )
-}
+  );
+};
 export default Page;

@@ -1,49 +1,81 @@
-"use client"
+"use client";
 
-import { useState, useMemo } from "react"
-import { Repository } from "@/generated/prisma/client"
-import { useRepositoryContext } from "@/contexts/RepositoryContext"
-import { Star, GitFork, Lock, Globe, Search, Circle, AlertCircle, CheckCircle2, RefreshCw, Clock } from "lucide-react"
-import ConnectGithub from "@/components/common/ConnectGithub"
-import { InstallationWithRepositories } from "@/modules/installation/server/procedures"
+import { useState, useMemo } from "react";
+import { Repository } from "@/generated/prisma/client";
+import { useRepositoryContext } from "@/contexts/RepositoryContext";
+import {
+  Star,
+  GitFork,
+  Lock,
+  Globe,
+  Search,
+  Circle,
+  AlertCircle,
+  CheckCircle2,
+  RefreshCw,
+  Clock,
+} from "lucide-react";
+import ConnectGithub from "@/components/common/ConnectGithub";
+import { InstallationWithRepositories } from "@/modules/installation/server/procedures";
 
 // --- Helpers ---
-const formatNumber = (num: number) => 
-  new Intl.NumberFormat('en-US', { notation: "compact", compactDisplay: "short" }).format(num)
+const formatNumber = (num: number) =>
+  new Intl.NumberFormat("en-US", {
+    notation: "compact",
+    compactDisplay: "short",
+  }).format(num);
 
 const timeAgo = (date: Date | string) => {
-  const d = new Date(date)
-  const now = new Date()
-  const diffInDays = Math.floor((now.getTime() - d.getTime()) / (1000 * 3600 * 24))
-  
-  if (diffInDays === 0) return 'Today'
-  if (diffInDays === 1) return 'Yesterday'
-  if (diffInDays < 7) return `${diffInDays}d ago`
-  if (diffInDays < 30) return `${Math.floor(diffInDays / 7)}w ago`
-  return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' }).format(d)
-}
+  const d = new Date(date);
+  const now = new Date();
+  const diffInDays = Math.floor(
+    (now.getTime() - d.getTime()) / (1000 * 3600 * 24),
+  );
+
+  if (diffInDays === 0) return "Today";
+  if (diffInDays === 1) return "Yesterday";
+  if (diffInDays < 7) return `${diffInDays}d ago`;
+  if (diffInDays < 30) return `${Math.floor(diffInDays / 7)}w ago`;
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+  }).format(d);
+};
 
 const SyncStatusIcon = ({ status }: { status: string }) => {
   switch (status) {
-    case 'completed': return <CheckCircle2 className="h-3 w-3 text-green-500" />
-    case 'syncing': return <RefreshCw className="h-3 w-3 text-blue-500 animate-spin" />
-    case 'failed': return <AlertCircle className="h-3 w-3 text-red-500" />
-    default: return <Circle className="h-3 w-3 text-muted-foreground" />
+    case "completed":
+      return <CheckCircle2 className="h-3 w-3 text-green-500" />;
+    case "syncing":
+      return <RefreshCw className="h-3 w-3 text-blue-500 animate-spin" />;
+    case "failed":
+      return <AlertCircle className="h-3 w-3 text-red-500" />;
+    default:
+      return <Circle className="h-3 w-3 text-muted-foreground" />;
   }
-}
+};
 
-export default function RepositoryList({ selected, setSelected, userInstallations }: { selected: Repository | null, setSelected: (repo: Repository | null) => void, userInstallations: InstallationWithRepositories[] | undefined }) {
-  const { repositories, isLoading } = useRepositoryContext()
-  const [searchQuery, setSearchQuery] = useState("")
+export default function RepositoryList({
+  selected,
+  setSelected,
+  userInstallations,
+}: {
+  selected: Repository | null;
+  setSelected: (repo: Repository | null) => void;
+  userInstallations: InstallationWithRepositories[] | undefined;
+}) {
+  const { repositories, isLoading } = useRepositoryContext();
+  const [searchQuery, setSearchQuery] = useState("");
 
   const filteredRepos = useMemo(() => {
-    if (!repositories) return []
-    const lowerQuery = searchQuery.toLowerCase()
-    return repositories.filter((repo: Repository) => 
-      repo.name.toLowerCase().includes(lowerQuery) ||
-      repo.fullName.toLowerCase().includes(lowerQuery)
-    )
-  }, [repositories, searchQuery])
+    if (!repositories) return [];
+    const lowerQuery = searchQuery.toLowerCase();
+    return repositories.filter(
+      (repo: Repository) =>
+        repo.name.toLowerCase().includes(lowerQuery) ||
+        repo.fullName.toLowerCase().includes(lowerQuery),
+    );
+  }, [repositories, searchQuery]);
 
   // --- Loading State ---
   if (isLoading) {
@@ -51,7 +83,10 @@ export default function RepositoryList({ selected, setSelected, userInstallation
       <div className="flex flex-col gap-4 p-1">
         <div className="h-10 w-full bg-muted/50 rounded-md animate-pulse" />
         {[1, 2, 3, 4, 5].map((i) => (
-          <div key={i} className="flex flex-col gap-2 py-3 border-b border-border">
+          <div
+            key={i}
+            className="flex flex-col gap-2 py-3 border-b border-border"
+          >
             <div className="flex justify-between">
               <div className="h-4 w-32 bg-muted rounded animate-pulse" />
               <div className="h-4 w-4 bg-muted rounded animate-pulse" />
@@ -64,7 +99,7 @@ export default function RepositoryList({ selected, setSelected, userInstallation
           </div>
         ))}
       </div>
-    )
+    );
   }
 
   return (
@@ -96,7 +131,9 @@ export default function RepositoryList({ selected, setSelected, userInstallation
                 key={repo.id}
                 onClick={() => setSelected(repo)}
                 className={`group cursor-pointer flex flex-col gap-1.5 py-3 border-b border-border px-2 rounded-md transition-all duration-200 text-left w-full ${
-                  selected?.id === repo.id ? 'border-primary bg-accent/50 shadow-sm border-l-2 border-l-primary' : 'hover:bg-accent/30 hover:px-2'
+                  selected?.id === repo.id
+                    ? "border-primary bg-accent/50 shadow-sm border-l-2 border-l-primary"
+                    : "hover:bg-accent/30 hover:px-2"
                 }`}
               >
                 {/* Top Row: Name & Status */}
@@ -107,12 +144,15 @@ export default function RepositoryList({ selected, setSelected, userInstallation
                     ) : (
                       <Globe className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                     )}
-                    <span className="font-medium text-sm text-foreground truncate" title={repo.fullName}>
+                    <span
+                      className="font-medium text-sm text-foreground truncate"
+                      title={repo.fullName}
+                    >
                       {repo.name}
                     </span>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
-                     {/* Sync Status Indicator */}
+                    {/* Sync Status Indicator */}
                     <div title={`Sync Status: ${repo.syncStatus}`}>
                       <SyncStatusIcon status={repo.syncStatus} />
                     </div>
@@ -121,7 +161,9 @@ export default function RepositoryList({ selected, setSelected, userInstallation
 
                 {/* Description */}
                 <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
-                  {repo.description || <span className="opacity-50 italic">No description</span>}
+                  {repo.description || (
+                    <span className="opacity-50 italic">No description</span>
+                  )}
                 </p>
 
                 {/* Bottom Row: Stats */}
@@ -129,10 +171,12 @@ export default function RepositoryList({ selected, setSelected, userInstallation
                   {repo.language && (
                     <div className="flex items-center gap-1">
                       <span className="h-2 w-2 rounded-full bg-primary/80" />
-                      <span className="text-foreground/80">{repo.language}</span>
+                      <span className="text-foreground/80">
+                        {repo.language}
+                      </span>
                     </div>
                   )}
-                  
+
                   {(repo.stargazers > 0 || repo.forks > 0) && (
                     <div className="flex items-center gap-3">
                       <div className="flex items-center gap-1">
@@ -146,7 +190,10 @@ export default function RepositoryList({ selected, setSelected, userInstallation
                     </div>
                   )}
 
-                  <div title={`Updated At`} className="flex items-center gap-1 ml-auto opacity-70">
+                  <div
+                    title={`Updated At`}
+                    className="flex items-center gap-1 ml-auto opacity-70"
+                  >
                     <Clock className="h-3 w-3" />
                     <span>{timeAgo(repo.updatedAt)}</span>
                   </div>
@@ -158,12 +205,14 @@ export default function RepositoryList({ selected, setSelected, userInstallation
       </div>
 
       {/* Footer - Fixed at bottom  */}
-      {userInstallations && userInstallations.length > 0 && <div className="sticky bottom-0 z-10 py-1 text-sm mx-auto">
-        <span className="text-foreground/70">Missing Git repository?</span>
-        <ConnectGithub isSidebarOpen={false} update={true}>
-          <span> Adjust GitHub App Permissions → </span>
-        </ConnectGithub>
-      </div>}
+      {userInstallations && userInstallations.length > 0 && (
+        <div className="sticky bottom-0 z-10 py-1 text-sm mx-auto">
+          <span className="text-foreground/70">Missing Git repository?</span>
+          <ConnectGithub isSidebarOpen={false} update={true}>
+            <span> Adjust GitHub App Permissions → </span>
+          </ConnectGithub>
+        </div>
+      )}
     </div>
-  )
+  );
 }

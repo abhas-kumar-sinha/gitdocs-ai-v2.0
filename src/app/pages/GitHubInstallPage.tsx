@@ -13,7 +13,7 @@ export default function GitHubInstallPage() {
   const searchParams = useSearchParams();
   const status = searchParams.get("status");
   const error = searchParams.get("error");
-  
+
   const pollingEnabled = status === "connected";
 
   const { data: installationStatus } = useQuery({
@@ -30,10 +30,10 @@ export default function GitHubInstallPage() {
       if (window.opener) {
         window.opener.postMessage(
           { type: "GITHUB_INSTALL_SUCCESS" },
-          window.origin
+          window.origin,
         );
       }
-      
+
       setTimeout(() => {
         window.close();
       }, 1000);
@@ -44,7 +44,8 @@ export default function GitHubInstallPage() {
   const errorMessages = {
     missing_params: {
       title: "Missing Parameters",
-      description: "Required installation parameters are missing. Please try installing the GitHub App again.",
+      description:
+        "Required installation parameters are missing. Please try installing the GitHub App again.",
       icon: AlertCircle,
       color: "text-orange-500",
     },
@@ -56,13 +57,15 @@ export default function GitHubInstallPage() {
     },
     user_not_found: {
       title: "User Not Found",
-      description: "Your user account could not be found. Please contact support.",
+      description:
+        "Your user account could not be found. Please contact support.",
       icon: XCircle,
       color: "text-red-500",
     },
     installation_failed: {
       title: "Installation Failed",
-      description: "Something went wrong during installation. Please try again.",
+      description:
+        "Something went wrong during installation. Please try again.",
       icon: XCircle,
       color: "text-red-500",
     },
@@ -81,7 +84,7 @@ export default function GitHubInstallPage() {
               <Icon className={`h-12 w-12 ${errorInfo.color}`} />
             </div>
           </div>
-          
+
           <div className="space-y-2">
             <h1 className="text-2xl font-semibold tracking-tight">
               {errorInfo.title}
@@ -104,9 +107,11 @@ export default function GitHubInstallPage() {
 
   // Render connecting/syncing state
   if (status === "connected") {
-    
     return (
-      <LoadingScreen title="Setting up your repositories" subtitle="We're syncing your repositories and setting up Gitdocs AI. This may take a few moments." />
+      <LoadingScreen
+        title="Setting up your repositories"
+        subtitle="We're syncing your repositories and setting up Gitdocs AI. This may take a few moments."
+      />
     );
   }
 
@@ -118,7 +123,7 @@ export default function GitHubInstallPage() {
             <Loader2 className="h-12 w-12 animate-spin text-muted-foreground" />
           </div>
         </div>
-        
+
         <div className="space-y-2">
           <h1 className="text-2xl font-semibold tracking-tight">
             Processing...

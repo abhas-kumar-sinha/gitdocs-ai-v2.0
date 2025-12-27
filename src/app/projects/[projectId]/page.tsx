@@ -1,6 +1,4 @@
-
-import ProjectView from '@/components/project/ProjectView'
-
+import ProjectView from "@/components/project/ProjectView";
 
 interface Props {
   params: Promise<{
@@ -11,9 +9,7 @@ interface Props {
 const Page = async ({ params }: Props) => {
   const { projectId } = await params;
 
-  return (
-    <ProjectView projectId={projectId} />
-  )
+  return <ProjectView projectId={projectId} />;
 };
 
 export default Page;

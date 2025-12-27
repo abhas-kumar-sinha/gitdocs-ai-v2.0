@@ -5,7 +5,11 @@ import { useEffect } from "react";
 
 let resizeTimeout: NodeJS.Timeout | null = null;
 
-export default function AuraBackground({source} : {source: "dashboard" | "landing"}) {
+export default function AuraBackground({
+  source,
+}: {
+  source: "dashboard" | "landing";
+}) {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -20,7 +24,7 @@ export default function AuraBackground({source} : {source: "dashboard" | "landin
     // 1️⃣ Load script only once
     if (!window.UnicornStudio?.isInitialized) {
       const existingScript = document.querySelector(
-        'script[src*="unicornstudio"]'
+        'script[src*="unicornstudio"]',
       );
 
       if (!existingScript) {
@@ -54,7 +58,14 @@ export default function AuraBackground({source} : {source: "dashboard" | "landin
   }, []);
 
   return (
-    <div className={cn("-z-10 bg-white dark:bg-black", source === "landing" ? "fixed top-0 left-0 w-full h-full" : "absolute inset-0")}>
+    <div
+      className={cn(
+        "-z-10 bg-white dark:bg-black",
+        source === "landing"
+          ? "fixed top-0 left-0 w-full h-full"
+          : "absolute inset-0",
+      )}
+    >
       <div
         data-us-project="tPmIIl0vKqHO9yqmtge2"
         className="

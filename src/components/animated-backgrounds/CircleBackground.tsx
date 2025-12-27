@@ -5,7 +5,11 @@ import { useEffect } from "react";
 
 let resizeTimeout: ReturnType<typeof setTimeout> | null = null;
 
-export default function CircleBackground({source} : {source: "dashboard" | "landing"}) {
+export default function CircleBackground({
+  source,
+}: {
+  source: "dashboard" | "landing";
+}) {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -18,7 +22,7 @@ export default function CircleBackground({source} : {source: "dashboard" | "land
     // 1️⃣ Load script only once
     if (!window.UnicornStudio?.isInitialized) {
       const existingScript = document.querySelector(
-        'script[src*="unicornstudio"]'
+        'script[src*="unicornstudio"]',
       );
 
       if (!existingScript) {
@@ -51,7 +55,14 @@ export default function CircleBackground({source} : {source: "dashboard" | "land
   }, []);
 
   return (
-    <div className={cn("-z-10", source === "landing" ? "fixed top-0 left-0 w-full h-full" : "absolute inset-0")}>
+    <div
+      className={cn(
+        "-z-10",
+        source === "landing"
+          ? "fixed top-0 left-0 w-full h-full"
+          : "absolute inset-0",
+      )}
+    >
       <div
         data-us-project="bKN5upvoulAmWvInmHza"
         className="

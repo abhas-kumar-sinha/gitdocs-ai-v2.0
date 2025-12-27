@@ -1,4 +1,4 @@
-import { App } from 'octokit';
+import { App } from "octokit";
 
 const app = new App({
   appId: process.env.GITHUB_APP_ID!,

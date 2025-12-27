@@ -1,14 +1,25 @@
-import { ConversationMessage, FileContext, RepositorySnapshot } from "@/types/readmeAi";
-import { TEMPLATE_PROMPTS, templates, TemplateType } from "../constants/CONSTANTS";
+import {
+  ConversationMessage,
+  FileContext,
+  RepositorySnapshot,
+} from "@/types/readmeAi";
+import {
+  TEMPLATE_PROMPTS,
+  templates,
+  TemplateType,
+} from "../constants/CONSTANTS";
 import { TemplateId } from "@/components/project/context-selection/TemplateList";
 
-export const contextDiscoveryPrompt = (snapshot: RepositorySnapshot, template: string = "standard") => `You are a context discovery specialist. Your job is to identify the MINIMUM set of files needed to generate a high-quality README.
+export const contextDiscoveryPrompt = (
+  snapshot: RepositorySnapshot,
+  template: string = "standard",
+) => `You are a context discovery specialist. Your job is to identify the MINIMUM set of files needed to generate a high-quality README.
 
 === REPOSITORY SNAPSHOT ===
 ${JSON.stringify(snapshot, null, 2)}
 
 === README TEMPLATE EXAMPLE===
-${templates.find((t) => t.id === template as TemplateId)?.content}
+${templates.find((t) => t.id === (template as TemplateId))?.content}
 
 === TASK ===
 Analyze this repository and return a JSON object with:
@@ -37,21 +48,30 @@ Analyze this repository and return a JSON object with:
 - Skip: test files, build artifacts, vendor/node_modules
 - Estimate tokens: ~1 token per 4 characters
 
-Return ONLY the JSON object, no other text.`
+Return ONLY the JSON object, no other text.`;
 
-export const readmeGeneratePrompt = (snapshot: RepositorySnapshot, template: string, contextFiles: FileContext[], reasoning: string) => `You are an expert README architect with deep knowledge of software documentation best practices.
+export const readmeGeneratePrompt = (
+  snapshot: RepositorySnapshot,
+  template: string,
+  contextFiles: FileContext[],
+  reasoning: string,
+) => `You are an expert README architect with deep knowledge of software documentation best practices.
 
 === TEMPLATE STYLE ===
-${TEMPLATE_PROMPTS[(template as TemplateType) || 'standard']}
+${TEMPLATE_PROMPTS[(template as TemplateType) || "standard"]}
 
 === REPOSITORY OVERVIEW ===
 ${JSON.stringify(snapshot, null, 2)}
 
 === CONTEXT FILES ===
-${contextFiles.map(f => `
+${contextFiles
+  .map(
+    (f) => `
 FILE: ${f.path} (${f.size} bytes)
 ${f.content}
-`).join('\n---\n')}
+`,
+  )
+  .join("\n---\n")}
 
 === DISCOVERY REASONING ===
 ${reasoning}
@@ -81,23 +101,23 @@ Make it production-ready and copy-paste ready for GitHub.
 - Include practical, runnable examples
 - Use proper Markdown syntax
 - Follow the template style strictly
-- Make it scannable with good visual hierarchy`
+- Make it scannable with good visual hierarchy`;
 
 // ============= TEMPLATE-SPECIFIC GUIDELINES =============
 
 const TEMPLATE_GUIDELINES: Record<string, string> = {
   minimal: `Keep changes concise and maintain minimalist style. Avoid adding unnecessary sections.`,
-  
+
   standard: `Maintain clear structure with badges, features, installation, usage, and contributing sections.`,
-  
+
   api: `Focus on endpoint documentation, authentication, request/response examples, and deployment instructions.`,
-  
-  'data-science': `Emphasize model architecture, training instructions, datasets, and performance metrics.`,
-  
+
+  "data-science": `Emphasize model architecture, training instructions, datasets, and performance metrics.`,
+
   documentation: `Maintain comprehensive structure with detailed API reference, configuration options, and examples.`,
-  
+
   monorepo: `Preserve workspace structure overview, package listings, and cross-package dependencies.`,
-  
+
   hackathon: `Keep it exciting and visual with demos, tech stack badges, and quick start instructions.`,
 };
 
@@ -105,9 +125,10 @@ export function readmeUpgradePrompt(
   existingReadme: string,
   contextFiles: FileContext[],
   conversationHistory: ConversationMessage[],
-  template: string
+  template: string,
 ): string {
-  const templateGuideline = TEMPLATE_GUIDELINES[template] || TEMPLATE_GUIDELINES.standard;
+  const templateGuideline =
+    TEMPLATE_GUIDELINES[template] || TEMPLATE_GUIDELINES.standard;
 
   return `You are an expert README editor with deep knowledge of documentation best practices. Your job is to update an EXISTING README based on user feedback while maintaining consistency and quality.
 
@@ -120,21 +141,37 @@ export function readmeUpgradePrompt(
 
 === CURRENT README ===
 \`\`\`markdown
-${existingReadme || 'No existing README yet (this should not happen in upgrade mode)'}
+${existingReadme || "No existing README yet (this should not happen in upgrade mode)"}
 \`\`\`
 
 === AVAILABLE CONTEXT FILES ===
-${contextFiles.length > 0 ? contextFiles.map(f => `
+${
+  contextFiles.length > 0
+    ? contextFiles
+        .map(
+          (f) => `
 **File: ${f.path}** (${f.size} bytes, type: ${f.type})
 \`\`\`
 ${f.content}
 \`\`\`
-`).join('\n---\n') : 'No additional context files available.'}
+`,
+        )
+        .join("\n---\n")
+    : "No additional context files available."
+}
 
 === CONVERSATION HISTORY ===
-${conversationHistory.length > 0 ? conversationHistory.map(msg => `
+${
+  conversationHistory.length > 0
+    ? conversationHistory
+        .map(
+          (msg) => `
 **${msg.role.toUpperCase()}:** ${msg.content}
-`).join('\n') : 'No previous conversation (first interaction).'}
+`,
+        )
+        .join("\n")
+    : "No previous conversation (first interaction)."
+}
 
 === GUIDELINES FOR UPDATES ===
 
@@ -215,23 +252,27 @@ You're EDITING an existing README, not creating a new one. The user expects thei
 
 // ============= HELPER: Format Conversation for Display =============
 
-export function formatConversationHistory(messages: ConversationMessage[]): string {
-  if (messages.length === 0) return 'No previous conversation.';
-  
+export function formatConversationHistory(
+  messages: ConversationMessage[],
+): string {
+  if (messages.length === 0) return "No previous conversation.";
+
   return messages
-    .map((msg, idx) => `${idx + 1}. **${msg.role.toUpperCase()}**: ${msg.content}`)
-    .join('\n\n');
+    .map(
+      (msg, idx) => `${idx + 1}. **${msg.role.toUpperCase()}**: ${msg.content}`,
+    )
+    .join("\n\n");
 }
 
 // ============= HELPER: Summarize Context Files =============
 
 export function summarizeContextFiles(files: FileContext[]): string {
-  if (files.length === 0) return 'No context files loaded.';
-  
-  const summary = files.map(f => {
+  if (files.length === 0) return "No context files loaded.";
+
+  const summary = files.map((f) => {
     const sizeKB = (f.size / 1024).toFixed(1);
     return `- ${f.path} (${sizeKB} KB, ${f.type})`;
   });
-  
-  return `${files.length} context file(s) available:\n${summary.join('\n')}`;
+
+  return `${files.length} context file(s) available:\n${summary.join("\n")}`;
 }

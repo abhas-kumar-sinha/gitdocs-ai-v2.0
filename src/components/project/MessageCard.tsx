@@ -1,10 +1,17 @@
 import { useState, useEffect } from "react";
-import { BookText, Check, ChevronRight, Copy, ThumbsDown, ThumbsUp } from "lucide-react"
-import { Fragment, Message, MessageType } from "@/generated/prisma/client"
+import {
+  BookText,
+  Check,
+  ChevronRight,
+  Copy,
+  ThumbsDown,
+  ThumbsUp,
+} from "lucide-react";
+import { Fragment, Message, MessageType } from "@/generated/prisma/client";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import remarkBreaks from 'remark-breaks';
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import remarkBreaks from "remark-breaks";
 import { Card } from "../ui/card";
 import { cn } from "@/lib/utils";
 
@@ -30,90 +37,94 @@ const preprocessText = (text: string) => {
   if (!text) return "";
   // 1. Replace literal "\\n" with real newlines
   // 2. Ensure double newlines for proper paragraph spacing if needed
-  return text.replace(/\\n/g, '\n');
+  return text.replace(/\\n/g, "\n");
 };
 
-const UserMessage = ({timeStamp, content} : {timeStamp : Date, content : string}) => {
+const UserMessage = ({
+  timeStamp,
+  content,
+}: {
+  timeStamp: Date;
+  content: string;
+}) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const MAX_LENGTH = 400; 
+  const MAX_LENGTH = 400;
   const shouldTruncate = content.length > MAX_LENGTH;
   const [copied, setCopied] = useState(false);
 
-  const cleanContent = preprocessText(content)
+  const cleanContent = preprocessText(content);
   // Helper to slice text without breaking markdown too badly (visual only)
-  const displayContent = shouldTruncate && !isExpanded 
-      ? cleanContent.slice(0, MAX_LENGTH) + '...'
+  const displayContent =
+    shouldTruncate && !isExpanded
+      ? cleanContent.slice(0, MAX_LENGTH) + "..."
       : cleanContent;
-
 
   useEffect(() => {
     const timeout = setTimeout(() => {
       setCopied(false);
     }, 2000);
     return () => clearTimeout(timeout);
-  }, [copied])
+  }, [copied]);
 
   return (
     <>
-    <div className="text-center text-xs text-foreground/50">{formatCreatedAt(timeStamp)}</div>
-    <div className="ms-auto flex flex-col gap-y-1 items-end group mt-3">
-      <Card className="py-2 px-4 bg-muted rounded-xl max-w-[76%] w-fit min-w-24 border-none shadow-none overflow-hidden">
-        
-        <div className="message-content -ms-0.5">
-          <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>
-            {displayContent}
-          </ReactMarkdown>
-        </div>
-
-        {shouldTruncate && (
-          <button 
-            onClick={() => setIsExpanded(!isExpanded)}
-            className="text-sm cursor-pointer text-foreground/50 hover:text-foreground/70 text-start mt-2 font-medium"
-          >
-            {isExpanded ? 'Show less' : 'Show more'}
-          </button>
-        )}
-      </Card>
-
-      <div className="flex items-center gap-x-2 invisible group-hover:visible">        
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <button 
-              className="cursor-pointer p-2 rounded-md hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50"
-              onClick={() => {
-                navigator.clipboard.writeText(content);
-                setCopied(true);
-              }}
-            >
-              {copied ? <Check size={10} /> : <Copy size={10} />}
-            </button>
-          </TooltipTrigger>
-          <TooltipContent>
-            {copied ? 'Copied' : 'Copy'}
-          </TooltipContent>
-        </Tooltip>
+      <div className="text-center text-xs text-foreground/50">
+        {formatCreatedAt(timeStamp)}
       </div>
-    </div>
+      <div className="ms-auto flex flex-col gap-y-1 items-end group mt-3">
+        <Card className="py-2 px-4 bg-muted rounded-xl max-w-[76%] w-fit min-w-24 border-none shadow-none overflow-hidden">
+          <div className="message-content -ms-0.5">
+            <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>
+              {displayContent}
+            </ReactMarkdown>
+          </div>
+
+          {shouldTruncate && (
+            <button
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="text-sm cursor-pointer text-foreground/50 hover:text-foreground/70 text-start mt-2 font-medium"
+            >
+              {isExpanded ? "Show less" : "Show more"}
+            </button>
+          )}
+        </Card>
+
+        <div className="flex items-center gap-x-2 invisible group-hover:visible">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                className="cursor-pointer p-2 rounded-md hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50"
+                onClick={() => {
+                  navigator.clipboard.writeText(content);
+                  setCopied(true);
+                }}
+              >
+                {copied ? <Check size={10} /> : <Copy size={10} />}
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>{copied ? "Copied" : "Copy"}</TooltipContent>
+          </Tooltip>
+        </div>
+      </div>
     </>
-  )
-}
+  );
+};
 
 const AssistantMessage = ({
-  content, 
-  type, 
-  fragment, 
+  content,
+  type,
+  fragment,
   fragmentVersion,
-  activeFragment, 
-  setActiveFragment
-} : {
-  content : string, 
-  type : MessageType, 
-  fragment : Fragment | null, 
-  fragmentVersion: number,
-  activeFragment : Fragment | null, 
-  setActiveFragment : (fragment : Fragment) => void
+  activeFragment,
+  setActiveFragment,
+}: {
+  content: string;
+  type: MessageType;
+  fragment: Fragment | null;
+  fragmentVersion: number;
+  activeFragment: Fragment | null;
+  setActiveFragment: (fragment: Fragment) => void;
 }) => {
-
   const [copied, setCopied] = useState(false);
   const [ishelpful, setIsHelpful] = useState<boolean | null>(null);
 
@@ -125,55 +136,65 @@ const AssistantMessage = ({
       setCopied(false);
     }, 2000);
     return () => clearTimeout(timeout);
-  }, [copied]) 
+  }, [copied]);
 
   return (
     <div className="flex flex-col gap-y-2 items-start mb-4">
-      <div className={cn("pe-4 max-w-full w-fit message-content", type === "ERROR" ? "text-red-500/80" : "")}>
+      <div
+        className={cn(
+          "pe-4 max-w-full w-fit message-content",
+          type === "ERROR" ? "text-red-500/80" : "",
+        )}
+      >
         {type === "RESULT" ? (
-          <ReactMarkdown 
-            remarkPlugins={[remarkGfm, remarkBreaks]}
-          >
+          <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>
             {cleanContent}
           </ReactMarkdown>
         ) : (
           "Something went wrong please try again"
         )}
       </div>
-      
+
       <div className="flex items-center gap-x-1">
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button
+              className="cursor-pointer p-2 rounded-md hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50"
+              onClick={() => {
+                setIsHelpful((prev) => (prev === true ? null : true));
+              }}
+            >
+              {ishelpful === true ? (
+                <ThumbsUp fill="white" stroke="none" size={10} />
+              ) : (
+                <ThumbsUp size={10} />
+              )}
+            </button>
+          </TooltipTrigger>
+          <TooltipContent>Helpful</TooltipContent>
+        </Tooltip>
 
         <Tooltip>
           <TooltipTrigger asChild>
-            <button 
+            <button
               className="cursor-pointer p-2 rounded-md hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50"
-              onClick={() => {setIsHelpful((prev) => (prev === true ? null : true))}}
+              onClick={() => {
+                setIsHelpful((prev) => (prev === false ? null : false));
+              }}
             >
-              {ishelpful === true ? <ThumbsUp fill="white" stroke="none" size={10} /> : <ThumbsUp size={10} />}
+              {ishelpful === false ? (
+                <ThumbsDown fill="white" stroke="none" size={10} />
+              ) : (
+                <ThumbsDown size={10} />
+              )}
             </button>
           </TooltipTrigger>
-          <TooltipContent>
-            Helpful
-          </TooltipContent>
-        </Tooltip>
-         
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <button 
-              className="cursor-pointer p-2 rounded-md hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50"
-              onClick={() => {setIsHelpful((prev) => (prev === false ? null : false))}}
-            >
-              {ishelpful === false ? <ThumbsDown fill="white" stroke="none" size={10} /> : <ThumbsDown size={10} />}
-            </button>
-          </TooltipTrigger>
-          <TooltipContent>
-            Not helpful
-          </TooltipContent>
+          <TooltipContent>Not helpful</TooltipContent>
         </Tooltip>
 
-         <Tooltip>
+        <Tooltip>
           <TooltipTrigger asChild>
-            <button 
+            <button
               className="cursor-pointer p-2 rounded-md hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50"
               onClick={() => {
                 navigator.clipboard.writeText(content); // Copy original raw content, or cleanContent if preferred
@@ -183,39 +204,71 @@ const AssistantMessage = ({
               {copied ? <Check size={10} /> : <Copy size={10} />}
             </button>
           </TooltipTrigger>
-          <TooltipContent>
-            {copied ? 'Copied' : 'Copy'}
-          </TooltipContent>
+          <TooltipContent>{copied ? "Copied" : "Copy"}</TooltipContent>
         </Tooltip>
       </div>
 
       {/* ... Fragment Card ... */}
-      {type === "RESULT" && fragment && 
-      <Card onClick={() => {setActiveFragment(fragment)}} className={cn("px-5 py-2.5 mt-4 w-3/4 max-w-[260px] transition-colors", fragment.id === activeFragment?.id ? "bg-accent/25 border-accent" : "hover:bg-foreground/20")}>
-        <div className="whitespace-pre-wrap flex flex-col items-start gap-y-1 cursor-pointer">
-          <div className="flex items-center justify-between w-full">
-            <div className="flex items-center gap-x-2">
-              <BookText size="15" />
-              <span>Readme: v{fragmentVersion}</span>
+      {type === "RESULT" && fragment && (
+        <Card
+          onClick={() => {
+            setActiveFragment(fragment);
+          }}
+          className={cn(
+            "px-5 py-2.5 mt-4 w-3/4 max-w-[260px] transition-colors",
+            fragment.id === activeFragment?.id
+              ? "bg-accent/25 border-accent"
+              : "hover:bg-foreground/20",
+          )}
+        >
+          <div className="whitespace-pre-wrap flex flex-col items-start gap-y-1 cursor-pointer">
+            <div className="flex items-center justify-between w-full">
+              <div className="flex items-center gap-x-2">
+                <BookText size="15" />
+                <span>Readme: v{fragmentVersion}</span>
+              </div>
+              <ChevronRight size={16} />
             </div>
-            <ChevronRight size={16} />
+            <span className="text-sm text-foreground/50">
+              {fragment.id === activeFragment?.id
+                ? "Active Edit"
+                : "Preview this version"}
+            </span>
           </div>
-          <span className="text-sm text-foreground/50">{fragment.id === activeFragment?.id ? "Active Edit" : "Preview this version"}</span>
-        </div>
-      </Card>}
+        </Card>
+      )}
     </div>
-  )
-}
+  );
+};
 
-const MessageCard = ({message, fragment, fragmentVersion, activeFragment, setActiveFragment} : {message : Message, fragment : Fragment | null, fragmentVersion : number, activeFragment : Fragment | null, setActiveFragment : (fragment : Fragment) => void}) => {
+const MessageCard = ({
+  message,
+  fragment,
+  fragmentVersion,
+  activeFragment,
+  setActiveFragment,
+}: {
+  message: Message;
+  fragment: Fragment | null;
+  fragmentVersion: number;
+  activeFragment: Fragment | null;
+  setActiveFragment: (fragment: Fragment) => void;
+}) => {
   if (message.role === "ASSISTANT") {
     return (
-      <AssistantMessage content={message.content} type={message.type} fragment={fragment} fragmentVersion={fragmentVersion} activeFragment={activeFragment} setActiveFragment={setActiveFragment}/>
-    )
+      <AssistantMessage
+        content={message.content}
+        type={message.type}
+        fragment={fragment}
+        fragmentVersion={fragmentVersion}
+        activeFragment={activeFragment}
+        setActiveFragment={setActiveFragment}
+      />
+    );
   }
 
   return (
-    <UserMessage timeStamp={message.createdAt} content={message.content}/>
-  )
-}
-export default MessageCard
+    <UserMessage timeStamp={message.createdAt} content={message.content} />
+  );
+};
+export default MessageCard;

@@ -34,7 +34,9 @@ export default function RootLayout({
     <ClerkProvider>
       <TRPCReactProvider>
         <html lang="en" suppressHydrationWarning>
-          <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+          <body
+            className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+          >
             <Providers>
               <ScrollPositionProvider>
                 <RepositoryProvider>

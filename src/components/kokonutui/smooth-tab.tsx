@@ -15,7 +15,7 @@ export interface TabItem {
 }
 
 interface SmoothTabProps {
-  items: TabItem[]
+  items: TabItem[];
   defaultTabId: string;
   className?: string;
   activeColor?: string;
@@ -103,7 +103,7 @@ export default function SmoothTab({
 
   const handleKeyDown = (
     e: React.KeyboardEvent<HTMLButtonElement>,
-    tabId: string
+    tabId: string,
   ) => {
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
@@ -115,7 +115,6 @@ export default function SmoothTab({
 
   return (
     <div className="flex h-full flex-col">
-
       {/* Toolbar */}
       <div
         aria-label="Smooth tabs"
@@ -124,7 +123,7 @@ export default function SmoothTab({
           "mx-auto w-full bg-background",
           "rounded-xl border",
           "transition-all duration-200",
-          className
+          className,
         )}
         ref={containerRef}
         role="tablist"
@@ -138,7 +137,7 @@ export default function SmoothTab({
           }}
           className={cn(
             "absolute z-1 rounded-lg",
-            selectedItem?.color || activeColor
+            selectedItem?.color || activeColor,
           )}
           initial={false}
           style={{ height: "calc(100% - 8px)", top: "4px" }}
@@ -163,7 +162,7 @@ export default function SmoothTab({
                   "truncate",
                   isSelected
                     ? "text-white"
-                    : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                    : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
                 )}
                 id={`tab-${item.id}`}
                 key={item.id}

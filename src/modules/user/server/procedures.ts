@@ -1,7 +1,7 @@
-import { z } from 'zod';
-import { prisma } from '@/lib/db';
-import { clerkClient } from '@clerk/nextjs/server';
-import { createTRPCRouter, protectedProcedure } from '@/trpc/init';
+import { z } from "zod";
+import { prisma } from "@/lib/db";
+import { clerkClient } from "@clerk/nextjs/server";
+import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
 
 const FeedbackInputSchema = z.object({
   intent: z.array(z.string()).min(1),
@@ -16,27 +16,26 @@ const FeedbackInputSchema = z.object({
 });
 
 export const userRouter = createTRPCRouter({
-  getCurrent: protectedProcedure
-    .query(async ({ ctx }) => {
-      const user = await prisma.user.findUnique({
-        where: { id: ctx.auth.userId },
-        include: {
-          installations: {
-            include: {
-              repositories: {
-                take: 10,
-                orderBy: { updatedAt: 'desc' },
-              },
+  getCurrent: protectedProcedure.query(async ({ ctx }) => {
+    const user = await prisma.user.findUnique({
+      where: { id: ctx.auth.userId },
+      include: {
+        installations: {
+          include: {
+            repositories: {
+              take: 10,
+              orderBy: { updatedAt: "desc" },
             },
           },
-          projects: {
-            orderBy: { updatedAt: 'desc' },
-          },
         },
-      });
+        projects: {
+          orderBy: { updatedAt: "desc" },
+        },
+      },
+    });
 
-      return user;
-    }),
+    return user;
+  }),
 
   completeFeedbackForm: protectedProcedure
     .input(FeedbackInputSchema)
@@ -82,11 +81,9 @@ export const userRouter = createTRPCRouter({
           });
         } catch (clerkError) {
           console.error("Failed to update Clerk metadata:", clerkError);
-
         }
       }
 
       return feedback.feedbackEntry;
     }),
-
 });

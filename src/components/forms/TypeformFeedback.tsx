@@ -10,7 +10,12 @@ import { cn } from "@/lib/utils";
 
 // --- Types & Configuration ---
 
-type QuestionType = "multipleChoice" | "singleChoice" | "shortText" | "longText" | "scale";
+type QuestionType =
+  | "multipleChoice"
+  | "singleChoice"
+  | "shortText"
+  | "longText"
+  | "scale";
 
 // Define what an answer can be
 export type AnswerValue = string | string[] | number | null;
@@ -66,7 +71,8 @@ const QUESTIONS: Question[] = [
     id: "insight",
     type: "longText",
     label: "If you could change one thing, what would it be?",
-    placeholder: "Better README structure suggestions, faster responses, clearer UI…",
+    placeholder:
+      "Better README structure suggestions, faster responses, clearer UI…",
     required: true,
   },
   {
@@ -86,7 +92,8 @@ const QUESTIONS: Question[] = [
     id: "missingFeature",
     type: "shortText",
     label: "Was there anything you expected Gitdocs AI to do but it couldn't?",
-    placeholder: "e.g., Auto-detect tech stack, better badges, folder-level docs…",
+    placeholder:
+      "e.g., Auto-detect tech stack, better badges, folder-level docs…",
     required: false,
   },
   {
@@ -100,7 +107,13 @@ const QUESTIONS: Question[] = [
 
 const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
-export function TypeformFeedback({ onComplete, setIsFeedbackFormOpen }: { onComplete?: (answers: Record<string, AnswerValue>) => void, setIsFeedbackFormOpen: (open: boolean) => void }) {
+export function TypeformFeedback({
+  onComplete,
+  setIsFeedbackFormOpen,
+}: {
+  onComplete?: (answers: Record<string, AnswerValue>) => void;
+  setIsFeedbackFormOpen: (open: boolean) => void;
+}) {
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState<Record<string, AnswerValue>>({});
   const [isCompleted, setIsCompleted] = useState(false);
@@ -113,31 +126,37 @@ export function TypeformFeedback({ onComplete, setIsFeedbackFormOpen }: { onComp
   const totalSteps = QUESTIONS.length;
 
   // --- Validation ---
-  const validateAnswer = useCallback((questionId: string, value: AnswerValue, question: Question): boolean => {
-    if (!question.required) return true;
-    
-    const isEmpty = 
-      value === undefined || 
-      value === null || 
-      value === "" || 
-      (Array.isArray(value) && value.length === 0);
+  const validateAnswer = useCallback(
+    (questionId: string, value: AnswerValue, question: Question): boolean => {
+      if (!question.required) return true;
 
-    return !isEmpty;
-  }, []);
+      const isEmpty =
+        value === undefined ||
+        value === null ||
+        value === "" ||
+        (Array.isArray(value) && value.length === 0);
+
+      return !isEmpty;
+    },
+    [],
+  );
 
   // --- Logic ---
-  const handleAnswerChange = useCallback((value: AnswerValue) => {
-    setAnswers((prev) => {
-      const newState = { ...prev, [currentQuestion.id]: value };
-      answersRef.current = newState;
-      return newState;
-    });
-    setError("");
-  }, [currentQuestion.id]);
+  const handleAnswerChange = useCallback(
+    (value: AnswerValue) => {
+      setAnswers((prev) => {
+        const newState = { ...prev, [currentQuestion.id]: value };
+        answersRef.current = newState;
+        return newState;
+      });
+      setError("");
+    },
+    [currentQuestion.id],
+  );
 
   const handleNext = useCallback(() => {
     const currentVal = answersRef.current[currentQuestion.id];
-    
+
     if (!validateAnswer(currentQuestion.id, currentVal, currentQuestion)) {
       setError("This question is required - please provide an answer");
       return;
@@ -152,23 +171,25 @@ export function TypeformFeedback({ onComplete, setIsFeedbackFormOpen }: { onComp
       const incompleteRequired = QUESTIONS.findIndex((q) => {
         if (!q.required) return false;
         const answer = answersRef.current[q.id];
-        const isEmpty = 
-          answer === undefined || 
-          answer === null || 
-          answer === "" || 
+        const isEmpty =
+          answer === undefined ||
+          answer === null ||
+          answer === "" ||
           (Array.isArray(answer) && answer.length === 0);
         return isEmpty;
       });
-      
+
       if (incompleteRequired !== -1) {
-        setError(`Please complete all required questions. Jumping to question ${incompleteRequired + 1}...`);
+        setError(
+          `Please complete all required questions. Jumping to question ${incompleteRequired + 1}...`,
+        );
         setTimeout(() => {
           setCurrentStep(incompleteRequired);
           setError("");
         }, 1500);
         return;
       }
-      
+
       setIsCompleted(true);
       if (onComplete) onComplete(answersRef.current);
     }
@@ -181,38 +202,45 @@ export function TypeformFeedback({ onComplete, setIsFeedbackFormOpen }: { onComp
     }
   }, [currentStep]);
 
-  const handleNavClick = useCallback((direction: 'next' | 'prev') => {
-    if (direction === 'next') {
-      handleNext();
-    } else {
-      handlePrev();
-    }
-  }, [handleNext, handlePrev]);
+  const handleNavClick = useCallback(
+    (direction: "next" | "prev") => {
+      if (direction === "next") {
+        handleNext();
+      } else {
+        handlePrev();
+      }
+    },
+    [handleNext, handlePrev],
+  );
 
-  const toggleSelection = useCallback((option: string) => {
-    const current = (answersRef.current[currentQuestion.id] as string[]) || [];
-    if (current.includes(option)) {
-      handleAnswerChange(current.filter((item) => item !== option));
-    } else {
-      handleAnswerChange([...current, option]);
-    }
-  }, [currentQuestion.id, handleAnswerChange]);
+  const toggleSelection = useCallback(
+    (option: string) => {
+      const current =
+        (answersRef.current[currentQuestion.id] as string[]) || [];
+      if (current.includes(option)) {
+        handleAnswerChange(current.filter((item) => item !== option));
+      } else {
+        handleAnswerChange([...current, option]);
+      }
+    },
+    [currentQuestion.id, handleAnswerChange],
+  );
 
   // Keyboard Navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Don't handle shortcuts if user is typing in a textarea with shift+enter
       const target = e.target as HTMLElement;
-      const isTextarea = target.tagName === 'TEXTAREA';
-      
+      const isTextarea = target.tagName === "TEXTAREA";
+
       // Enter Key Logic
       if (e.key === "Enter") {
         if (currentQuestion.type === "longText") {
           // Shift + Enter = New line (default behavior), don't submit
-          if (e.shiftKey) return; 
-          
+          if (e.shiftKey) return;
+
           // Enter only = Submit
-          e.preventDefault(); 
+          e.preventDefault();
           handleNext();
           return;
         }
@@ -226,9 +254,16 @@ export function TypeformFeedback({ onComplete, setIsFeedbackFormOpen }: { onComp
       if (isTextarea && !e.ctrlKey && !e.metaKey) return;
 
       // Shortcuts for Single Choice (A, B, C...)
-      if (currentQuestion.type === "singleChoice" || currentQuestion.type === "multipleChoice") {
+      if (
+        currentQuestion.type === "singleChoice" ||
+        currentQuestion.type === "multipleChoice"
+      ) {
         const keyIndex = ALPHABET.indexOf(e.key.toUpperCase());
-        if (keyIndex !== -1 && currentQuestion.options && currentQuestion.options[keyIndex]) {
+        if (
+          keyIndex !== -1 &&
+          currentQuestion.options &&
+          currentQuestion.options[keyIndex]
+        ) {
           e.preventDefault();
           const option = currentQuestion.options[keyIndex];
           if (currentQuestion.type === "singleChoice") {
@@ -245,7 +280,7 @@ export function TypeformFeedback({ onComplete, setIsFeedbackFormOpen }: { onComp
       if (currentQuestion.type === "scale") {
         const key = e.key;
         let num: number | null = null;
-        
+
         if (key === "0") {
           num = 10; // 0 key represents 10
         } else {
@@ -254,7 +289,7 @@ export function TypeformFeedback({ onComplete, setIsFeedbackFormOpen }: { onComp
             num = parsed;
           }
         }
-        
+
         if (num !== null) {
           e.preventDefault();
           handleAnswerChange(num);
@@ -289,7 +324,8 @@ export function TypeformFeedback({ onComplete, setIsFeedbackFormOpen }: { onComp
           <div className="flex flex-col gap-3">
             <div className="flex flex-col gap-2 pt-2">
               {currentQuestion.options?.map((option, idx) => {
-                const currentVal = (answers[currentQuestion.id] as string[]) || [];
+                const currentVal =
+                  (answers[currentQuestion.id] as string[]) || [];
                 const isSelected = currentVal.includes(option);
                 return (
                   <div
@@ -299,7 +335,7 @@ export function TypeformFeedback({ onComplete, setIsFeedbackFormOpen }: { onComp
                       "group flex items-center justify-between p-3 px-4 border rounded-md cursor-pointer transition-all duration-200",
                       isSelected
                         ? "bg-primary/10 border-primary shadow-[0_0_0_1px_rgba(0,0,0,0.1)] dark:shadow-none ring-1 ring-primary"
-                        : "bg-background hover:bg-muted border-input"
+                        : "bg-background hover:bg-muted border-input",
                     )}
                   >
                     <div className="flex items-center gap-3">
@@ -308,20 +344,26 @@ export function TypeformFeedback({ onComplete, setIsFeedbackFormOpen }: { onComp
                           "flex items-center justify-center w-6 h-6 text-xs font-bold border rounded-sm transition-colors",
                           isSelected
                             ? "bg-primary text-primary-foreground border-primary"
-                            : "bg-muted text-muted-foreground border-border group-hover:border-primary"
+                            : "bg-muted text-muted-foreground border-border group-hover:border-primary",
                         )}
                       >
                         {ALPHABET[idx]}
                       </span>
                       <span className="text-lg">{option}</span>
                     </div>
-                    {isSelected && <Check className="w-5 h-5 text-primary animate-in zoom-in duration-200" />}
+                    {isSelected && (
+                      <Check className="w-5 h-5 text-primary animate-in zoom-in duration-200" />
+                    )}
                   </div>
                 );
               })}
             </div>
             <div className="text-xs text-muted-foreground/70 text-center hidden md:block">
-              Press <span className="font-bold">A-{ALPHABET[currentQuestion.options!.length - 1]}</span> to select options
+              Press{" "}
+              <span className="font-bold">
+                A-{ALPHABET[currentQuestion.options!.length - 1]}
+              </span>{" "}
+              to select options
             </div>
           </div>
         );
@@ -337,13 +379,13 @@ export function TypeformFeedback({ onComplete, setIsFeedbackFormOpen }: { onComp
                     key={option}
                     onClick={() => {
                       handleAnswerChange(option);
-                      setTimeout(handleNext, 350); 
+                      setTimeout(handleNext, 350);
                     }}
                     className={cn(
                       "group flex items-center gap-3 p-3 px-4 border rounded-md cursor-pointer transition-all duration-200",
                       isSelected
                         ? "bg-primary/10 border-primary ring-1 ring-primary"
-                        : "bg-background hover:bg-muted border-input"
+                        : "bg-background hover:bg-muted border-input",
                     )}
                   >
                     <span
@@ -351,7 +393,7 @@ export function TypeformFeedback({ onComplete, setIsFeedbackFormOpen }: { onComp
                         "flex items-center justify-center w-6 h-6 text-xs font-bold border rounded-sm transition-colors",
                         isSelected
                           ? "bg-primary text-primary-foreground border-primary"
-                          : "bg-muted text-muted-foreground border-border group-hover:border-primary"
+                          : "bg-muted text-muted-foreground border-border group-hover:border-primary",
                       )}
                     >
                       {ALPHABET[idx]}
@@ -362,7 +404,11 @@ export function TypeformFeedback({ onComplete, setIsFeedbackFormOpen }: { onComp
               })}
             </div>
             <div className="text-xs text-muted-foreground/70 text-center hidden md:block">
-              Press <span className="font-bold">A-{ALPHABET[currentQuestion.options!.length - 1]}</span> to select and continue
+              Press{" "}
+              <span className="font-bold">
+                A-{ALPHABET[currentQuestion.options!.length - 1]}
+              </span>{" "}
+              to select and continue
             </div>
           </div>
         );
@@ -389,7 +435,8 @@ export function TypeformFeedback({ onComplete, setIsFeedbackFormOpen }: { onComp
               className="text-xl md:text-2xl min-h-[120px] bg-transparent border-0 border-b border-primary/20 rounded-none px-0 py-2 focus-visible:ring-0 focus-visible:border-primary resize-none placeholder:text-muted-foreground/40 leading-relaxed scrollbar-hide"
             />
             <div className="absolute bottom-[-25px] right-0 text-xs text-muted-foreground">
-              <span className="font-semibold">Shift ⇧ + Enter ↵</span> for line break
+              <span className="font-semibold">Shift ⇧ + Enter ↵</span> for line
+              break
             </div>
           </div>
         );
@@ -409,7 +456,7 @@ export function TypeformFeedback({ onComplete, setIsFeedbackFormOpen }: { onComp
                     "w-12 h-12 md:w-16 md:h-16 rounded-md border-2 text-xl font-bold transition-all duration-200 flex items-center justify-center",
                     answers[currentQuestion.id] === num
                       ? "bg-primary text-primary-foreground border-primary scale-110 shadow-lg"
-                      : "bg-background border-muted-foreground/20 text-muted-foreground hover:border-primary hover:text-primary hover:bg-primary/5"
+                      : "bg-background border-muted-foreground/20 text-muted-foreground hover:border-primary hover:text-primary hover:bg-primary/5",
                   )}
                 >
                   {num}
@@ -421,7 +468,8 @@ export function TypeformFeedback({ onComplete, setIsFeedbackFormOpen }: { onComp
               <span>Very likely</span>
             </div>
             <div className="text-xs text-muted-foreground/70 text-center hidden md:block">
-              Press <span className="font-bold">1-9</span> or <span className="font-bold">0</span> (for 10) on your keyboard
+              Press <span className="font-bold">1-9</span> or{" "}
+              <span className="font-bold">0</span> (for 10) on your keyboard
             </div>
           </div>
         );
@@ -440,7 +488,8 @@ export function TypeformFeedback({ onComplete, setIsFeedbackFormOpen }: { onComp
         </div>
         <h2 className="text-3xl font-bold mb-4">Feedback Received</h2>
         <p className="text-xl text-muted-foreground mb-8">
-          Thanks for helping us build a better product. Your insights have been logged.
+          Thanks for helping us build a better product. Your insights have been
+          logged.
         </p>
         <Button size="lg" onClick={() => setIsFeedbackFormOpen(false)}>
           Close Form
@@ -451,21 +500,21 @@ export function TypeformFeedback({ onComplete, setIsFeedbackFormOpen }: { onComp
 
   // --- Main Render ---
   const progress = ((currentStep + 1) / totalSteps) * 100;
-  
+
   // Calculate completion status for each question
   const questionStatus = QUESTIONS.map((q, idx) => {
     const answer = answers[q.id];
-    const isEmpty = 
-      answer === undefined || 
-      answer === null || 
-      answer === "" || 
+    const isEmpty =
+      answer === undefined ||
+      answer === null ||
+      answer === "" ||
       (Array.isArray(answer) && answer.length === 0);
-    
+
     return {
       index: idx,
       isAnswered: !isEmpty,
       isRequired: q.required,
-      isCurrent: idx === currentStep
+      isCurrent: idx === currentStep,
     };
   });
 
@@ -480,7 +529,7 @@ export function TypeformFeedback({ onComplete, setIsFeedbackFormOpen }: { onComp
           transition={{ duration: 0.5, ease: "easeInOut" }}
         />
       </div>
-      
+
       {/* Question Dots Indicator */}
       <div className="fixed top-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-50 bg-background/80 backdrop-blur-sm px-3 py-2 rounded-full border border-border shadow-sm">
         {questionStatus.map((status) => (
@@ -493,13 +542,13 @@ export function TypeformFeedback({ onComplete, setIsFeedbackFormOpen }: { onComp
             className={cn(
               "w-2 h-2 rounded-full transition-all duration-300 cursor-pointer hover:scale-125",
               status.isCurrent && "scale-150",
-              status.isAnswered 
-                ? "bg-primary" 
-                : status.isRequired 
-                  ? "bg-muted-foreground/30 ring-1 ring-primary/50" 
-                  : "bg-muted-foreground/20"
+              status.isAnswered
+                ? "bg-primary"
+                : status.isRequired
+                  ? "bg-muted-foreground/30 ring-1 ring-primary/50"
+                  : "bg-muted-foreground/20",
             )}
-            title={`Question ${status.index + 1}${status.isRequired ? ' (required)' : ''}`}
+            title={`Question ${status.index + 1}${status.isRequired ? " (required)" : ""}`}
           />
         ))}
       </div>
@@ -524,7 +573,9 @@ export function TypeformFeedback({ onComplete, setIsFeedbackFormOpen }: { onComp
               <h2 className="text-3xl md:text-4xl font-light leading-tight text-foreground">
                 {currentQuestion.label}
                 {currentQuestion.required && (
-                  <span className="text-red-500 ml-1 text-2xl align-top">*</span>
+                  <span className="text-red-500 ml-1 text-2xl align-top">
+                    *
+                  </span>
                 )}
               </h2>
 
@@ -548,7 +599,7 @@ export function TypeformFeedback({ onComplete, setIsFeedbackFormOpen }: { onComp
                     exit={{ opacity: 0 }}
                     className="absolute -bottom-8 left-0 bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 text-sm px-4 py-2 rounded-md flex items-center gap-2 border border-red-200 dark:border-red-800"
                   >
-                    <span className="font-bold text-base">⚠</span> 
+                    <span className="font-bold text-base">⚠</span>
                     <span className="font-medium">{error}</span>
                   </motion.div>
                 )}
@@ -589,7 +640,7 @@ export function TypeformFeedback({ onComplete, setIsFeedbackFormOpen }: { onComp
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => handleNavClick('next')}
+          onClick={() => handleNavClick("next")}
           disabled={currentStep === totalSteps - 1}
           className="h-10 w-10 rounded-none hover:bg-muted disabled:opacity-50"
           title="Next question (↓)"
@@ -597,7 +648,7 @@ export function TypeformFeedback({ onComplete, setIsFeedbackFormOpen }: { onComp
           <ChevronDown className="w-5 h-5" />
         </Button>
       </div>
-      
+
       <div className="fixed bottom-6 left-6 text-xs text-muted-foreground/50 hidden md:block">
         Powered by <span className="font-semibold">Gitdocs AI</span>
       </div>

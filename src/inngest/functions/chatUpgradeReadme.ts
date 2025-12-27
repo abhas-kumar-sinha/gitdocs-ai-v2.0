@@ -1,13 +1,17 @@
-import { prisma } from '@/lib/db';
-import { inngest } from '../client';
-import type { Octokit } from '@octokit/rest';
-import { publishProgress } from '@/lib/redis';
-import { lastAssistantTextMessage } from '../utils';
-import { Repository } from '@/generated/prisma/client';
-import { createAgent, openai } from '@inngest/agent-kit';
-import { readmeUpgradePrompt } from '@/lib/prompts/PROMPTS';
-import { getInstallationOctokit } from '@/lib/github/appAuth';
-import { type ModelConfig, type FileContext, type ConversationMessage } from '@/types/readmeAi';
+import { prisma } from "@/lib/db";
+import { inngest } from "../client";
+import type { Octokit } from "@octokit/rest";
+import { publishProgress } from "@/lib/redis";
+import { lastAssistantTextMessage } from "../utils";
+import { Repository } from "@/generated/prisma/client";
+import { createAgent, openai } from "@inngest/agent-kit";
+import { readmeUpgradePrompt } from "@/lib/prompts/PROMPTS";
+import { getInstallationOctokit } from "@/lib/github/appAuth";
+import {
+  type ModelConfig,
+  type FileContext,
+  type ConversationMessage,
+} from "@/types/readmeAi";
 
 const getTodayDate = () => {
   const today = new Date();
@@ -22,53 +26,75 @@ const Models = {
     fast: { model: "gpt-5-nano", temp: 1 },
     balanced: { model: "gpt-5-mini", temp: 1 },
     quality: { model: "o4-mini", temp: 1 },
-  }
+  },
 };
 
-function selectChatModel(complexity: 'simple' | 'moderate' | 'complex'): ModelConfig {
-  if (complexity === 'simple') return Models.chatUpgrade.fast;
-  if (complexity === 'complex') return Models.chatUpgrade.quality;
+function selectChatModel(
+  complexity: "simple" | "moderate" | "complex",
+): ModelConfig {
+  if (complexity === "simple") return Models.chatUpgrade.fast;
+  if (complexity === "complex") return Models.chatUpgrade.quality;
   return Models.chatUpgrade.balanced;
 }
 
 // ============= COMPLEXITY ANALYZER =============
 
-function analyzeRequestComplexity(userMessage: string): 'simple' | 'moderate' | 'complex' {
+function analyzeRequestComplexity(
+  userMessage: string,
+): "simple" | "moderate" | "complex" {
   const lowerMsg = userMessage.toLowerCase();
-  
+
   // Simple: typo fixes, small tweaks, formatting
-  const simpleKeywords = ['fix typo', 'change', 'update', 'add badge', 'remove', 'bold', 'italics'];
-  if (simpleKeywords.some(kw => lowerMsg.includes(kw)) && userMessage.length < 100) {
-    return 'simple';
+  const simpleKeywords = [
+    "fix typo",
+    "change",
+    "update",
+    "add badge",
+    "remove",
+    "bold",
+    "italics",
+  ];
+  if (
+    simpleKeywords.some((kw) => lowerMsg.includes(kw)) &&
+    userMessage.length < 100
+  ) {
+    return "simple";
   }
-  
+
   // Complex: restructure, multiple sections, add examples, architecture
-  const complexKeywords = ['restructure', 'rewrite', 'add section', 'architecture', 'diagram', 'comprehensive'];
-  if (complexKeywords.some(kw => lowerMsg.includes(kw))) {
-    return 'complex';
+  const complexKeywords = [
+    "restructure",
+    "rewrite",
+    "add section",
+    "architecture",
+    "diagram",
+    "comprehensive",
+  ];
+  if (complexKeywords.some((kw) => lowerMsg.includes(kw))) {
+    return "complex";
   }
-  
-  return 'moderate';
+
+  return "moderate";
 }
 
 // ============= DETERMINE IF NEW FILES NEEDED =============
 
 function needsAdditionalFiles(userMessage: string): boolean {
   const lowerMsg = userMessage.toLowerCase();
-  
+
   // Check if user is asking for info that might require new files
   const fileHints = [
-    'add api docs',
-    'include endpoints',
-    'add configuration',
-    'deployment',
-    'docker',
-    'environment variables',
-    'database schema',
-    'add tests section',
+    "add api docs",
+    "include endpoints",
+    "add configuration",
+    "deployment",
+    "docker",
+    "environment variables",
+    "database schema",
+    "add tests section",
   ];
-  
-  return fileHints.some(hint => lowerMsg.includes(hint));
+
+  return fileHints.some((hint) => lowerMsg.includes(hint));
 }
 
 // ============= FETCH ADDITIONAL FILES =============
@@ -77,30 +103,52 @@ async function fetchAdditionalContextFiles(
   userMessage: string,
   existingFiles: string[],
   octokit: Octokit,
-  repo: Repository
+  repo: Repository,
 ): Promise<FileContext[]> {
   const lowerMsg = userMessage.toLowerCase();
   const newFilesToFetch: string[] = [];
-  
+
   // Smart file detection based on user request
-  if (lowerMsg.includes('api') && !existingFiles.some(f => f.includes('routes') || f.includes('controllers'))) {
-    newFilesToFetch.push('src/routes/index.ts', 'src/api/routes.ts', 'routes/index.js');
+  if (
+    lowerMsg.includes("api") &&
+    !existingFiles.some(
+      (f) => f.includes("routes") || f.includes("controllers"),
+    )
+  ) {
+    newFilesToFetch.push(
+      "src/routes/index.ts",
+      "src/api/routes.ts",
+      "routes/index.js",
+    );
   }
-  
-  if (lowerMsg.includes('docker') && !existingFiles.some(f => f.includes('Docker'))) {
-    newFilesToFetch.push('Dockerfile', 'docker-compose.yml');
+
+  if (
+    lowerMsg.includes("docker") &&
+    !existingFiles.some((f) => f.includes("Docker"))
+  ) {
+    newFilesToFetch.push("Dockerfile", "docker-compose.yml");
   }
-  
-  if (lowerMsg.includes('environment') && !existingFiles.some(f => f.includes('.env'))) {
-    newFilesToFetch.push('.env.example', '.env.sample');
+
+  if (
+    lowerMsg.includes("environment") &&
+    !existingFiles.some((f) => f.includes(".env"))
+  ) {
+    newFilesToFetch.push(".env.example", ".env.sample");
   }
-  
-  if (lowerMsg.includes('test') && !existingFiles.some(f => f.includes('test'))) {
-    newFilesToFetch.push('jest.config.js', 'vitest.config.ts', 'tests/setup.ts');
+
+  if (
+    lowerMsg.includes("test") &&
+    !existingFiles.some((f) => f.includes("test"))
+  ) {
+    newFilesToFetch.push(
+      "jest.config.js",
+      "vitest.config.ts",
+      "tests/setup.ts",
+    );
   }
 
   const contexts: FileContext[] = [];
-  
+
   for (const path of newFilesToFetch) {
     try {
       const { data } = await octokit.rest.repos.getContent({
@@ -109,14 +157,17 @@ async function fetchAdditionalContextFiles(
         path: path,
       });
 
-      if ('content' in data && typeof data.content === 'string') {
-        const content = Buffer.from(data.content, 'base64').toString('utf-8');
+      if ("content" in data && typeof data.content === "string") {
+        const content = Buffer.from(data.content, "base64").toString("utf-8");
         const size = data.size || 0;
 
         contexts.push({
           path,
-          content: size < 15000 ? content : content.substring(0, 3000) + '\n\n... [truncated]',
-          type: size < 15000 ? 'full' : 'summary',
+          content:
+            size < 15000
+              ? content
+              : content.substring(0, 3000) + "\n\n... [truncated]",
+          type: size < 15000 ? "full" : "summary",
           size,
         });
       }
@@ -134,7 +185,7 @@ async function fetchAdditionalContextFiles(
 async function loadExistingContext(
   projectId: string,
   octokit: Octokit,
-  repo: Repository
+  repo: Repository,
 ): Promise<FileContext[]> {
   const project = await prisma.project.findUnique({
     where: { id: projectId },
@@ -155,14 +206,17 @@ async function loadExistingContext(
         path: path,
       });
 
-      if ('content' in data && typeof data.content === 'string') {
-        const content = Buffer.from(data.content, 'base64').toString('utf-8');
+      if ("content" in data && typeof data.content === "string") {
+        const content = Buffer.from(data.content, "base64").toString("utf-8");
         const size = data.size || 0;
 
         contexts.push({
           path,
-          content: size < 15000 ? content : content.substring(0, 3000) + '\n\n... [truncated]',
-          type: size < 15000 ? 'full' : 'summary',
+          content:
+            size < 15000
+              ? content
+              : content.substring(0, 3000) + "\n\n... [truncated]",
+          type: size < 15000 ? "full" : "summary",
           size,
         });
       }
@@ -177,15 +231,20 @@ async function loadExistingContext(
 // ============= MAIN FUNCTION =============
 
 export const chatUpgradeReadme = inngest.createFunction(
-  { 
-    id: 'readme-chat-upgrade',
+  {
+    id: "readme-chat-upgrade",
     concurrency: { limit: 10 },
   },
-  { event: 'readme/chat.upgrade' },
+  { event: "readme/chat.upgrade" },
   async ({ event, step }) => {
     const { projectId, messageId, userId } = event.data;
 
-    const emitProgress = async (stage: string, progress: number, message: string, data?: object) => {
+    const emitProgress = async (
+      stage: string,
+      progress: number,
+      message: string,
+      data?: object,
+    ) => {
       await publishProgress(projectId, {
         stage,
         progress,
@@ -195,22 +254,22 @@ export const chatUpgradeReadme = inngest.createFunction(
       });
     };
 
-    await emitProgress('CHECKING_ACCESS', 10, 'Checking usage limits...');
-    const access = await step.run('check-access', async () => {
+    await emitProgress("CHECKING_ACCESS", 10, "Checking usage limits...");
+    const access = await step.run("check-access", async () => {
       const today = getTodayDate();
-      
+
       const user = await prisma.user.findUnique({
         where: {
-          id: userId
-        }, 
+          id: userId,
+        },
         select: {
           bonusAiChatCredits: true,
-          dailyAiChatLimit: true
-        }
-      })
+          dailyAiChatLimit: true,
+        },
+      });
 
       if (!user) {
-        return false
+        return false;
       }
 
       // Try to find today's usage
@@ -236,33 +295,34 @@ export const chatUpgradeReadme = inngest.createFunction(
       }
 
       if (usage.maxCount - usage.count > 0) {
-        return true
+        return true;
       }
-      
-      return false
-    })
+
+      return false;
+    });
 
     if (!access) {
-      await emitProgress('ACCESS_DENIED', 100, 'Usage Limit Exceeded...');
+      await emitProgress("ACCESS_DENIED", 100, "Usage Limit Exceeded...");
       // Save assistant message
       const message = await prisma.message.create({
         data: {
           projectId,
-          content: "You’re all set for today \nYou’ve reached today’s usage limit.\nNew credits will be available tomorrow. \nTake a break — we’ll be ready when you’re back 🙂",
-          role: 'ASSISTANT',
-          type: 'ERROR',
+          content:
+            "You’re all set for today \nYou’ve reached today’s usage limit.\nNew credits will be available tomorrow. \nTake a break — we’ll be ready when you’re back 🙂",
+          role: "ASSISTANT",
+          type: "ERROR",
           model: "",
         },
       });
 
       return {
-        message
-      }
+        message,
+      };
     }
 
-    await emitProgress('FETCHING_PROJECT', 20, 'Loading project details...');
+    await emitProgress("FETCHING_PROJECT", 20, "Loading project details...");
     // ========== STEP 1: Fetch Project with Full Context ==========
-    const project = await step.run('fetch-project-context', async () => {
+    const project = await step.run("fetch-project-context", async () => {
       const proj = await prisma.project.findUnique({
         where: { id: projectId },
         include: {
@@ -270,7 +330,7 @@ export const chatUpgradeReadme = inngest.createFunction(
             include: { installation: true },
           },
           messages: {
-            orderBy: { createdAt: 'asc' },
+            orderBy: { createdAt: "asc" },
             include: {
               fragment: true,
             },
@@ -278,60 +338,71 @@ export const chatUpgradeReadme = inngest.createFunction(
         },
       });
 
-      if (!proj) throw new Error('Project not found');
-      if (!proj.repository) throw new Error('No repository linked');
-      
+      if (!proj) throw new Error("Project not found");
+      if (!proj.repository) throw new Error("No repository linked");
+
       return proj;
     });
 
     // ========== STEP 2: Get Octokit ==========
     const octokit = await getInstallationOctokit(
-      parseInt(project.repository!.installation.installationId)
+      parseInt(project.repository!.installation.installationId),
     );
 
     // ========== STEP 3: Find User Message ==========
-    const userMessage = await step.run('get-user-message', async () => {
+    const userMessage = await step.run("get-user-message", async () => {
       const msg = await prisma.message.findUnique({
         where: { id: messageId },
       });
 
-      if (!msg || msg.role !== 'USER') {
-        throw new Error('Invalid message or not a user message');
+      if (!msg || msg.role !== "USER") {
+        throw new Error("Invalid message or not a user message");
       }
 
       return msg.content;
     });
 
-    await emitProgress('ANALYZING_REPO', 35, 'Analyzing repository structure...', {
-      repoName: project?.repository?.fullName,
-    });
+    await emitProgress(
+      "ANALYZING_REPO",
+      35,
+      "Analyzing repository structure...",
+      {
+        repoName: project?.repository?.fullName,
+      },
+    );
     // ========== STEP 4: Analyze Request Complexity ==========
     const complexity = analyzeRequestComplexity(userMessage);
     const selectedModel = selectChatModel(complexity);
 
     // ========== STEP 5: Load Existing Context Files ==========
-    const existingContext = await step.run('load-existing-context', async () => {
-      return await loadExistingContext(
-        projectId,
-        octokit as unknown as Octokit,
-        project.repository! as unknown as Repository
-      );
-    });
+    const existingContext = await step.run(
+      "load-existing-context",
+      async () => {
+        return await loadExistingContext(
+          projectId,
+          octokit as unknown as Octokit,
+          project.repository! as unknown as Repository,
+        );
+      },
+    );
 
     // ========== STEP 6: Fetch Additional Files if Needed ==========
-    const additionalContext = await step.run('fetch-additional-files', async () => {
-      if (!needsAdditionalFiles(userMessage)) {
-        return [];
-      }
+    const additionalContext = await step.run(
+      "fetch-additional-files",
+      async () => {
+        if (!needsAdditionalFiles(userMessage)) {
+          return [];
+        }
 
-      const existingPaths = project.contextFiles || [];
-      return await fetchAdditionalContextFiles(
-        userMessage,
-        existingPaths,
-        octokit as unknown as Octokit,
-        project.repository! as unknown as Repository
-      );
-    });
+        const existingPaths = project.contextFiles || [];
+        return await fetchAdditionalContextFiles(
+          userMessage,
+          existingPaths,
+          octokit as unknown as Octokit,
+          project.repository! as unknown as Repository,
+        );
+      },
+    );
 
     // Combine contexts
     const allContext = [...existingContext, ...additionalContext];
@@ -339,35 +410,36 @@ export const chatUpgradeReadme = inngest.createFunction(
     // ========== STEP 7: Build Conversation History ==========
     const conversationHistory: ConversationMessage[] = project.messages
       .slice(0, -1) // Exclude the current user message
-      .map(msg => ({
-        role: msg.role.toLowerCase() as 'user' | 'assistant',
+      .map((msg) => ({
+        role: msg.role.toLowerCase() as "user" | "assistant",
         content: msg.content,
       }));
 
     // Get the most recent README
-    const latestReadme = project.messages
-      .slice()
-      .reverse()
-      .find(msg => msg.fragment?.readme)?.fragment?.readme || '';
+    const latestReadme =
+      project.messages
+        .slice()
+        .reverse()
+        .find((msg) => msg.fragment?.readme)?.fragment?.readme || "";
 
     // ========== STEP 8: Prepare System Prompt ==========
     const systemPrompt = readmeUpgradePrompt(
       latestReadme,
       allContext,
       conversationHistory,
-      project.template || 'standard'
+      project.template || "standard",
     );
 
-    await emitProgress('GENERATING_README', 80, 'AI is writing your README...');
+    await emitProgress("GENERATING_README", 80, "AI is writing your README...");
     // ========== STEP 9: Run Upgrade Agent ==========
     const agent = createAgent({
-      name: 'readme-upgrade-assistant',
+      name: "readme-upgrade-assistant",
       system: systemPrompt,
       model: openai({
         model: selectedModel.model,
         apiKey: process.env.AZURE_OPENAI_API_KEY!,
         baseUrl: process.env.AZURE_OPENAI_ENDPOINT!,
-        defaultParameters: { 
+        defaultParameters: {
           temperature: selectedModel.temp,
         },
       }),
@@ -375,27 +447,30 @@ export const chatUpgradeReadme = inngest.createFunction(
 
     const agentResult = await agent.run(userMessage);
 
-    await emitProgress('SAVING_RESULTS', 95, 'Finalizing...');
+    await emitProgress("SAVING_RESULTS", 95, "Finalizing...");
     // ========== STEP 10: Parse and Save Response ==========
-    const result = await step.run('parse-and-save-upgrade', async () => {
+    const result = await step.run("parse-and-save-upgrade", async () => {
       const fullOutput = lastAssistantTextMessage(agentResult);
 
       // Parse structured output
-      const thinkingMatch = fullOutput?.match(/<THINKING>([\s\S]*?)<\/THINKING>/);
+      const thinkingMatch = fullOutput?.match(
+        /<THINKING>([\s\S]*?)<\/THINKING>/,
+      );
       const summaryMatch = fullOutput?.match(/<SUMMARY>([\s\S]*?)<\/SUMMARY>/);
       const readmeMatch = fullOutput?.match(/<README>([\s\S]*?)<\/README>/);
 
       const thinking = thinkingMatch?.[1].trim() || null;
-      const summary = summaryMatch?.[1].trim() || 'README updated successfully!';
-      const readme = readmeMatch?.[1].trim() || fullOutput || '';
+      const summary =
+        summaryMatch?.[1].trim() || "README updated successfully!";
+      const readme = readmeMatch?.[1].trim() || fullOutput || "";
 
       // Save assistant message
       const message = await prisma.message.create({
         data: {
           projectId,
           content: summary,
-          role: 'ASSISTANT',
-          type: 'RESULT',
+          role: "ASSISTANT",
+          type: "RESULT",
           model: selectedModel.model,
         },
       });
@@ -410,7 +485,7 @@ export const chatUpgradeReadme = inngest.createFunction(
 
       // Update context files if we added new ones
       if (additionalContext.length > 0) {
-        const newContextPaths = additionalContext.map(ctx => ctx.path);
+        const newContextPaths = additionalContext.map((ctx) => ctx.path);
         const updatedContextFiles = [
           ...(project.contextFiles || []),
           ...newContextPaths,
@@ -472,11 +547,11 @@ export const chatUpgradeReadme = inngest.createFunction(
         summary,
         complexity,
         additionalFilesUsed: additionalContext.length,
-        usageUpdate
+        usageUpdate,
       };
     });
 
-    await emitProgress('COMPLETED', 100, 'README generated! 🎉', {
+    await emitProgress("COMPLETED", 100, "README generated! 🎉", {
       messageId: result.messageId,
       completed: true,
     });
@@ -489,5 +564,5 @@ export const chatUpgradeReadme = inngest.createFunction(
       additionalFilesUsed: result.additionalFilesUsed,
       thinking: result.thinking,
     };
-  }
+  },
 );

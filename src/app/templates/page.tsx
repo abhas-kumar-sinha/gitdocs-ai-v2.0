@@ -8,7 +8,6 @@ export const metadata: Metadata = {
 };
 
 const Page = async () => {
-
   return (
     <div className="flex h-screen">
       <Sidebar />
@@ -16,7 +15,6 @@ const Page = async () => {
       <div className="relative flex-1 overflow-y-scroll overflow-x-hidden bg-background">
         <TemplatePage />
       </div>
-      
     </div>
   );
 };

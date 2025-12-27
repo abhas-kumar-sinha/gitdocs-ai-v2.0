@@ -1,12 +1,12 @@
-import { prisma } from '@/lib/db';
-import { auth } from '@clerk/nextjs/server';
-import { initTRPC, TRPCError } from '@trpc/server';
-import { cache } from 'react';
-import superjson from 'superjson';
+import { prisma } from "@/lib/db";
+import { auth } from "@clerk/nextjs/server";
+import { initTRPC, TRPCError } from "@trpc/server";
+import { cache } from "react";
+import superjson from "superjson";
 
 export const createTRPCContext = cache(async () => {
-  return { 
-    auth: await auth()
+  return {
+    auth: await auth(),
   };
 });
 
@@ -36,8 +36,8 @@ export const isAuthorized = t.middleware(async ({ next, ctx }) => {
       ...ctx,
       auth: {
         ...ctx.auth,
-        clerkId,        // original Clerk id
-        userId: user.id // your internal user id
+        clerkId, // original Clerk id
+        userId: user.id, // your internal user id
       },
     },
   });

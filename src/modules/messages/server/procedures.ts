@@ -1,15 +1,18 @@
-import { z } from 'zod';
-import { prisma } from '@/lib/db';
-import { inngest } from '@/inngest/client';
-import { baseProcedure, createTRPCRouter, protectedProcedure } from '@/trpc/init';
-import { Prisma } from '@/generated/prisma/client';
+import { z } from "zod";
+import { prisma } from "@/lib/db";
+import { inngest } from "@/inngest/client";
+import {
+  baseProcedure,
+  createTRPCRouter,
+  protectedProcedure,
+} from "@/trpc/init";
+import { Prisma } from "@/generated/prisma/client";
 
-type messageWithFragment = 
-  Prisma.MessageGetPayload<{
-    include: {
-      fragment: true;
-    };
-  }>;
+type messageWithFragment = Prisma.MessageGetPayload<{
+  include: {
+    fragment: true;
+  };
+}>;
 
 export const messagesRouter = createTRPCRouter({
   getMany: protectedProcedure
@@ -24,43 +27,43 @@ export const messagesRouter = createTRPCRouter({
         },
         orderBy: {
           updatedAt: "asc",
-        }
+        },
       });
 
       return messages;
     }),
-  
+
   create: protectedProcedure
     .input(
       z.object({
-        value: z.string()
-          .min(1, { message : "Value is Required" })
-          .max(1000, { message : "Value is too long" }),
-        projectId: z.string()
-          .min(1, { message : "Project ID is Required" })
+        value: z
+          .string()
+          .min(1, { message: "Value is Required" })
+          .max(1000, { message: "Value is too long" }),
+        projectId: z.string().min(1, { message: "Project ID is Required" }),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-        const newMessage = await prisma.message.create({
-          data: {
-            projectId: input.projectId,
-            content: input.value,
-            role: "USER",
-            type: "RESULT",
-          }
-        })
+      const newMessage = await prisma.message.create({
+        data: {
+          projectId: input.projectId,
+          content: input.value,
+          role: "USER",
+          type: "RESULT",
+        },
+      });
 
-        await inngest.send({
-          name: "readme/chat.upgrade",
-          data: {
-            projectId: input.projectId,
-            messageId: newMessage.id,
-            userId: ctx.auth.userId
-          }
-        })
+      await inngest.send({
+        name: "readme/chat.upgrade",
+        data: {
+          projectId: input.projectId,
+          messageId: newMessage.id,
+          userId: ctx.auth.userId,
+        },
+      });
 
-        return newMessage
-    })
+      return newMessage;
+    }),
 });
 
 export type MessagesRouter = typeof messagesRouter;

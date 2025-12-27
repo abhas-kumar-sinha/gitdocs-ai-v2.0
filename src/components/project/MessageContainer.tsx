@@ -11,38 +11,40 @@ const MessageContainer = ({
   activeFragment,
   setActiveFragment,
   fragmentIds,
-  setFragmentIds
+  setFragmentIds,
 }: {
   projectId: string;
   activeFragment: Fragment | null;
   setActiveFragment: (fragment: Fragment) => void;
-  fragmentIds: (string | undefined)[],
+  fragmentIds: (string | undefined)[];
   setFragmentIds: (fragments: (string | undefined)[]) => void;
 }) => {
   const trpc = useTRPC();
-  
+
   const bottomRef = useRef<HTMLDivElement>(null);
   const previousMessageCountRef = useRef<number>(0);
 
   const { data: messages } = useSuspenseQuery(
     trpc.message.getMany.queryOptions({
       projectId,
-    })
+    }),
   );
 
   // Create array of fragment IDs from messages
   useEffect(() => {
-    setFragmentIds(messages?.map((message) => message.fragment?.id).filter(Boolean) || [])
-  }, [messages, setFragmentIds])
+    setFragmentIds(
+      messages?.map((message) => message.fragment?.id).filter(Boolean) || [],
+    );
+  }, [messages, setFragmentIds]);
 
   // Only scroll when message count increases (new message added)
   useEffect(() => {
     const currentCount = messages?.length || 0;
-    
+
     if (currentCount > previousMessageCountRef.current) {
       bottomRef.current?.scrollIntoView({ behavior: "smooth" });
     }
-    
+
     previousMessageCountRef.current = currentCount;
   }, [messages]);
 
@@ -59,15 +61,17 @@ const MessageContainer = ({
   }, [messages, setActiveFragment]);
 
   return (
-    <div 
-      className="flex flex-col flex-1 w-full mt-14 mb-34 px-6 overflow-y-auto overflow-x-hidden pb-4 scroll-smooth"
-    >
-      <Suspense fallback={<p className="text-center text-gray-500 mt-4">Loading Messages...</p>}>
+    <div className="flex flex-col flex-1 w-full mt-14 mb-34 px-6 overflow-y-auto overflow-x-hidden pb-4 scroll-smooth">
+      <Suspense
+        fallback={
+          <p className="text-center text-gray-500 mt-4">Loading Messages...</p>
+        }
+      >
         {messages?.map((message) => {
-          const fragmentVersion = message.fragment?.id 
+          const fragmentVersion = message.fragment?.id
             ? fragmentIds.indexOf(message.fragment.id) + 1
             : -1;
-          
+
           return (
             <MessageCard
               key={message.id}
@@ -80,9 +84,9 @@ const MessageContainer = ({
           );
         })}
       </Suspense>
-      {messages[messages.length - 1].role === "USER" && 
-      <ProgressTracker projectId={projectId} />
-      }
+      {messages[messages.length - 1].role === "USER" && (
+        <ProgressTracker projectId={projectId} />
+      )}
 
       <div ref={bottomRef} />
     </div>

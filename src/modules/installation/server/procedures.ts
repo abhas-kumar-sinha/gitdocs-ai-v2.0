@@ -1,34 +1,39 @@
-import { z } from 'zod';
-import { createTRPCRouter, protectedProcedure } from '@/trpc/init';
-import { TRPCError } from '@trpc/server';
-import { prisma } from '@/lib/db';
-import { inngest } from '@/inngest/client';
-import { Prisma } from '@/generated/prisma/client';
+import { z } from "zod";
+import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
+import { TRPCError } from "@trpc/server";
+import { prisma } from "@/lib/db";
+import { inngest } from "@/inngest/client";
+import { Prisma } from "@/generated/prisma/client";
 
-export type InstallationWithRepositories =
-  Prisma.InstallationGetPayload<{
-    include: {
-      repositories: true;
-    };
-  }>;
+export type InstallationWithRepositories = Prisma.InstallationGetPayload<{
+  include: {
+    repositories: true;
+  };
+}>;
 
 export const installationRouter = createTRPCRouter({
-  list: protectedProcedure
-    .query(async ({ ctx }) => {
-      const installations: InstallationWithRepositories[] = await prisma.installation.findMany({
+  list: protectedProcedure.query(async ({ ctx }) => {
+    const installations: InstallationWithRepositories[] =
+      await prisma.installation.findMany({
         where: { userId: ctx.auth.userId },
         include: {
           repositories: {
-            orderBy: { updatedAt: 'desc' },
+            orderBy: { updatedAt: "desc" },
           },
         },
       });
 
-      return installations;
-    }),
+    return installations;
+  }),
 
   syncRepositories: protectedProcedure
-    .input(z.object({ installationId: z.string().min(1, { message: 'Installation ID is required' }) }))
+    .input(
+      z.object({
+        installationId: z
+          .string()
+          .min(1, { message: "Installation ID is required" }),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       const installation = await prisma.installation.findFirst({
         where: {
@@ -38,11 +43,11 @@ export const installationRouter = createTRPCRouter({
       });
 
       if (!installation) {
-        throw new TRPCError({ code: 'NOT_FOUND' });
+        throw new TRPCError({ code: "NOT_FOUND" });
       }
 
       await inngest.send({
-        name: 'github/sync-repositories',
+        name: "github/sync-repositories",
         data: {
           installationId: installation.id,
         },
@@ -52,33 +57,40 @@ export const installationRouter = createTRPCRouter({
     }),
 
   updateInstallationAccess: protectedProcedure
-    .input(z.object({ installationId: z.string().min(1, { message: "Installation ID is required" }) }))
-    .mutation( async ({ ctx, input }) => {
+    .input(
+      z.object({
+        installationId: z
+          .string()
+          .min(1, { message: "Installation ID is required" }),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
       const installationPermissions = await prisma.installation.findFirst({
         where: {
           id: input.installationId,
           userId: ctx.auth.userId,
         },
-        select: {permissions: true}
+        select: { permissions: true },
       });
 
       if (!installationPermissions) {
-        throw new TRPCError({ code: 'NOT_FOUND', message: "Installation Not found" });
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Installation Not found",
+        });
       }
 
       const updatedInstallation = await prisma.installation.update({
-      where: {
-        id: input.installationId,
-        userId: ctx.auth.userId,
-      },
-      data: {
-        permissions:
-          installationPermissions.permissions === "WRITE"
-            ? "READ"
-            : "WRITE",
-      },
-    });
-      
-    return updatedInstallation;
-    })
+        where: {
+          id: input.installationId,
+          userId: ctx.auth.userId,
+        },
+        data: {
+          permissions:
+            installationPermissions.permissions === "WRITE" ? "READ" : "WRITE",
+        },
+      });
+
+      return updatedInstallation;
+    }),
 });

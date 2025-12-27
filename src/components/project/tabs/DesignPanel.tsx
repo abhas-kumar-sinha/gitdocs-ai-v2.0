@@ -7,11 +7,17 @@ import { PixelatedCanvas } from "@/components/ui/pixelated-canvas";
 import { useScrollPosition } from "@/contexts/ScrollPositionContext";
 import ShimmerText from "@/components/kokonutui/shimmer-text";
 
-const MarkdownPreview = ({ content, view = "max" }: { content: string, view?: "max" | "min" | "min-max" }) => {
+const MarkdownPreview = ({
+  content,
+  view = "max",
+}: {
+  content: string;
+  view?: "max" | "min" | "min-max";
+}) => {
   const { markdownScrollPosition, setMarkdownScrollPosition } =
     useScrollPosition();
   const [isReady, setIsReady] = useState(false);
-  
+
   const containerRef = useRef<HTMLDivElement>(null);
   const hasRestoredRef = useRef(false);
 
@@ -49,7 +55,7 @@ const MarkdownPreview = ({ content, view = "max" }: { content: string, view?: "m
           containerRef.current.scrollTop = markdownScrollPosition;
           hasRestoredRef.current = true;
         }
-        
+
         // Mark as ready after scroll restoration
         setTimeout(() => {
           setIsReady(true);
@@ -97,7 +103,10 @@ const MarkdownPreview = ({ content, view = "max" }: { content: string, view?: "m
           sampleAverage
         />
         <div className="flex items-center gap-x-2 text-foreground/70 -my-8">
-          <ShimmerText text="Loading Project Preview..." className="text-xl -px-5 mt-8" />
+          <ShimmerText
+            text="Loading Project Preview..."
+            className="text-xl -px-5 mt-8"
+          />
         </div>
       </div>
     );
@@ -119,9 +128,11 @@ const MarkdownPreview = ({ content, view = "max" }: { content: string, view?: "m
       <div
         ref={containerRef}
         className={`h-full bg-transparent rounded-xl text-[#e0e3e7] focus:outline-none w-full p-4 resize-none rounded-b-lg transition-opacity duration-300 ${
-          isReady ? 'opacity-100' : 'opacity-0'
+          isReady ? "opacity-100" : "opacity-0"
         } ${
-          (view === "max" || view === "min-max") ? 'markdown-preview overflow-y-auto' : 'markdown-preview-mini px-20! pt-6!'
+          view === "max" || view === "min-max"
+            ? "markdown-preview overflow-y-auto"
+            : "markdown-preview-mini px-20! pt-6!"
         }`}
         onScroll={handleScroll}
       >
