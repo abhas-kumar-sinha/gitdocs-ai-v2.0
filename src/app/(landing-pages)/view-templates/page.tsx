@@ -2,6 +2,17 @@ import Footer from "@/components/layout/Footer";
 import Navbar from "@/components/layout/Navbar";
 import TemplateList from "@/components/template/TemplateList";
 import { templates } from "@/lib/constants/CONSTANTS";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "README Templates – Gitdocs AI",
+  description:
+    "Browse professionally designed README templates for open-source and SaaS projects.",
+  alternates: {
+    canonical: "https://www.gitdocs.space/view-templates",
+  },
+};
+
 
 const LandingPage = () => {
   return (

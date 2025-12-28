@@ -3,8 +3,12 @@ import TemplatePage from "../pages/TemplatePage";
 import Sidebar from "@/components/layout/Sidebar";
 
 export const metadata: Metadata = {
-  title: "Gitdocs AI | Templates",
-  description: "",
+  title: "Gitdocs AI Dashboard",
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+  },
 };
 
 const Page = async () => {

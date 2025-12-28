@@ -6,9 +6,26 @@ import { ClerkLoaded, ClerkLoading, SignedIn, SignedOut } from "@clerk/nextjs";
 import BgMain from "@/components/animated-backgrounds/bgMain";
 
 export const metadata: Metadata = {
-  title: "Gitdocs AI",
-  description: "",
+  title: "Gitdocs AI – Generate & Improve README Files with AI",
+  description:
+    "Gitdocs AI helps developers generate, improve, and maintain professional README files directly from their GitHub repositories.",
+  alternates: {
+    canonical: "https://www.gitdocs.space",
+  },
+  openGraph: {
+    title: "Gitdocs AI",
+    description:
+      "Generate production-ready README files using AI. Connect your GitHub repo and ship better docs.",
+    url: "https://www.gitdocs.space",
+    siteName: "Gitdocs AI",
+    images: ["/og.png"],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+  },
 };
+
 
 const Home = () => {
   return (

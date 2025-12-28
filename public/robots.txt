@@ -1,4 +1,4 @@
 User-agent: *
 Disallow:
 Allow: /
-Sitemap: https://gitdocs.space/api/sitemap
+Sitemap: https://gitdocs.space/sitemap.xml

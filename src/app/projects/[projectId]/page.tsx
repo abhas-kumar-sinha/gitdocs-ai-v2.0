@@ -1,4 +1,14 @@
 import ProjectView from "@/components/project/ProjectView";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Gitdocs AI Dashboard",
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+  },
+};
 
 interface Props {
   params: Promise<{

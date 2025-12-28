@@ -1,14 +1,6 @@
 import { Template } from "@/app/pages/TemplatePage";
 import MarkdownPreview from "../project/tabs/PreviewPanel";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { List } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 const TemplateList = ({ templates }: { templates: Template[] }) => {
   return (

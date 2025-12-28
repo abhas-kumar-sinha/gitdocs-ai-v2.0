@@ -2,6 +2,17 @@ import ChangelogItems from "@/components/landing-page/changelog/changelogItems";
 import Footer from "@/components/layout/Footer";
 import Navbar from "@/components/layout/Navbar";
 import { CircleCheckBig } from "lucide-react";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Changelog – Gitdocs AI",
+  description:
+    "Track new features, improvements, and updates to Gitdocs AI.",
+  alternates: {
+    canonical: "https://www.gitdocs.space/changelog",
+  },
+};
+
 
 export interface Changelog {
     type: "NEW" | "FEATURE" | "FIXES",
