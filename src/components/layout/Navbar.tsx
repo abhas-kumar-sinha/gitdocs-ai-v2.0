@@ -71,14 +71,14 @@ const Navbar = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:ms-10 ms-6 md:flex items-center lg:space-x-8 space-x-5 text-white/50">
+          <nav className="hidden lg:ms-10 ms-6 md:flex items-center lg:space-x-8 space-x-5 text-foreground">
             {navLinks.map((navItem, idx) => {
               return (
                 <Link
                   key={idx}
                   prefetch={true}
                   href={navItem.href}
-                  className="text-xs uppercase relative font-medium hover:text-white transition-colors"
+                  className="text-xs uppercase relative font-medium hover:text-accent-foreground transition-colors"
                 >
                   {navItem.title}
                 </Link>
