@@ -48,6 +48,14 @@ const resourceLinks = [
 
 const connectLinks = [
   {
+    href: "/privacy",
+    title: "Privacy",
+  },
+  {
+    href: "/terms",
+    title: "Terms",
+  },
+  {
     href: "https://www.linkedin.com/in/abhas-kumar-sinha-b23038317",
     title: "LinkedIn",
   },
