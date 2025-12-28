@@ -68,11 +68,9 @@ const LandingPage = () => {
           <hr className="mt-6 mb-10 border-border" />
 
           <div className="relative flex h-full w-full">
-            <div className="h-full w-px bg-border ms-6 me-4" />
-            <div>
-              <div className="absolute left-[19.45px] top-2 h-2.5 w-2.5 rounded-full bg-primary" />
-            </div>
-            <div>
+            <div className="absolute left-6 h-[calc(100%-1.5em)] w-px bg-border" />
+            <div className="absolute left-[19.45px] top-2 h-2.5 w-2.5 rounded-full bg-primary" />
+            <div className="ms-12">
               <div className="flex items-center gap-x-2 h-fit">
                 <span className="text-primary-foreground font-mono">2.0.0</span>
                 <span className="text-foreground/50 text-sm mt-1"> December 28, 2025</span>
@@ -91,7 +89,7 @@ const LandingPage = () => {
             </div>
           </div>
 
-          <hr className="mt-2 mb-6 border-border" />
+          <hr className="my-6 border-border" />
 
           <div className="flex item-center justify-between px-8 py-2">
             <div className="flex flex-col items-start">
