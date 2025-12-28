@@ -45,7 +45,7 @@ const DashboardPage = () => {
       <Sidebar />
 
       <div className="relative flex-1 overflow-y-scroll overflow-x-hidden">
-        <BgMain />
+        <BgMain bgNumber={3} />
         <div className="h-screen max-h-[768px] flex items-center justify-center">
           <div className="flex flex-col gap-y-2 w-full -mt-14">
             <span className="mx-auto text-sm text-foreground border border-foreground/10 ps-4 pe-3 py-3 rounded-full bg-white/5 backdrop-blur-lg flex items-center gap-x-2 cursor-pointer group transition-colors duration-300 hover:scale-102 animate-all hover:text-foreground hover:border-foreground/30">

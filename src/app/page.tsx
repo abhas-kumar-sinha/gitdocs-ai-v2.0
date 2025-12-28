@@ -19,7 +19,7 @@ const Home = () => {
 
       <ClerkLoaded>
         <SignedOut>
-          <BgMain />
+          <BgMain bgNumber={3} />
           <LandingPage />
         </SignedOut>
 
