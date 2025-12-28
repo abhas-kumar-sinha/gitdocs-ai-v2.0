@@ -239,7 +239,7 @@ export default function AI_Prompt({
                     <Button
                       disabled={!!projectId}
                       variant="outline"
-                      className="flex h-8 items-center gap-1 rounded-md pr-2 pl-1 text-xs hover:bg-black/10 focus-visible:ring-1 focus-visible:ring-blue-500 focus-visible:ring-offset-0 dark:text-white dark:hover:bg-white/10"
+                      className="flex h-8 items-center gap-1 rounded-full ps-4! pe-3! ms-1 text-xs hover:bg-black/10 focus-visible:ring-1 focus-visible:ring-blue-500 focus-visible:ring-offset-0 dark:text-white dark:hover:bg-white/10"
                     >
                       <Plus />
                       <span>Connect GitHub</span>
@@ -291,7 +291,7 @@ export default function AI_Prompt({
                 <Button
                   disabled={!!projectId}
                   variant="outline"
-                  className="flex h-8 items-center gap-1 ps-4! pe-3! ms-1 text-xs hover:bg-black/10 focus-visible:ring-1 focus-visible:ring-blue-500 focus-visible:ring-offset-0 dark:text-white dark:hover:bg-white/10"
+                  className="flex h-8 items-center gap-1 rounded-full ps-4! pe-3! ms-1 text-xs hover:bg-black/10 focus-visible:ring-1 focus-visible:ring-blue-500 focus-visible:ring-offset-0 dark:text-white dark:hover:bg-white/10"
                 >
                   <Loader2 className="animate-spin" />
                   <ShimmerText

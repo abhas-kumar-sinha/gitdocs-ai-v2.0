@@ -10,7 +10,7 @@ const navLinks = [
     title: "create",
   },
   {
-    href: "/templates",
+    href: "/view-templates",
     title: "templates",
   },
   {
