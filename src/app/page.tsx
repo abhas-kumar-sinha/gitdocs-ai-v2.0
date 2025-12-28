@@ -30,6 +30,26 @@ export const metadata: Metadata = {
 const Home = () => {
   return (
     <>
+      {/* Structured Data (SEO) */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "SoftwareApplication",
+            name: "Gitdocs AI",
+            url: "https://www.gitdocs.space",
+            applicationCategory: "Developer Tools",
+            operatingSystem: "Web",
+            offers: {
+              "@type": "Offer",
+              price: "0",
+              priceCurrency: "USD",
+            },
+          }),
+        }}
+      />
+      
       <ClerkLoading>
         <LoadingScreen />
       </ClerkLoading>

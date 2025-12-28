@@ -8,7 +8,45 @@ import { TRPCReactProvider } from "@/trpc/client";
 import { Geist_Mono, Caveat, Nunito } from "next/font/google";
 import { SidebarProvider } from "@/contexts/SidebarContext";
 import { RepositoryProvider } from "@/contexts/RepositoryContext";
+import GoogleTagManager from "@/components/analytics/GoogleTagManager";
 import { ScrollPositionProvider } from "@/contexts/ScrollPositionContext";
+
+export const metadata: Metadata = {
+  metadataBase: new URL("https://www.gitdocs.space"),
+
+  applicationName: "Gitdocs AI",
+  generator: "Next.js",
+
+  referrer: "origin-when-cross-origin",
+
+  verification: {
+    google: "jE8xZwoJxnDc2ICzxeLXfUNjB1xxBdMBxkwOVsxsnEY",
+  },
+
+  icons: {
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+    ],
+    apple: "/apple-touch-icon.png",
+  },
+
+  openGraph: {
+    siteName: "Gitdocs AI",
+    type: "website",
+  },
+
+  twitter: {
+    card: "summary_large_image",
+  },
+
+  robots: {
+    index: true,
+    follow: true,
+  },
+};
+
 
 const nunito = Nunito({
   subsets: ["latin"],
@@ -25,11 +63,6 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "Gitdocs AI",
-  description: "",
-};
-
 export default function RootLayout({
   children,
 }: {
@@ -42,6 +75,7 @@ export default function RootLayout({
           <body
             className={`${caveat.variable} ${geistMono.variable} ${nunito.variable} antialiased`}
           >
+            <GoogleTagManager />
             <Providers>
               <ScrollPositionProvider>
                 <RepositoryProvider>

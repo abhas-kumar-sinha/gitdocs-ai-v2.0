@@ -1,4 +1,11 @@
 User-agent: *
-Disallow:
 Allow: /
-Sitemap: https://gitdocs.space/sitemap.xml
+
+# Block authenticated & internal routes
+Disallow: /onboarding
+Disallow: /github/
+Disallow: /projects
+Disallow: /templates
+
+# Sitemap
+Sitemap: https://www.gitdocs.space/sitemap.xml
