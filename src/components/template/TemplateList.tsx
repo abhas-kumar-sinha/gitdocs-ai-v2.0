@@ -8,6 +8,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { List } from "lucide-react";
 
 const TemplateList = ({ templates }: { templates: Template[] }) => {
   return (
@@ -33,11 +34,47 @@ const TemplateList = ({ templates }: { templates: Template[] }) => {
                   <DialogTitle>{template.title}</DialogTitle>
                   <DialogDescription>{template.description}</DialogDescription>
                 </DialogHeader>
-                <div className="overflow-hidden">
-                  <MarkdownPreview
-                    content={template.content || ""}
-                    view="min-max"
-                  />
+
+                <hr className="border-border" />
+
+                <div className="flex items-start overflow-hidden">
+                  <div className="h-full w-7/10 overflow-y-auto overflow-x-hidden">
+                    <div className="min-h-full w-4/5 mx-auto bg-accent rounded-xl">
+                      <MarkdownPreview
+                        content={template.content || ""}
+                        view="min-max"
+                      />
+                    </div>
+                  </div>
+                  <div className="w-3/10 ps-4">
+                    <div className="p-4 bg-muted/30 rounded-lg">
+                      <h3 className="text-xs font-semibold text-foreground mb-2 uppercase">Template Attributes</h3>
+                      <div className="flex flex-col gap-y-2 mt-2">
+                        <div className="flex items-center justify-between text-xs">
+                          <span>Badges</span>
+                          <span>Included</span>
+                        </div>
+                        <div className="flex items-center justify-between text-xs">
+                          <span>Logo Supported</span>
+                          <span>Included</span>
+                        </div>
+                        <div className="flex items-center justify-between text-xs">
+                          <span>AI Difficulty</span>
+                          <span>Low</span>
+                        </div>
+                      </div>
+
+                      <h3 className="text-xs font-semibold text-foreground mb-2 uppercase mt-6">Perfect for</h3>
+                      <div className="flex items-center gap-2 flex-wrap -ms-1">
+                        {template.tags.map((tag, idx) => (
+                          <span key={idx} className="text-xs py-0.5 px-4 rounded-full bg-accent" >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+
+                    </div>
+                  </div>
                 </div>
               </DialogContent>
             </Dialog>
