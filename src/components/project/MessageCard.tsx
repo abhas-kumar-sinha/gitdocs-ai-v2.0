@@ -14,6 +14,7 @@ import remarkGfm from "remark-gfm";
 import remarkBreaks from "remark-breaks";
 import { Card } from "../ui/card";
 import { cn } from "@/lib/utils";
+import "@/styles/message-content.css"
 
 function formatCreatedAt(date: Date | string) {
   const d = new Date(date);

@@ -3,7 +3,6 @@ import LandingPage from "@/app/pages/LandingPage";
 import DashboardPage from "@/app/pages/DashboardPage";
 import LoadingScreen from "@/components/common/LoadingScreen";
 import { ClerkLoaded, ClerkLoading, SignedIn, SignedOut } from "@clerk/nextjs";
-import BgMain from "@/components/animated-backgrounds/bgMain";
 
 export const metadata: Metadata = {
   title: "Gitdocs AI – Generate & Improve README Files with AI",
@@ -25,7 +24,6 @@ export const metadata: Metadata = {
     card: "summary_large_image",
   },
 };
-
 
 const Home = () => {
   return (
@@ -56,7 +54,6 @@ const Home = () => {
 
       <ClerkLoaded>
         <SignedOut>
-          <BgMain bgNumber={3} />
           <LandingPage />
         </SignedOut>
 

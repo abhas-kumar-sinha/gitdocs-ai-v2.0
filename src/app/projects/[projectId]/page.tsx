@@ -1,5 +1,5 @@
-import ProjectView from "@/components/project/ProjectView";
 import { Metadata } from "next";
+import ProjectView from "@/components/project/ProjectView";
 
 export const metadata: Metadata = {
   title: "Gitdocs AI Dashboard",

@@ -1,5 +1,6 @@
 "use client";
 
+import "@/styles/markdown.css"
 import remarkGfm from "remark-gfm";
 import ReactMarkdown from "react-markdown";
 import React, { useRef, useEffect, useState, useMemo } from "react";

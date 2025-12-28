@@ -1,0 +1,630 @@
+/* ==================== MARKDOWN PREVIEW - NORMAL SIZE ==================== */
+.markdown-preview {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  word-wrap: break-word;
+}
+
+/* Light theme */
+.markdown-preview {
+  color: #1f2328;
+}
+
+/* Dark theme */
+.dark .markdown-preview {
+  color: #e6edf3;
+}
+
+/* Headings */
+.markdown-preview h1,
+.markdown-preview h2,
+.markdown-preview h3,
+.markdown-preview h4,
+.markdown-preview h5,
+.markdown-preview h6 {
+  margin-top: 24px;
+  margin-bottom: 16px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.markdown-preview h1 {
+  font-size: 2em;
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid #d0d7de;
+}
+
+.dark .markdown-preview h1 {
+  border-bottom-color: #30363d;
+}
+
+.markdown-preview h2 {
+  font-size: 1.5em;
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid #d0d7de;
+}
+
+.dark .markdown-preview h2 {
+  border-bottom-color: #30363d;
+}
+
+.markdown-preview h3 {
+  font-size: 1.25em;
+}
+
+.markdown-preview h4 {
+  font-size: 1em;
+}
+
+.markdown-preview h5 {
+  font-size: 0.875em;
+}
+
+.markdown-preview h6 {
+  font-size: 0.85em;
+  color: #59636e;
+}
+
+.dark .markdown-preview h6 {
+  color: #848d97;
+}
+
+/* Paragraphs */
+.markdown-preview p {
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+/* Lists */
+.markdown-preview ul,
+.markdown-preview ol {
+  margin-top: 0;
+  margin-bottom: 16px;
+  padding-left: 2em;
+}
+
+.markdown-preview ul {
+  list-style-type: disc;
+}
+
+.markdown-preview ul ul {
+  list-style-type: circle;
+}
+
+.markdown-preview ul ul ul {
+  list-style-type: square;
+}
+
+.markdown-preview ol {
+  list-style-type: decimal;
+}
+
+.markdown-preview ol ol {
+  list-style-type: lower-alpha;
+}
+
+.markdown-preview ol ol ol {
+  list-style-type: lower-roman;
+}
+
+.markdown-preview li {
+  margin-top: 0.25em;
+}
+
+.markdown-preview li > p {
+  margin-top: 16px;
+}
+
+.markdown-preview li + li {
+  margin-top: 0.25em;
+}
+
+/* Task lists */
+.markdown-preview input[type="checkbox"] {
+  margin-right: 0.5em;
+  vertical-align: middle;
+}
+
+/* Links */
+.markdown-preview a {
+  color: #0969da;
+  text-decoration: none;
+}
+
+.markdown-preview a:hover {
+  text-decoration: underline;
+}
+
+.dark .markdown-preview a {
+  color: #4493f8;
+}
+
+/* Code blocks */
+.markdown-preview pre {
+  padding: 16px;
+  overflow: auto;
+  font-size: 85%;
+  line-height: 1.45;
+  background-color: #f6f8fa;
+  border-radius: 6px;
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+.dark .markdown-preview pre {
+  background-color: #161b22;
+}
+
+.markdown-preview code {
+  padding: 0.2em 0.4em;
+  margin: 0;
+  font-size: 85%;
+  background-color: "#F6F8FA";
+  border-radius: 6px;
+  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+}
+
+
+.markdown-preview pre code {
+  padding: 0;
+  margin: 0;
+  font-size: 100%;
+  background-color: transparent;
+  border: 0;
+  display: block;
+  overflow-x: auto;
+}
+
+/* Blockquotes */
+.markdown-preview blockquote {
+  margin: 0 0 16px 0;
+  padding: 0 1em;
+  color: #59636e;
+  border-left: 0.25em solid #d0d7de;
+}
+
+.dark .markdown-preview blockquote {
+  color: #848d97;
+  border-left-color: #30363d;
+}
+
+.markdown-preview blockquote > :first-child {
+  margin-top: 0;
+}
+
+.markdown-preview blockquote > :last-child {
+  margin-bottom: 0;
+}
+
+/* Horizontal rules */
+.markdown-preview hr {
+  height: 0.25em;
+  padding: 0;
+  margin: 24px 0;
+  background-color: #d0d7de;
+  border: 0;
+}
+
+.dark .markdown-preview hr {
+  background-color: #30363d;
+}
+
+/* Tables */
+.markdown-preview table {
+  border-spacing: 0;
+  border-collapse: collapse;
+  margin-top: 0;
+  margin-bottom: 16px;
+  width: max-content;
+  max-width: 100%;
+  overflow: auto;
+  display: block;
+}
+
+.markdown-preview table th,
+.markdown-preview table td {
+  padding: 6px 13px;
+  border: 1px solid #d0d7de;
+}
+
+.dark .markdown-preview table th,
+.dark .markdown-preview table td {
+  border-color: #30363d;
+}
+
+.markdown-preview table th {
+  font-weight: 600;
+  background-color: #f6f8fa;
+}
+
+.dark .markdown-preview table th {
+  background-color: #161b22;
+}
+
+.markdown-preview table tr {
+  background-color: #ffffff;
+  border-top: 1px solid #d1d9e0;
+}
+
+.dark .markdown-preview table tr {
+  background-color: #0d1117;
+  border-top-color: #30363d;
+}
+
+.markdown-preview table tr:nth-child(2n) {
+  background-color: #f6f8fa;
+}
+
+.dark .markdown-preview table tr:nth-child(2n) {
+  background-color: #161b22;
+}
+
+/* Images */
+.markdown-preview img {
+  max-width: 100%;
+  box-sizing: content-box;
+  background-color: #ffffff;
+}
+
+.dark .markdown-preview img {
+  background-color: #0d1117;
+}
+
+/* Strong/Bold */
+.markdown-preview strong {
+  font-weight: 600;
+}
+
+/* Emphasis/Italic */
+.markdown-preview em {
+  font-style: italic;
+}
+
+/* Strikethrough */
+.markdown-preview del {
+  text-decoration: line-through;
+}
+
+/* ==================== MARKDOWN PREVIEW MINI - 6PX BASE ==================== */
+.markdown-preview-mini {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+  font-size: 6px;
+  line-height: 1.6;
+  word-wrap: break-word;
+}
+
+/* Light theme */
+.markdown-preview-mini {
+  color: #1f2328;
+}
+
+/* Dark theme */
+.dark .markdown-preview-mini {
+  color: #e6edf3;
+}
+
+/* Headings */
+.markdown-preview-mini h1,
+.markdown-preview-mini h2,
+.markdown-preview-mini h3,
+.markdown-preview-mini h4,
+.markdown-preview-mini h5,
+.markdown-preview-mini h6 {
+  margin-top: 9px;
+  margin-bottom: 6px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.markdown-preview-mini h1 {
+  font-size: 2em;
+  padding-bottom: 0.3em;
+  border-bottom: 0.4px solid #d0d7de;
+}
+
+.dark .markdown-preview-mini h1 {
+  border-bottom-color: #30363d;
+}
+
+.markdown-preview-mini h2 {
+  font-size: 1.5em;
+  padding-bottom: 0.3em;
+  border-bottom: 0.4px solid #d0d7de;
+}
+
+.dark .markdown-preview-mini h2 {
+  border-bottom-color: #30363d;
+}
+
+.markdown-preview-mini h3 {
+  font-size: 1.25em;
+}
+
+.markdown-preview-mini h4 {
+  font-size: 1em;
+}
+
+.markdown-preview-mini h5 {
+  font-size: 0.875em;
+}
+
+.markdown-preview-mini h6 {
+  font-size: 0.85em;
+  color: #59636e;
+}
+
+.dark .markdown-preview-mini h6 {
+  color: #848d97;
+}
+
+/* Paragraphs */
+.markdown-preview-mini p {
+  margin-top: 0;
+  margin-bottom: 6px;
+}
+
+/* Lists */
+.markdown-preview-mini ul,
+.markdown-preview-mini ol {
+  margin-top: 0;
+  margin-bottom: 6px;
+  padding-left: 0.75em;
+}
+
+.markdown-preview-mini ul {
+  list-style-type: disc;
+}
+
+.markdown-preview-mini ul ul {
+  list-style-type: circle;
+}
+
+.markdown-preview-mini ul ul ul {
+  list-style-type: square;
+}
+
+.markdown-preview-mini ol {
+  list-style-type: decimal;
+}
+
+.markdown-preview-mini ol ol {
+  list-style-type: lower-alpha;
+}
+
+.markdown-preview-mini ol ol ol {
+  list-style-type: lower-roman;
+}
+
+.markdown-preview-mini li {
+  margin-top: 0.1em;
+}
+
+.markdown-preview-mini li > p {
+  margin-top: 6px;
+}
+
+.markdown-preview-mini li + li {
+  margin-top: 0.1em;
+}
+
+/* Task lists */
+.markdown-preview-mini input[type="checkbox"] {
+  margin-right: 0.2em;
+  vertical-align: middle;
+  width: 4px;
+  height: 4px;
+}
+
+/* Links */
+.markdown-preview-mini a {
+  color: #0969da;
+  text-decoration: none;
+}
+
+.markdown-preview-mini a:hover {
+  text-decoration: underline;
+}
+
+.dark .markdown-preview-mini a {
+  color: #4493f8;
+}
+
+/* Code blocks */
+.markdown-preview-mini pre {
+  padding: 6px;
+  overflow: auto;
+  font-size: 85%;
+  line-height: 1.45;
+  background-color: #f6f8fa;
+  border-radius: 2px;
+  margin-top: 0;
+  margin-bottom: 6px;
+}
+
+.dark .markdown-preview-mini pre {
+  background-color: #161b22;
+}
+
+.markdown-preview-mini code {
+  padding: 0.1em 0.2em;
+  margin: 0;
+  font-size: 85%;
+  background-color: rgba(175, 184, 193, 0.2);
+  border-radius: 2px;
+  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+}
+
+.dark .markdown-preview-mini code {
+  background-color: rgba(110, 118, 129, 0.4);
+}
+
+.markdown-preview-mini pre code {
+  padding: 0;
+  margin: 0;
+  font-size: 100%;
+  background-color: transparent;
+  border: 0;
+  display: block;
+  overflow-x: auto;
+}
+
+/* Blockquotes */
+.markdown-preview-mini blockquote {
+  margin: 0 0 6px 0;
+  padding: 0 0.4em;
+  color: #59636e;
+  border-left: 0.1em solid #d0d7de;
+}
+
+.dark .markdown-preview-mini blockquote {
+  color: #848d97;
+  border-left-color: #30363d;
+}
+
+.markdown-preview-mini blockquote > :first-child {
+  margin-top: 0;
+}
+
+.markdown-preview-mini blockquote > :last-child {
+  margin-bottom: 0;
+}
+
+/* Horizontal rules */
+.markdown-preview-mini hr {
+  height: 0.1em;
+  padding: 0;
+  margin: 9px 0;
+  background-color: #d0d7de;
+  border: 0;
+}
+
+.dark .markdown-preview-mini hr {
+  background-color: #30363d;
+}
+
+/* Tables */
+.markdown-preview-mini table {
+  border-spacing: 0;
+  border-collapse: collapse;
+  margin-top: 0;
+  margin-bottom: 6px;
+  width: max-content;
+  max-width: 100%;
+  overflow: auto;
+  display: block;
+}
+
+.markdown-preview-mini table th,
+.markdown-preview-mini table td {
+  padding: 2px 5px;
+  border: 0.4px solid #d0d7de;
+}
+
+.dark .markdown-preview-mini table th,
+.dark .markdown-preview-mini table td {
+  border-color: #30363d;
+}
+
+.markdown-preview-mini table th {
+  font-weight: 600;
+  background-color: #f6f8fa;
+}
+
+.dark .markdown-preview-mini table th {
+  background-color: #161b22;
+}
+
+.markdown-preview-mini table tr {
+  background-color: #ffffff;
+  border-top: 0.4px solid #d1d9e0;
+}
+
+.dark .markdown-preview-mini table tr {
+  background-color: #0d1117;
+  border-top-color: #30363d;
+}
+
+.markdown-preview-mini table tr:nth-child(2n) {
+  background-color: #f6f8fa;
+}
+
+.dark .markdown-preview-mini table tr:nth-child(2n) {
+  background-color: #161b22;
+}
+
+/* Images */
+.markdown-preview-mini img {
+  max-width: 100%;
+  box-sizing: content-box;
+  background-color: #ffffff;
+}
+
+.dark .markdown-preview-mini img {
+  background-color: #0d1117;
+}
+
+/* Strong/Bold */
+.markdown-preview-mini strong {
+  font-weight: 600;
+}
+
+/* Emphasis/Italic */
+.markdown-preview-mini em {
+  font-style: italic;
+}
+
+/* Strikethrough */
+.markdown-preview-mini del {
+  text-decoration: line-through;
+}
+
+/* ==================== BADGES - NORMAL PREVIEW ==================== */
+.markdown-preview img[src*="shields.io"],
+.markdown-preview img[src*="badge"],
+.markdown-preview img[src*="img.shields"],
+.markdown-preview img[src*="badgen.net"],
+.markdown-preview img[alt*="badge" i],
+.markdown-preview img[alt*="shield" i] {
+  display: inline-block;
+  margin: 0 4px 4px 0;
+  vertical-align: middle;
+  max-height: 20px;
+  width: auto;
+}
+
+/* Keep badges in a single line container */
+.markdown-preview p:has(img[src*="shields.io"]),
+.markdown-preview p:has(img[src*="badge"]),
+.markdown-preview p:has(img[src*="badgen.net"]) {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 16px;
+}
+
+/* ==================== BADGES - MINI PREVIEW ==================== */
+.markdown-preview-mini img[src*="shields.io"],
+.markdown-preview-mini img[src*="badge"],
+.markdown-preview-mini img[src*="img.shields"],
+.markdown-preview-mini img[src*="badgen.net"],
+.markdown-preview-mini img[alt*="badge" i],
+.markdown-preview-mini img[alt*="shield" i] {
+  display: inline-block;
+  margin: 0 1px 1px 0;
+  vertical-align: middle;
+  max-height: 4px;
+  width: auto;
+}
+
+/* Keep badges in a single line container - mini */
+.markdown-preview-mini p:has(img[src*="shields.io"]),
+.markdown-preview-mini p:has(img[src*="badge"]),
+.markdown-preview-mini p:has(img[src*="badgen.net"]) {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1px;
+  margin-bottom: 6px;
+}
