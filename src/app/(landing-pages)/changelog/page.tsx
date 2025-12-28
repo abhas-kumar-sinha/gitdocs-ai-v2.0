@@ -68,9 +68,9 @@ const LandingPage = () => {
           <hr className="mt-6 mb-10 border-border" />
 
           <div className="relative flex h-full w-full">
-            <div className="absolute left-6 h-[calc(100%-1.5em)] w-px bg-border" />
-            <div className="absolute left-[19.45px] top-2 h-2.5 w-2.5 rounded-full bg-primary" />
-            <div className="ms-12">
+            <div className="absolute left-6 h-[calc(100%-1.5em)] w-px bg-border hidden md:block" />
+            <div className="absolute left-[19.45px] top-2 h-2.5 w-2.5 rounded-full bg-primary hidden md:block" />
+            <div className="md:ms-12">
               <div className="flex items-center gap-x-2 h-fit">
                 <span className="text-primary-foreground font-mono">2.0.0</span>
                 <span className="text-foreground/50 text-sm mt-1"> December 28, 2025</span>
@@ -80,7 +80,7 @@ const LandingPage = () => {
                 <h3 className="text-xl text-primary-foreground font-semibold">
                   🚀 Major Platform Update: Smarter Docs, Faster Workflow
                 </h3>
-                <p className="mt-2">We’re excited to introduce Gitdocs AI v2.0.0, a major milestone in our journey toward making documentation creation faster, smarter, and more intuitive.
+                <p className="mt-2 text-sm md:text-base">We’re excited to introduce Gitdocs AI v2.0.0, a major milestone in our journey toward making documentation creation faster, smarter, and more intuitive.
                   This release marks a significant evolution of the platform, introducing a more refined workflow, deeper AI assistance, and new ways to explore, remix, and improve documentation—giving teams more control, clarity, and speed as they build and ship.</p>
               </div>
 
@@ -91,7 +91,7 @@ const LandingPage = () => {
 
           <hr className="my-6 border-border" />
 
-          <div className="flex item-center justify-between px-8 py-2">
+          <div className="flex flex-col md:flex-row gap-y-6 item-center justify-between md:px-8 py-2">
             <div className="flex flex-col items-start">
               <span>Abhas Kumar Sinha</span>
               <span className="text-xs text-foreground">Creater of Gitdocs AI</span>

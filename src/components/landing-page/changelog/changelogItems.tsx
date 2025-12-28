@@ -7,7 +7,7 @@ const ChangelogItems = ( { items }: {items: Changelog[]} ) => {
       {items.map((item, index, arr) => (
         <div
           key={index}
-          className={`w-full h-24 flex items-start gap-x-4 ${
+          className={`w-full min-h-24 py-4 gap-y-1 flex flex-col md:flex-row items-start gap-x-4 ${
             index !== arr.length - 1 ? "border-b border-border" : ""
           }`}
         >
