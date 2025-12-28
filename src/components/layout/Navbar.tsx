@@ -26,7 +26,7 @@ const navLinks = [
     title: "templates",
   },
   {
-    href: "/blog",
+    href: "/blogs",
     title: "blogs",
   },
   {
