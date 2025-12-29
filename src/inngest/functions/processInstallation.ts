@@ -95,9 +95,8 @@ export const processInstallation = inngest.createFunction(
         }),
       );
 
-      // Extract common fields to avoid duplication
-      const getRepoData = (repo: (typeof reposWithReadmeInfo)[0]) => ({
-        installationId: installation.id,
+      // ✅ GLOBAL repo data ONLY
+      const getGlobalRepoData = (repo: (typeof reposWithReadmeInfo)[0]) => ({
         name: repo.name,
         fullName: repo.full_name,
         description: repo.description,
@@ -113,25 +112,44 @@ export const processInstallation = inngest.createFunction(
         forks: repo.forks_count || 0,
         hasReadme: repo.hasReadme,
         readmeSha: repo.readmeSha,
-        lastSyncedAt: new Date(),
-        syncStatus: "completed" as const,
       });
 
-      // Parallelize upserts
+      // ✅ Upsert repositories + link to installation
       await Promise.all(
-        reposWithReadmeInfo.map((repo) =>
-          prisma.repository.upsert({
+        reposWithReadmeInfo.map(async (repo) => {
+          // 1️⃣ Global repository
+          const repository = await prisma.repository.upsert({
             where: { githubId: repo.id.toString() },
-            update: getRepoData(repo),
+            update: getGlobalRepoData(repo),
             create: {
               githubId: repo.id.toString(),
-              ...getRepoData(repo),
+              ...getGlobalRepoData(repo),
             },
-          }),
-        ),
+          });
+
+          // 2️⃣ Installation-specific state
+          await prisma.installationRepository.upsert({
+            where: {
+              installationId_repositoryId: {
+                installationId: installation.id,
+                repositoryId: repository.id,
+              },
+            },
+            update: {
+              lastSyncedAt: new Date(),
+              syncStatus: "completed",
+            },
+            create: {
+              installationId: installation.id,
+              repositoryId: repository.id,
+              lastSyncedAt: new Date(),
+              syncStatus: "completed",
+            },
+          });
+        }),
       );
 
-      // Remove repos that are no longer accessible for this installation
+      // Remove repos no longer accessible for THIS installation
       if (action === "update") {
         await prisma.installationRepository.deleteMany({
           where: {
@@ -145,9 +163,9 @@ export const processInstallation = inngest.createFunction(
         });
       }
 
-
       return data;
     });
+
 
     await step.run("inform-frontend", async () => {
       await prisma.installationProcess.updateMany({
