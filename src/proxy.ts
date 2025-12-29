@@ -39,8 +39,8 @@ export default clerkMiddleware(async (auth, req) => {
           color:#fff;
         ">
           <div style="text-align:center">
-            <h1>🚧 Maintenance</h1>
-            <p>We’re upgrading Gitdocs AI.<br/>We’ll be back shortly.</p>
+            <h1>Maintenance</h1>
+            <p>We're upgrading Gitdocs AI.<br/>We'll be back shortly.</p>
           </div>
         </body>
       </html>
