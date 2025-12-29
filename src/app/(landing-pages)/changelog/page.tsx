@@ -83,12 +83,12 @@ const LandingPage = () => {
             <div className="absolute left-[19.45px] top-2 h-2.5 w-2.5 rounded-full bg-primary hidden md:block" />
             <div className="md:ms-12">
               <div className="flex items-center gap-x-2 h-fit">
-                <span className="text-primary-foreground font-mono">2.0.0</span>
+                <span className="text-accent-foreground font-mono">2.0.0</span>
                 <span className="text-foreground/50 text-sm mt-1"> December 28, 2025</span>
               </div>
 
               <div className="mt-4">
-                <h3 className="text-xl text-primary-foreground font-semibold">
+                <h3 className="text-xl text-accent-foreground font-semibold">
                   🚀 Major Platform Update: Smarter Docs, Faster Workflow
                 </h3>
                 <p className="mt-2 text-sm md:text-base">We’re excited to introduce Gitdocs AI v2.0.0, a major milestone in our journey toward making documentation creation faster, smarter, and more intuitive.

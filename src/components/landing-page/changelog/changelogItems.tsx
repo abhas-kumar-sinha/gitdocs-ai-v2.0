@@ -16,7 +16,7 @@ const ChangelogItems = ( { items }: {items: Changelog[]} ) => {
           </span>
 
           <div className="flex-1">
-            <p className="text-primary-foreground text-lg">
+            <p className="text-accent-foreground text-lg">
               {item.title}
             </p>
             <p className="text-sm mt-1">
