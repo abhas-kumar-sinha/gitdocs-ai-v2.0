@@ -21,7 +21,7 @@ const TemplateList = ({ templates }: { templates: Template[] }) => {
                   />
                 </div>
               </DialogTrigger>
-              <DialogContent className="max-w-none! w-screen h-screen md:w-[calc(100vw-6rem)] md:h-[calc(100vh-6rem)] border-none!">
+              <DialogContent className="w-screen h-screen md:w-[calc(100vw-6rem)] md:h-[calc(100vh-6rem)] max-w-7xl! border-none!">
                 <DialogHeader>
                   <DialogTitle>{template.title}</DialogTitle>
                   <DialogDescription>{template.description}</DialogDescription>
@@ -29,28 +29,28 @@ const TemplateList = ({ templates }: { templates: Template[] }) => {
 
                 <hr className="border-border" />
 
-                <div className="flex items-start overflow-hidden">
-                  <div className="h-full w-7/10 overflow-y-auto overflow-x-hidden">
-                    <div className="min-h-full w-4/5 mx-auto bg-accent rounded-xl">
+                <div className="flex flex-col md:flex-row gap-y-4 items-start overflow-hidden">
+                  <div className="h-full md:w-7/10 overflow-auto">
+                    <div className="min-h-full w-full max-w-3xl mx-auto bg-accent rounded-xl">
                       <MarkdownPreview
                         content={template.content || ""}
                         view="min-max"
                       />
                     </div>
                   </div>
-                  <div className="w-3/10 ps-4">
+                  <div className="md:w-3/10 md:ps-4 w-full">
                     <div className="p-4 bg-muted/30 rounded-lg">
                       <h3 className="text-xs font-semibold text-foreground mb-2 uppercase">Template Attributes</h3>
-                      <div className="flex flex-col gap-y-2 mt-2">
-                        <div className="flex items-center justify-between text-xs">
+                      <div className="flex flex-col gap-y-2 mt-2 text-xs">
+                        <div className="flex items-center justify-between">
                           <span>Badges</span>
                           <span>Included</span>
                         </div>
-                        <div className="flex items-center justify-between text-xs">
+                        <div className="flex items-center justify-between">
                           <span>Logo Supported</span>
                           <span>Included</span>
                         </div>
-                        <div className="flex items-center justify-between text-xs">
+                        <div className="flex items-center justify-between">
                           <span>AI Difficulty</span>
                           <span>Low</span>
                         </div>

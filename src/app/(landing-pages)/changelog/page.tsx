@@ -53,7 +53,7 @@ const LandingPage = () => {
     <>
       <Navbar />
 
-      <div className="min-h-screen flex flex-col items-center pt-40">
+      <div className="min-h-screen mx-auto max-w-7xl flex flex-col items-center pt-40">
         <div className="xl:w-7/10 w-9/10 h-20 flex flex-col gap-y-4 lg:flex-row items-start justify-between">
           <h1 className="lg:w-1/2 text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-semibold xl:leading-[0.9]">
             Product evolution timeline and feature releases

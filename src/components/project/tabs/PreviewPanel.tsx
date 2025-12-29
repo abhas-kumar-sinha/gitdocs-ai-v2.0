@@ -159,11 +159,11 @@ const MarkdownPreview = ({
       {/* Markdown content - hidden until ready */}
       <div
         ref={containerRef}
-        className={`h-full rounded-xl focus:outline-none w-full p-4 px-10! resize-none rounded-b-lg transition-opacity duration-300 ${
+        className={`h-full w-full rounded-xl focus:outline-none p-4 md:px-10! resize-none rounded-b-lg transition-opacity duration-300 ${
           isReady ? "opacity-100" : "opacity-0"
         } ${
           view === "max" || view === "min-max"
-            ? `markdown-preview overflow-y-auto`
+            ? `markdown-preview overflow-auto`
             : "markdown-preview-mini px-20! pt-6! bg-sidebar-accent"
         }`}
         onScroll={handleScroll}
