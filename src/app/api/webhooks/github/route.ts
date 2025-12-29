@@ -58,7 +58,7 @@ export async function POST(req: Request) {
 }
 
 async function handleInstallation(data: any) {
-  const { action, installation, repositories, sender } = data;
+  const { action, installation } = data;
 
   if (action === "created") {
     // Installation created - trigger sync
@@ -88,7 +88,7 @@ async function handleInstallationRepositories(data: any) {
     await inngest.send({
       name: "github/sync-repositories",
       data: {
-        installationId: installation.id,
+        actualInstallationId: installation.id,
       },
     });
   } else if (action === "removed") {

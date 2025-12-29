@@ -10,9 +10,8 @@ const BgMain = ( { bgNumber } : { bgNumber: number } ) => {
         width={1000}
         height={1000}
         src={bgNumber === 1 ? "/1.jpg" : bgNumber === 2 ? "/2.jpg" : "/3.jpg"}
-        className="absolute h-screen w-screen md:w-[calc(100vw-8rem)] -translate-x-1/2 left-1/2 opacity-80 mix-blend-screen"
+        className="absolute h-screen w-screen md:w-[calc(100vw-8rem)] -translate-x-1/2 left-1/2 opacity-90 mix-blend-screen"
     />
-     <div className="absolute inset-0 bg-white/20 dark:bg-black/20" />
     </div>
   )
 }
