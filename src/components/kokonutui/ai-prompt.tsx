@@ -50,6 +50,7 @@ export default function AI_Prompt({
   const [selectedRepository, setSelectedRepository] =
     useState<Repository | null>(repository ? repository : null);
 
+
   const { textareaRef, adjustHeight } = useAutoResizeTextarea({
     minHeight: isActive ? 50 : 80,
     maxHeight: 250,
@@ -209,6 +210,44 @@ export default function AI_Prompt({
     }
   };
 
+  const generateButtonName = () => {
+    if(selectedRepository && selectedTemplate !== "ai-gen"){
+      return (
+        <span className="mx-1 flex items-center gap-1">
+          <span className="truncate max-w-[60px] md:max-w-[120px]">
+            {selectedRepository.name}
+          </span>
+          <span className="hidden md:block">•</span>
+          <span className="truncate hidden md:block md:max-w-[100px]">
+            {selectedTemplate}
+          </span>
+        </span>
+      )
+    }
+
+    if (selectedRepository) {
+      return (
+        <span className="mx-1 truncate max-w-[60px] md:max-w-[200px]">
+          {selectedRepository.name}
+        </span>
+      ) 
+    }
+
+    if (repository) {
+      return (
+        <span className="mx-1 truncate max-w-[60px] md:max-w-[200px]">
+          {repository.name}
+        </span>
+      ) 
+    }
+
+    return (
+      <span className="mx-1">Select Repository</span>
+    )
+    
+
+  }
+
   return (
     <div className="relative flex flex-col bg-sidebar rounded-3xl pt-4">
       <div className="overflow-y-auto px-2" style={{ maxHeight: "250px" }}>
@@ -255,25 +294,7 @@ export default function AI_Prompt({
                         className="flex h-8 items-center gap-1 rounded-full ps-4! pe-3! ms-1 text-xs hover:bg-black/10 focus-visible:ring-1 focus-visible:ring-blue-500 focus-visible:ring-offset-0 dark:text-white dark:hover:bg-white/10"
                       >
                         <Book className="h-3.5! w-3.5!" />
-                        {selectedRepository &&
-                        selectedTemplate &&
-                        selectedTemplate !== "ai-gen" ? (
-                          <span className="mx-1 flex items-center gap-1">
-                            <span className="truncate max-w-[60px] md:max-w-[120px]">
-                              {selectedRepository.name}
-                            </span>
-                            <span className="hidden md:block">•</span>
-                            <span className="truncate hidden md:block md:max-w-[100px]">
-                              {selectedTemplate}
-                            </span>
-                          </span>
-                        ) : selectedRepository ? (
-                          <span className="mx-1 truncate max-w-[60px] md:max-w-[200px]">
-                            {selectedRepository.name}
-                          </span>
-                        ) : (
-                          <>{<span className="mx-1">Select Repository</span>}</>
-                        )}
+                        {generateButtonName()}
                         <ChevronRight />
                       </Button>
                     </SheetTrigger>
