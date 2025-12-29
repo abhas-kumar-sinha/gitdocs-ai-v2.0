@@ -350,21 +350,34 @@ export const initialReadmeBuild = inngest.createFunction(
 
     await emitProgress("FETCHING_PROJECT", 20, "Loading project details...");
     // ========== STEP 1: Fetch Project ==========
-    const project = await step.run("fetch-project", async () => {
+    const project = await step.run("fetch-project-context", async () => {
       const proj = await prisma.project.findUnique({
         where: { id: projectId },
         include: {
           repository: {
-            include: { installation: true },
+            include: {
+              installations: {
+                include: {
+                  installation: true,
+                },
+              },
+            },
           },
           messages: {
-            orderBy: { createdAt: "desc" },
-            take: 1,
+            orderBy: { createdAt: "asc" },
+            include: {
+              fragment: true,
+            },
           },
         },
       });
 
       if (!proj) throw new Error("Project not found");
+      if (!proj.repository) throw new Error("No repository linked");
+      if (proj.repository.installations.length === 0) {
+        throw new Error("No installation found for repository");
+      }
+
       return proj;
     });
 
@@ -373,8 +386,11 @@ export const initialReadmeBuild = inngest.createFunction(
     }
 
     // ========== STEP 2: Get Octokit ==========
+    const installation =
+      project.repository!.installations[0].installation;
+
     const octokit = await getInstallationOctokit(
-      parseInt(project.repository!.installation.installationId),
+      parseInt(installation.installationId),
     );
 
     await emitProgress(

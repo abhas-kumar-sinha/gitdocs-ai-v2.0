@@ -211,10 +211,12 @@ const GithubConnectionItem = ({
       (inst) => inst.repositories ?? [],
     );
 
-    const map = new Map<string | number, Repository>();
+    const map = new Map<string, Repository>();
+
     for (const r of allRepos) {
-      map.set(r.id, r);
+      map.set(r.repository.id, r.repository);
     }
+
     const arr = Array.from(map.values());
 
     arr.sort(

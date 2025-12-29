@@ -16,26 +16,36 @@ const FeedbackInputSchema = z.object({
 });
 
 export const userRouter = createTRPCRouter({
-  getCurrent: protectedProcedure.query(async ({ ctx }) => {
-    const user = await prisma.user.findUnique({
-      where: { id: ctx.auth.userId },
-      include: {
-        installations: {
-          include: {
-            repositories: {
-              take: 10,
-              orderBy: { updatedAt: "desc" },
+
+  getCurrent: protectedProcedure
+    .query(async ({ ctx }) => {
+      const user = await prisma.user.findUnique({
+        where: { id: ctx.auth.userId },
+        include: {
+          installationMemberships: {
+            include: {
+              installation: {
+                include: {
+                  repositories: {
+                    take: 10,
+                    orderBy: { updatedAt: "desc" },
+                    include: {
+                      repository: true,
+                    },
+                  },
+                },
+              },
             },
           },
+          projects: {
+            orderBy: { updatedAt: "desc" },
+          },
         },
-        projects: {
-          orderBy: { updatedAt: "desc" },
-        },
-      },
-    });
+      });
 
-    return user;
-  }),
+      return user;
+    }),
+
 
   completeFeedbackForm: protectedProcedure
     .input(FeedbackInputSchema)

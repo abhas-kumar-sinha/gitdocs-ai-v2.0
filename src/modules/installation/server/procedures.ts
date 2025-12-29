@@ -7,18 +7,34 @@ import { Prisma } from "@/generated/prisma/client";
 
 export type InstallationWithRepositories = Prisma.InstallationGetPayload<{
   include: {
-    repositories: true;
+    repositories: {
+      include: {
+        repository: true;
+      };
+    };
   };
 }>;
 
 export const installationRouter = createTRPCRouter({
+  // ----------------------------------------------------
+  // LIST INSTALLATIONS ACCESSIBLE TO USER
+  // ----------------------------------------------------
   list: protectedProcedure.query(async ({ ctx }) => {
     const installations: InstallationWithRepositories[] =
       await prisma.installation.findMany({
-        where: { userId: ctx.auth.userId },
+        where: {
+          members: {
+            some: {
+              userId: ctx.auth.userId,
+            },
+          },
+        },
         include: {
           repositories: {
             orderBy: { updatedAt: "desc" },
+            include: {
+              repository: true,
+            },
           },
         },
       });
@@ -26,6 +42,9 @@ export const installationRouter = createTRPCRouter({
     return installations;
   }),
 
+  // ----------------------------------------------------
+  // SYNC REPOSITORIES (ACCESS CHECK VIA MEMBERSHIP)
+  // ----------------------------------------------------
   syncRepositories: protectedProcedure
     .input(
       z.object({
@@ -38,12 +57,19 @@ export const installationRouter = createTRPCRouter({
       const installation = await prisma.installation.findFirst({
         where: {
           id: input.installationId,
-          userId: ctx.auth.userId,
+          members: {
+            some: {
+              userId: ctx.auth.userId,
+            },
+          },
         },
       });
 
       if (!installation) {
-        throw new TRPCError({ code: "NOT_FOUND" });
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Installation not found or access denied",
+        });
       }
 
       await inngest.send({
@@ -56,6 +82,9 @@ export const installationRouter = createTRPCRouter({
       return { success: true };
     }),
 
+  // ----------------------------------------------------
+  // TOGGLE INSTALLATION PERMISSIONS
+  // ----------------------------------------------------
   updateInstallationAccess: protectedProcedure
     .input(
       z.object({
@@ -65,29 +94,34 @@ export const installationRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const installationPermissions = await prisma.installation.findFirst({
+      const installation = await prisma.installation.findFirst({
         where: {
           id: input.installationId,
-          userId: ctx.auth.userId,
+          members: {
+            some: {
+              userId: ctx.auth.userId,
+            },
+          },
         },
-        select: { permissions: true },
+        select: {
+          permissions: true,
+        },
       });
 
-      if (!installationPermissions) {
+      if (!installation) {
         throw new TRPCError({
           code: "NOT_FOUND",
-          message: "Installation Not found",
+          message: "Installation not found or access denied",
         });
       }
 
       const updatedInstallation = await prisma.installation.update({
         where: {
           id: input.installationId,
-          userId: ctx.auth.userId,
         },
         data: {
           permissions:
-            installationPermissions.permissions === "WRITE" ? "READ" : "WRITE",
+            installation.permissions === "WRITE" ? "READ" : "WRITE",
         },
       });
 

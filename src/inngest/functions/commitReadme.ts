@@ -36,14 +36,36 @@ export const createReadmePr = inngest.createFunction(
         throw new Error(`Fragment ${fragmentId} not found`);
       }
 
-      const project = await prisma.project.findUnique({
+    const project = await step.run("fetch-project-context", async () => {
+      const proj = await prisma.project.findUnique({
         where: { id: projectId },
         include: {
           repository: {
-            include: { installation: true },
+            include: {
+              installations: {
+                include: {
+                  installation: true,
+                },
+              },
+            },
+          },
+          messages: {
+            orderBy: { createdAt: "asc" },
+            include: {
+              fragment: true,
+            },
           },
         },
       });
+
+      if (!proj) throw new Error("Project not found");
+      if (!proj.repository) throw new Error("No repository linked");
+      if (proj.repository.installations.length === 0) {
+        throw new Error("No installation found for repository");
+      }
+
+      return proj;
+    });
 
       if (!project?.repository) {
         throw new Error(`Project ${projectId} has no linked repository`);
@@ -68,8 +90,11 @@ export const createReadmePr = inngest.createFunction(
     }
 
     // Step 2: Get GitHub installation client
+    const installation =
+      project.repository!.installations[0].installation;
+
     const octokit = await getInstallationOctokit(
-      parseInt(repository.installation.installationId),
+      parseInt(installation.installationId),
     );
 
     // Step 3: Get default branch reference

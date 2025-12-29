@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
 
     if (permissionsParam === "existing") {
       const existing = await prisma.installation.findFirst({
-        where: { userId: user.id },
+        where: { members: { some: { userId: user.id } } },
         select: { permissions: true },
       });
 

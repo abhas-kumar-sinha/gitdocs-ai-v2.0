@@ -32,17 +32,33 @@ export const processInstallation = inngest.createFunction(
           accountId: installationData.account?.id?.toString() || "",
           accountName: installationData.account?.name?.toString() || "",
           accountAvatarUrl: installationData.account?.avatar_url,
-          permissions: permissions,
+          permissions,
           repositorySelection: installationData.repository_selection || "all",
         },
         create: {
-          userId,
           installationId: installationId.toString(),
           accountId: installationData.account?.id?.toString() || "",
           accountName: installationData.account?.name?.toString() || "",
           accountAvatarUrl: installationData.account?.avatar_url,
-          permissions: permissions,
+          permissions,
           repositorySelection: installationData.repository_selection || "all",
+        },
+      });
+    });
+
+    await step.run("upsert-installation-member", async () => {
+      return prisma.installationMember.upsert({
+        where: {
+          installationId_userId: {
+            installationId: installation.id,
+            userId,
+          },
+        },
+        update: {}, // nothing to update for now
+        create: {
+          installationId: installation.id,
+          userId,
+          role: "owner",
         },
       });
     });
@@ -115,15 +131,20 @@ export const processInstallation = inngest.createFunction(
         ),
       );
 
-      // Remove repos that are no longer accessible
+      // Remove repos that are no longer accessible for this installation
       if (action === "update") {
-        await prisma.repository.deleteMany({
+        await prisma.installationRepository.deleteMany({
           where: {
             installationId: installation.id,
-            githubId: { notIn: currentGithubRepoIds },
+            repository: {
+              githubId: {
+                notIn: currentGithubRepoIds,
+              },
+            },
           },
         });
       }
+
 
       return data;
     });

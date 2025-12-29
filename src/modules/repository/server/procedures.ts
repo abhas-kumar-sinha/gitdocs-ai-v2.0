@@ -17,7 +17,7 @@ export const repositoryRouter = createTRPCRouter({
       const installation = await prisma.installation.findFirst({
         where: {
           id: input.installationId,
-          userId: ctx.auth.userId,
+          members: { some: { userId: ctx.auth.userId } },
         },
       });
 

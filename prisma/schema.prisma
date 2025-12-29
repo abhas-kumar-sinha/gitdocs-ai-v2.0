@@ -17,28 +17,29 @@ model User {
   firstName String?
   lastName  String?
   imageUrl  String?
-  
+
   // Feedback
   feedbackRewarded    Boolean @default(false)
 
   // per-user limit (default 5 chats/day)
   dailyAiChatLimit    Int @default(5)
   bonusAiChatCredits  Int @default(0)
-  
+
   // Timestamps
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+
   // Relations
-  installations         Installation[]
-  projects              Project[]
-  aiUsages              AiUsage[]
-  installationProcesses InstallationProcess[]
-  feedbacks             Feedback[]
+  installationMemberships InstallationMember[] // ⬅ replaces installations[]
+  projects                Project[]
+  aiUsages                AiUsage[]
+  installationProcesses   InstallationProcess[]
+  feedbacks               Feedback[]
 
   @@index([clerkId])
   @@index([email])
 }
+
 
 // ============= GitHub App Integration =============
 
@@ -49,33 +50,62 @@ enum Permission {
 
 model Installation {
   id        String   @id @default(cuid())
-  userId    String
-  
-  // GitHub App Installation Info
-  installationId   String   @unique // GitHub installation ID
-  accountId        String              // GitHub account ID
-  accountName      String              // GitHub account name
+
+  installationId   String   @unique
+  accountId        String
+  accountName      String
   accountAvatarUrl String?
-  
-  // Permissions
-  permissions      Permission  @default(READ) // Store granted permissions
-  repositorySelection String           // "all" or "selected"
-  
-  // Installation status
+
+  permissions      Permission  @default(READ)
+  repositorySelection String
+
   suspended        Boolean  @default(false)
   suspendedAt      DateTime?
-  
-  // Timestamps
+
   installedAt      DateTime @default(now())
   updatedAt        DateTime @updatedAt
-  
+
   // Relations
-  user             User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  repositories     Repository[]
-  
-  @@index([userId])
+  members      InstallationMember[]
+  repositories InstallationRepository[]
+
   @@index([installationId])
 }
+
+model InstallationMember {
+  id             String @id @default(cuid())
+  installationId String
+  userId         String
+
+  role           String @default("owner") // owner | admin | member
+  addedAt        DateTime @default(now())
+
+  installation Installation @relation(fields: [installationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([installationId, userId])
+  @@index([userId])
+}
+
+model InstallationRepository {
+  id             String @id @default(cuid())
+  installationId String
+  repositoryId   String
+
+  selected       Boolean @default(true)
+  lastSyncedAt   DateTime?
+  syncStatus     String @default("pending")
+
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  installation Installation @relation(fields: [installationId], references: [id], onDelete: Cascade)
+  repository   Repository   @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+
+  @@unique([installationId, repositoryId])
+}
+
 
 enum Status {
   COMPLETED
@@ -106,52 +136,44 @@ model InstallationProcess {
 
 model Repository {
   id          String   @id @default(cuid())
-  installationId String
-  
-  // GitHub Repository Info
-  githubId    String   @unique // GitHub repository ID
+
+  githubId    String   @unique
   name        String
-  fullName    String   // owner/repo
+  fullName    String   @unique
   description String?
   private     Boolean  @default(false)
   defaultBranch String @default("main")
   url         String
-  
-  // Owner info
+
   ownerLogin  String
-  ownerType   String   // "User" or "Organization"
-  
-  // Repository metadata
+  ownerType   String
+
   language    String?
-  topics      String[] // Array of topics/tags
+  topics      String[]
   homepage    String?
+
   size        Int      @default(0)
   stargazers  Int      @default(0)
-  watchers    Int      @default(0)
   forks       Int      @default(0)
   openIssues  Int      @default(0)
-  
-  // README Info
+  watchers    Int      @default(0)
+
+
   hasReadme   Boolean  @default(false)
   readmePath  String?  @default("README.md")
-  readmeSha   String?  // Git blob SHA for the README
-  
-  // Last sync info
-  lastSyncedAt DateTime?
-  syncStatus   String   @default("pending") // pending, syncing, completed, failed
-  
-  // Timestamps
+  readmeSha   String?
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  
+
   // Relations
-  installation Installation @relation(fields: [installationId], references: [id], onDelete: Cascade)
-  projects     Project[]
-  
-  @@index([installationId])
+  installations InstallationRepository[]
+  projects      Project[]
+
   @@index([githubId])
   @@index([fullName])
 }
+
 
 // ============= Projects & Messages =============
 

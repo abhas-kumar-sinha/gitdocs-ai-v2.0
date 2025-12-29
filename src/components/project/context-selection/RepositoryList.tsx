@@ -153,8 +153,8 @@ export default function RepositoryList({
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
                     {/* Sync Status Indicator */}
-                    <div title={`Sync Status: ${repo.syncStatus}`}>
-                      <SyncStatusIcon status={repo.syncStatus} />
+                    <div title={`Sync Status: Synced`}>
+                      <SyncStatusIcon status="Synced" />
                     </div>
                   </div>
                 </div>

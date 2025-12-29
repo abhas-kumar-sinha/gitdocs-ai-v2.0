@@ -322,12 +322,20 @@ export const chatUpgradeReadme = inngest.createFunction(
 
     await emitProgress("FETCHING_PROJECT", 20, "Loading project details...");
     // ========== STEP 1: Fetch Project with Full Context ==========
+    await emitProgress("FETCHING_PROJECT", 20, "Loading project details...");
+
     const project = await step.run("fetch-project-context", async () => {
       const proj = await prisma.project.findUnique({
         where: { id: projectId },
         include: {
           repository: {
-            include: { installation: true },
+            include: {
+              installations: {
+                include: {
+                  installation: true,
+                },
+              },
+            },
           },
           messages: {
             orderBy: { createdAt: "asc" },
@@ -340,14 +348,21 @@ export const chatUpgradeReadme = inngest.createFunction(
 
       if (!proj) throw new Error("Project not found");
       if (!proj.repository) throw new Error("No repository linked");
+      if (proj.repository.installations.length === 0) {
+        throw new Error("No installation found for repository");
+      }
 
       return proj;
     });
 
     // ========== STEP 2: Get Octokit ==========
+    const installation =
+      project.repository!.installations[0].installation;
+
     const octokit = await getInstallationOctokit(
-      parseInt(project.repository!.installation.installationId),
+      parseInt(installation.installationId),
     );
+
 
     // ========== STEP 3: Find User Message ==========
     const userMessage = await step.run("get-user-message", async () => {
@@ -367,7 +382,7 @@ export const chatUpgradeReadme = inngest.createFunction(
       35,
       "Analyzing repository structure...",
       {
-        repoName: project?.repository?.fullName,
+        repoName: project.repository?.fullName,
       },
     );
     // ========== STEP 4: Analyze Request Complexity ==========
