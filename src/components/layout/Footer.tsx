@@ -61,7 +61,7 @@ const connectLinks = [
   },
   {
     href: "https://x.com/AbhasKumar99",
-    title: "X",
+    title: "X / Twitter",
   },
   {
     href: "https://github.com/abhas-kumar-sinha",

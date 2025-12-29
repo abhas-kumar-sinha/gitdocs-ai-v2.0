@@ -133,7 +133,7 @@ const Sidebar = () => {
           <div className="h-full w-full flex flex-col justify-center items-center gap-y-2">
             <Mail size={20} className="mb-4" />
             <p className="text-center font-semibold">
-              No messages or invites pending
+              No messages pending
             </p>
             <span className="text-center text-sm">
               Messages, workspace and project invitations will appear here
@@ -151,10 +151,10 @@ const Sidebar = () => {
           <div className="h-full w-full flex flex-col justify-center items-center gap-y-2">
             <Mail size={20} className="mb-4" />
             <p className="text-center font-semibold">
-              No messages or invites pending
+              Nothing New
             </p>
             <span className="text-center text-sm">
-              Messages, workspace and project invitations will appear here
+              New updates will appear here
             </span>
           </div>
         </div>
