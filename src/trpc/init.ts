@@ -1,8 +1,9 @@
+import { cache } from "react";
 import { prisma } from "@/lib/db";
+import superjson from "superjson";
 import { auth } from "@clerk/nextjs/server";
 import { initTRPC, TRPCError } from "@trpc/server";
-import { cache } from "react";
-import superjson from "superjson";
+import { clerkClient } from "@clerk/nextjs/server";
 
 export const createTRPCContext = cache(async () => {
   return {
@@ -32,10 +33,20 @@ export const isAuthorized = t.middleware(async ({ next, ctx }) => {
   });
 
   if (!user) {
+    const clerk = await clerkClient();
+    const clerkUser = await clerk.users.getUser(clerkId);
+
     const email =
-      typeof ctx.auth.sessionClaims?.email === "string"
-        ? ctx.auth.sessionClaims.email
-        : `${clerkId}@clerk.local`;
+      clerkUser.emailAddresses.find(
+        (e) => e.id === clerkUser.primaryEmailAddressId
+      )?.emailAddress;
+
+    if (!email) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "No email found for Clerk user",
+      });
+    }
 
     user = await prisma.user.create({
       data: {
