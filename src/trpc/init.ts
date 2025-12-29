@@ -18,17 +18,32 @@ const t = initTRPC.context<Context>().create({
 
 export const isAuthorized = t.middleware(async ({ next, ctx }) => {
   const clerkId = ctx?.auth?.userId;
+
   if (!clerkId) {
-    throw new TRPCError({ code: "UNAUTHORIZED", message: "Not authenticated" });
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "Not authenticated",
+    });
   }
 
-  const user = await prisma.user.findUnique({
+  let user = await prisma.user.findUnique({
     where: { clerkId },
     select: { id: true, clerkId: true },
   });
 
   if (!user) {
-    throw new TRPCError({ code: "UNAUTHORIZED", message: "User not found" });
+    const email =
+      typeof ctx.auth.sessionClaims?.email === "string"
+        ? ctx.auth.sessionClaims.email
+        : `${clerkId}@clerk.local`;
+
+    user = await prisma.user.create({
+      data: {
+        clerkId,
+        email,
+      },
+      select: { id: true, clerkId: true },
+    });
   }
 
   return next({
@@ -36,12 +51,13 @@ export const isAuthorized = t.middleware(async ({ next, ctx }) => {
       ...ctx,
       auth: {
         ...ctx.auth,
-        clerkId, // original Clerk id
-        userId: user.id, // your internal user id
+        clerkId,
+        userId: user.id,
       },
     },
   });
 });
+
 
 // Base router and procedure helpers
 export const createTRPCRouter = t.router;

@@ -30,7 +30,7 @@ model User {
   updatedAt DateTime @updatedAt
 
   // Relations
-  installationMemberships InstallationMember[] // ⬅ replaces installations[]
+  installationMemberships InstallationMember[]
   projects                Project[]
   aiUsages                AiUsage[]
   installationProcesses   InstallationProcess[]
