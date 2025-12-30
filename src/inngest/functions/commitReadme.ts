@@ -25,8 +25,8 @@ export const createReadmePr = inngest.createFunction(
   async ({ event, step }) => {
     const { projectId, commitMessage, commitBranch, fragmentId } = event.data;
 
-    // Step 1: Get fragment and project data
-    const { fragment, project } = await step.run("fetch-data", async () => {
+    // Step 1: Get fragment data
+    const fragment = await step.run("fetch-fragment", async () => {
       const fragment = await prisma.fragment.findUnique({
         where: { id: fragmentId },
         select: { readme: true },
@@ -36,6 +36,10 @@ export const createReadmePr = inngest.createFunction(
         throw new Error(`Fragment ${fragmentId} not found`);
       }
 
+      return fragment;
+    });
+
+    // Step 2: Get project data
     const project = await step.run("fetch-project-context", async () => {
       const proj = await prisma.project.findUnique({
         where: { id: projectId },
@@ -67,15 +71,8 @@ export const createReadmePr = inngest.createFunction(
       return proj;
     });
 
-      if (!project?.repository) {
-        throw new Error(`Project ${projectId} has no linked repository`);
-      }
-
-      return { fragment, project };
-    });
-
+    // Continue with validation
     const { repository } = project;
-
     if (!repository) {
       throw new TRPCError({
         code: "NOT_FOUND",

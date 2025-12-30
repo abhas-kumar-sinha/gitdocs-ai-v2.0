@@ -14,7 +14,7 @@ export const syncRepositories = inngest.createFunction(
     const installation = await step.run("fetch-installation", async () => {
       if (actualInstallationId) {
         return prisma.installation.findUnique({
-          where: { installationId: actualInstallationId },
+          where: { installationId: String(actualInstallationId) },
         });
       }
 
