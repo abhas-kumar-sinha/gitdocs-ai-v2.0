@@ -55,7 +55,7 @@ export function ProgressTracker({ projectId }: { projectId: string }) {
           ) : (
             <ShimmerText
               text="Thinking... This may take a while..."
-              className="text-sm -mb-2.5 -mt-1.5 from-[#22A7BD]! via-[#5c3185]! to-[#4754d6]! font-light"
+              className="text-sm -mb-2.5 -mt-1.5 from-[#22A7BD]! via-[#5c3185]! to-[#4754d6]! "
             />
           )}
         </div>
@@ -64,7 +64,7 @@ export function ProgressTracker({ projectId }: { projectId: string }) {
         <div className="relative">
           <div className="w-full bg-muted rounded-xl py-3 px-3 min-h-20 font-mono text-xs border border-[#2d2d2d] flex flex-col justify-between">
             {/* Content Area */}
-            <div className="text-gray-300 whitespace-pre-wrap wrap-break-words">
+            <div className="text-accent-foreground whitespace-pre-wrap wrap-break-words">
               {!isConnected && !error ? (
                 <span>Connecting to server...</span>
               ) : (
@@ -74,7 +74,7 @@ export function ProgressTracker({ projectId }: { projectId: string }) {
                   {!isComplete && !error && (
                     <span
                       className="
-                        inline-block w-0.5 h-4 ml-1 -mt-1 align-middle bg-gray-400
+                        inline-block w-0.5 h-4 ml-1 -mt-1 align-middle bg-accent-foreground
                         animate-[blink_1s_steps(1,end)_infinite]
                       "
                     />

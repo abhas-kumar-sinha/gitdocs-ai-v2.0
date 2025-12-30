@@ -3,7 +3,7 @@ import { inngest } from "../client";
 import type { Octokit } from "@octokit/rest";
 import { publishProgress } from "@/lib/redis";
 import { lastAssistantTextMessage } from "../utils";
-import { Repository } from "@/generated/prisma/client";
+import { Message, Repository } from "@/generated/prisma/client";
 import { createAgent, openai } from "@inngest/agent-kit";
 import { readmeUpgradePrompt } from "@/lib/prompts/PROMPTS";
 import { getInstallationOctokit } from "@/lib/github/appAuth";
@@ -35,6 +35,66 @@ function selectChatModel(
   if (complexity === "simple") return Models.chatUpgrade.fast;
   if (complexity === "complex") return Models.chatUpgrade.quality;
   return Models.chatUpgrade.balanced;
+}
+
+// ============= ERROR HANDLER =============
+
+async function handleError(
+  projectId: string,
+  error: unknown,
+  stage: string,
+  emitProgress: (stage: string, progress: number, message: string, data?: object) => Promise<void>
+): Promise<{ message: Message }> {
+  console.error(`Error at stage ${stage}:`, error);
+
+  // Determine user-friendly error message
+  let userMessage = "Something went wrong. Please try again.";
+  
+  if (error instanceof Error) {
+    const errorMsg = error.message.toLowerCase();
+    
+    if (errorMsg.includes("project not found")) {
+      userMessage = "Project not found. Please refresh and try again.";
+    } else if (errorMsg.includes("no repository linked")) {
+      userMessage = "No repository is linked to this project. Please connect a repository first.";
+    } else if (errorMsg.includes("no installation found")) {
+      userMessage = "GitHub App installation not found. Please reinstall the app on your repository.";
+    } else if (errorMsg.includes("invalid message")) {
+      userMessage = "Message not found. Please refresh and try again.";
+    } else if (errorMsg.includes("rate limit") || errorMsg.includes("api rate")) {
+      userMessage = "GitHub API rate limit exceeded. Please try again in a few minutes.";
+    } else if (errorMsg.includes("not found") && errorMsg.includes("repository")) {
+      userMessage = "Repository not found or access denied. Please check your permissions.";
+    } else if (errorMsg.includes("authentication") || errorMsg.includes("unauthorized")) {
+      userMessage = "Authentication failed. Please reconnect your GitHub account.";
+    } else if (errorMsg.includes("network") || errorMsg.includes("fetch")) {
+      userMessage = "Network error occurred. Please check your connection and try again.";
+    } else if (errorMsg.includes("timeout")) {
+      userMessage = "Request timed out. Please try again.";
+    } else if (errorMsg.includes("usage row missing")) {
+      userMessage = "Usage tracking error. Please contact support.";
+    } else if (stage === "GENERATING_README") {
+      userMessage = "AI service encountered an error updating the README. Please try again.";
+    } else if (stage === "ANALYZING_REPO") {
+      userMessage = "Failed to analyze repository. Please ensure the repository is accessible.";
+    }
+  }
+
+  // Emit error progress
+  await emitProgress("ERROR", 100, userMessage);
+
+  // Save error message to database
+  const message = await prisma.message.create({
+    data: {
+      projectId,
+      content: userMessage,
+      role: "ASSISTANT",
+      type: "ERROR",
+      model: "",
+    },
+  });
+
+  return { message };
 }
 
 // ============= COMPLEXITY ANALYZER =============
@@ -222,6 +282,7 @@ async function loadExistingContext(
       }
     } catch (err) {
       console.error(`Failed to fetch ${path}:`, err);
+      // Continue with other files
     }
   }
 
@@ -245,339 +306,391 @@ export const chatUpgradeReadme = inngest.createFunction(
       message: string,
       data?: object,
     ) => {
-      await publishProgress(projectId, {
-        stage,
-        progress,
-        message,
-        timestamp: Date.now(),
-        ...data,
-      });
+      try {
+        await publishProgress(projectId, {
+          stage,
+          progress,
+          message,
+          timestamp: Date.now(),
+          ...data,
+        });
+      } catch (err) {
+        console.error("Failed to emit progress:", err);
+        // Don't throw - continue execution
+      }
     };
 
-    await emitProgress("CHECKING_ACCESS", 10, "Checking usage limits...");
-    const access = await step.run("check-access", async () => {
-      const today = getTodayDate();
+    try {
+      await emitProgress("CHECKING_ACCESS", 10, "Checking usage limits...");
+      
+      // ========== STEP 1: Check Access ==========
+      const access = await step.run("check-access", async () => {
+        try {
+          const today = getTodayDate();
 
-      const user = await prisma.user.findUnique({
-        where: {
-          id: userId,
-        },
-        select: {
-          bonusAiChatCredits: true,
-          dailyAiChatLimit: true,
-        },
+          const user = await prisma.user.findUnique({
+            where: { id: userId },
+            select: {
+              bonusAiChatCredits: true,
+              dailyAiChatLimit: true,
+            },
+          });
+
+          if (!user) {
+            return false;
+          }
+
+          // Try to find today's usage
+          let usage = await prisma.aiUsage.findUnique({
+            where: {
+              userId_date: {
+                userId: userId,
+                date: today,
+              },
+            },
+          });
+
+          // If no usage exists for today, create one
+          if (!usage) {
+            usage = await prisma.aiUsage.create({
+              data: {
+                userId: userId,
+                date: today,
+                count: 0,
+                maxCount: user.bonusAiChatCredits + user.dailyAiChatLimit,
+              },
+            });
+          }
+
+          if (usage.maxCount - usage.count > 0) {
+            return true;
+          }
+
+          return false;
+        } catch (err) {
+          console.error("Error checking access:", err);
+          throw new Error("Failed to check usage limits. Please try again.");
+        }
       });
 
-      if (!user) {
-        return false;
-      }
-
-      // Try to find today's usage
-      let usage = await prisma.aiUsage.findUnique({
-        where: {
-          userId_date: {
-            userId: userId,
-            date: today,
-          },
-        },
-      });
-
-      // If no usage exists for today, create one
-      if (!usage) {
-        usage = await prisma.aiUsage.create({
+      if (!access) {
+        await emitProgress("ACCESS_DENIED", 100, "Usage Limit Exceeded...");
+        const message = await prisma.message.create({
           data: {
-            userId: userId,
-            date: today,
-            count: 0,
-            maxCount: user.bonusAiChatCredits + user.dailyAiChatLimit,
+            projectId,
+            content:
+              "You're all set for today \nYou've reached today's usage limit.\nNew credits will be available tomorrow. \nTake a break — we'll be ready when you're back 🙂",
+            role: "ASSISTANT",
+            type: "ERROR",
+            model: "",
           },
         });
+
+        return { message };
       }
 
-      if (usage.maxCount - usage.count > 0) {
-        return true;
-      }
-
-      return false;
-    });
-
-    if (!access) {
-      await emitProgress("ACCESS_DENIED", 100, "Usage Limit Exceeded...");
-      // Save assistant message
-      const message = await prisma.message.create({
-        data: {
-          projectId,
-          content:
-            "You’re all set for today \nYou’ve reached today’s usage limit.\nNew credits will be available tomorrow. \nTake a break — we’ll be ready when you’re back 🙂",
-          role: "ASSISTANT",
-          type: "ERROR",
-          model: "",
-        },
-      });
-
-      return {
-        message,
-      };
-    }
-
-    await emitProgress("FETCHING_PROJECT", 20, "Loading project details...");
-    // ========== STEP 1: Fetch Project with Full Context ==========
-    await emitProgress("FETCHING_PROJECT", 20, "Loading project details...");
-
-    const project = await step.run("fetch-project-context", async () => {
-      const proj = await prisma.project.findUnique({
-        where: { id: projectId },
-        include: {
-          repository: {
+      await emitProgress("FETCHING_PROJECT", 20, "Loading project details...");
+      
+      // ========== STEP 2: Fetch Project ==========
+      const project = await step.run("fetch-project-context", async () => {
+        try {
+          const proj = await prisma.project.findUnique({
+            where: { id: projectId },
             include: {
-              installations: {
+              repository: {
                 include: {
-                  installation: true,
+                  installations: {
+                    include: {
+                      installation: true,
+                    },
+                  },
+                },
+              },
+              messages: {
+                orderBy: { createdAt: "asc" },
+                include: {
+                  fragment: true,
                 },
               },
             },
-          },
-          messages: {
-            orderBy: { createdAt: "asc" },
-            include: {
-              fragment: true,
-            },
-          },
-        },
-      });
+          });
 
-      if (!proj) throw new Error("Project not found");
-      if (!proj.repository) throw new Error("No repository linked");
-      if (proj.repository.installations.length === 0) {
-        throw new Error("No installation found for repository");
-      }
+          if (!proj) throw new Error("Project not found");
+          if (!proj.repository) throw new Error("No repository linked");
+          if (proj.repository.installations.length === 0) {
+            throw new Error("No installation found for repository");
+          }
 
-      return proj;
-    });
-
-    // ========== STEP 2: Get Octokit ==========
-    const installation =
-      project.repository!.installations[0].installation;
-
-    const octokit = await getInstallationOctokit(
-      parseInt(installation.installationId),
-    );
-
-
-    // ========== STEP 3: Find User Message ==========
-    const userMessage = await step.run("get-user-message", async () => {
-      const msg = await prisma.message.findUnique({
-        where: { id: messageId },
-      });
-
-      if (!msg || msg.role !== "USER") {
-        throw new Error("Invalid message or not a user message");
-      }
-
-      return msg.content;
-    });
-
-    await emitProgress(
-      "ANALYZING_REPO",
-      35,
-      "Analyzing repository structure...",
-      {
-        repoName: project.repository?.fullName,
-      },
-    );
-    // ========== STEP 4: Analyze Request Complexity ==========
-    const complexity = analyzeRequestComplexity(userMessage);
-    const selectedModel = selectChatModel(complexity);
-
-    // ========== STEP 5: Load Existing Context Files ==========
-    const existingContext = await step.run(
-      "load-existing-context",
-      async () => {
-        return await loadExistingContext(
-          projectId,
-          octokit as unknown as Octokit,
-          project.repository! as unknown as Repository,
-        );
-      },
-    );
-
-    // ========== STEP 6: Fetch Additional Files if Needed ==========
-    const additionalContext = await step.run(
-      "fetch-additional-files",
-      async () => {
-        if (!needsAdditionalFiles(userMessage)) {
-          return [];
+          return proj;
+        } catch (err) {
+          console.error("Error fetching project:", err);
+          throw err;
         }
+      });
 
-        const existingPaths = project.contextFiles || [];
-        return await fetchAdditionalContextFiles(
-          userMessage,
-          existingPaths,
-          octokit as unknown as Octokit,
-          project.repository! as unknown as Repository,
-        );
-      },
-    );
+      // ========== STEP 3: Get Octokit ==========
+      const installation = project.repository!.installations[0].installation;
+      
+      let octokit: Octokit;
+      try {
+        octokit = await getInstallationOctokit(
+          parseInt(installation.installationId),
+        ) as unknown as Octokit;
+      } catch (err) {
+        console.error("Error getting Octokit:", err);
+        throw new Error("Failed to authenticate with GitHub. Please reconnect your account.");
+      }
 
-    // Combine contexts
-    const allContext = [...existingContext, ...additionalContext];
+      // ========== STEP 4: Get User Message ==========
+      const userMessage = await step.run("get-user-message", async () => {
+        try {
+          const msg = await prisma.message.findUnique({
+            where: { id: messageId },
+          });
 
-    // ========== STEP 7: Build Conversation History ==========
-    const conversationHistory: ConversationMessage[] = project.messages
-      .slice(0, -1) // Exclude the current user message
-      .map((msg) => ({
-        role: msg.role.toLowerCase() as "user" | "assistant",
-        content: msg.content,
-      }));
+          if (!msg || msg.role !== "USER") {
+            throw new Error("Invalid message or not a user message");
+          }
 
-    // Get the most recent README
-    const latestReadme =
-      project.messages
-        .slice()
-        .reverse()
-        .find((msg) => msg.fragment?.readme)?.fragment?.readme || "";
+          return msg.content;
+        } catch (err) {
+          console.error("Error fetching user message:", err);
+          throw err;
+        }
+      });
 
-    // ========== STEP 8: Prepare System Prompt ==========
-    const systemPrompt = readmeUpgradePrompt(
-      latestReadme,
-      allContext,
-      conversationHistory,
-      project.template || "standard",
-    );
-
-    await emitProgress("GENERATING_README", 80, "AI is writing your README...");
-    // ========== STEP 9: Run Upgrade Agent ==========
-    const agent = createAgent({
-      name: "readme-upgrade-assistant",
-      system: systemPrompt,
-      model: openai({
-        model: selectedModel.model,
-        apiKey: process.env.AZURE_OPENAI_API_KEY!,
-        baseUrl: process.env.AZURE_OPENAI_ENDPOINT!,
-        defaultParameters: {
-          temperature: selectedModel.temp,
-        },
-      }),
-    });
-
-    const agentResult = await agent.run(userMessage);
-
-    await emitProgress("SAVING_RESULTS", 95, "Finalizing...");
-    // ========== STEP 10: Parse and Save Response ==========
-    const result = await step.run("parse-and-save-upgrade", async () => {
-      const fullOutput = lastAssistantTextMessage(agentResult);
-
-      // Parse structured output
-      const thinkingMatch = fullOutput?.match(
-        /<THINKING>([\s\S]*?)<\/THINKING>/,
+      await emitProgress(
+        "ANALYZING_REQUEST",
+        35,
+        "Analyzing your request...",
+        { repoName: project.repository?.fullName },
       );
-      const summaryMatch = fullOutput?.match(/<SUMMARY>([\s\S]*?)<\/SUMMARY>/);
-      const readmeMatch = fullOutput?.match(/<README>([\s\S]*?)<\/README>/);
+      
+      // ========== STEP 5: Analyze Complexity ==========
+      const complexity = analyzeRequestComplexity(userMessage);
+      const selectedModel = selectChatModel(complexity);
 
-      const thinking = thinkingMatch?.[1].trim() || null;
-      const summary =
-        summaryMatch?.[1].trim() || "README updated successfully!";
-      const readme = readmeMatch?.[1].trim() || fullOutput || "";
-
-      // Save assistant message
-      const message = await prisma.message.create({
-        data: {
-          projectId,
-          content: summary,
-          role: "ASSISTANT",
-          type: "RESULT",
-          model: selectedModel.model,
+      // ========== STEP 6: Load Existing Context ==========
+      const existingContext = await step.run(
+        "load-existing-context",
+        async () => {
+          try {
+            return await loadExistingContext(
+              projectId,
+              octokit,
+              project.repository! as unknown as Repository,
+            );
+          } catch (err) {
+            console.error("Error loading existing context:", err);
+            // Return empty array as fallback
+            return [];
+          }
         },
-      });
+      );
 
-      // Save updated README fragment
-      await prisma.fragment.create({
-        data: {
-          messageId: message.id,
-          readme: readme,
+      // ========== STEP 7: Fetch Additional Files ==========
+      const additionalContext = await step.run(
+        "fetch-additional-files",
+        async () => {
+          try {
+            if (!needsAdditionalFiles(userMessage)) {
+              return [];
+            }
+
+            const existingPaths = project.contextFiles || [];
+            return await fetchAdditionalContextFiles(
+              userMessage,
+              existingPaths,
+              octokit,
+              project.repository! as unknown as Repository,
+            );
+          } catch (err) {
+            console.error("Error fetching additional files:", err);
+            // Return empty array as fallback
+            return [];
+          }
         },
-      });
+      );
 
-      // Update context files if we added new ones
-      if (additionalContext.length > 0) {
-        const newContextPaths = additionalContext.map((ctx) => ctx.path);
-        const updatedContextFiles = [
-          ...(project.contextFiles || []),
-          ...newContextPaths,
-        ];
+      // Combine contexts
+      const allContext = [...existingContext, ...additionalContext];
 
-        await prisma.project.update({
-          where: { id: projectId },
-          data: {
-            contextFiles: updatedContextFiles,
-          },
+      // ========== STEP 8: Build Conversation History ==========
+      const conversationHistory: ConversationMessage[] = project.messages
+        .slice(0, -1) // Exclude the current user message
+        .map((msg) => ({
+          role: msg.role.toLowerCase() as "user" | "assistant",
+          content: msg.content,
+        }));
+
+      // Get the most recent README
+      const latestReadme =
+        project.messages
+          .slice()
+          .reverse()
+          .find((msg) => msg.fragment?.readme)?.fragment?.readme || "";
+
+      // ========== STEP 9: Prepare System Prompt ==========
+      const systemPrompt = readmeUpgradePrompt(
+        latestReadme,
+        allContext,
+        conversationHistory,
+        project.template || "standard",
+      );
+
+      await emitProgress("GENERATING_README", 80, "AI is updating your README...");
+      
+      // ========== STEP 10: Run Upgrade Agent ==========
+      let agentResult;
+      try {
+        const agent = createAgent({
+          name: "readme-upgrade-assistant",
+          system: systemPrompt,
+          model: openai({
+            model: selectedModel.model,
+            apiKey: process.env.AZURE_OPENAI_API_KEY!,
+            baseUrl: process.env.AZURE_OPENAI_ENDPOINT!,
+            defaultParameters: {
+              temperature: selectedModel.temp,
+            },
+          }),
         });
+
+        agentResult = await agent.run(userMessage);
+      } catch (err) {
+        console.error("Error running upgrade agent:", err);
+        throw new Error("AI service encountered an error updating the README.");
       }
 
-      const today = getTodayDate();
+      await emitProgress("SAVING_RESULTS", 95, "Finalizing...");
+      
+      // ========== STEP 11: Parse and Save ==========
+      const result = await step.run("parse-and-save-upgrade", async () => {
+        try {
+          const fullOutput = lastAssistantTextMessage(agentResult);
 
-      const usageUpdate = await prisma.$transaction(async (tx) => {
-        // 1️⃣ Get current usage
-        const usage = await tx.aiUsage.findUnique({
-          where: {
-            userId_date: {
-              userId,
-              date: today,
-            },
-          },
-          select: { count: true },
-        });
+          // Parse structured output
+          const thinkingMatch = fullOutput?.match(
+            /<THINKING>([\s\S]*?)<\/THINKING>/,
+          );
+          const summaryMatch = fullOutput?.match(/<SUMMARY>([\s\S]*?)<\/SUMMARY>/);
+          const readmeMatch = fullOutput?.match(/<README>([\s\S]*?)<\/README>/);
 
-        if (!usage) {
-          throw new Error("Usage row missing");
-        }
+          const thinking = thinkingMatch?.[1].trim() || null;
+          const summary =
+            summaryMatch?.[1].trim() || "README updated successfully!";
+          const readme = readmeMatch?.[1].trim() || fullOutput || "";
 
-        // 2️⃣ Update usage count
-        await tx.aiUsage.update({
-          where: {
-            userId_date: {
-              userId,
-              date: today,
-            },
-          },
-          data: {
-            count: { increment: 1 },
-          },
-        });
-
-        // 3️⃣ If count >= 5, reduce bonus credits
-        if (usage.count >= 5) {
-          await tx.user.update({
-            where: { id: userId },
+          // Save assistant message
+          const message = await prisma.message.create({
             data: {
-              bonusAiChatCredits: { decrement: 1 },
+              projectId,
+              content: summary,
+              role: "ASSISTANT",
+              type: "RESULT",
+              model: selectedModel.model,
             },
           });
+
+          // Save updated README fragment
+          await prisma.fragment.create({
+            data: {
+              messageId: message.id,
+              readme: readme,
+            },
+          });
+
+          // Update context files if we added new ones
+          if (additionalContext.length > 0) {
+            const newContextPaths = additionalContext.map((ctx) => ctx.path);
+            const updatedContextFiles = [
+              ...(project.contextFiles || []),
+              ...newContextPaths,
+            ];
+
+            await prisma.project.update({
+              where: { id: projectId },
+              data: {
+                contextFiles: updatedContextFiles,
+              },
+            });
+          }
+
+          // Update usage
+          const today = getTodayDate();
+          await prisma.$transaction(async (tx) => {
+            const usage = await tx.aiUsage.findUnique({
+              where: {
+                userId_date: {
+                  userId,
+                  date: today,
+                },
+              },
+              select: { count: true },
+            });
+
+            if (!usage) {
+              throw new Error("Usage row missing");
+            }
+
+            await tx.aiUsage.update({
+              where: {
+                userId_date: {
+                  userId,
+                  date: today,
+                },
+              },
+              data: {
+                count: { increment: 1 },
+              },
+            });
+
+            if (usage.count >= 5) {
+              await tx.user.update({
+                where: { id: userId },
+                data: {
+                  bonusAiChatCredits: { decrement: 1 },
+                },
+              });
+            }
+          });
+
+          return {
+            messageId: message.id,
+            thinking,
+            summary,
+            complexity,
+            additionalFilesUsed: additionalContext.length,
+          };
+        } catch (err) {
+          console.error("Error parsing and saving:", err);
+          throw err;
         }
+      });
+
+      await emitProgress("COMPLETED", 100, "README updated! 🎉", {
+        messageId: result.messageId,
+        completed: true,
       });
 
       return {
-        messageId: message.id,
-        thinking,
-        summary,
-        complexity,
-        additionalFilesUsed: additionalContext.length,
-        usageUpdate,
+        success: true,
+        messageId: result.messageId,
+        complexity: result.complexity,
+        model: selectedModel.model,
+        additionalFilesUsed: result.additionalFilesUsed,
+        thinking: result.thinking,
       };
-    });
 
-    await emitProgress("COMPLETED", 100, "README generated! 🎉", {
-      messageId: result.messageId,
-      completed: true,
-    });
+    } catch (error) {
+      // Catch all errors and handle them gracefully
+      const stage = error instanceof Error && error.message.includes("AI service")
+        ? "GENERATING_README"
+        : error instanceof Error && error.message.includes("analyze")
+        ? "ANALYZING_REPO"
+        : "ERROR";
 
-    return {
-      success: true,
-      messageId: result.messageId,
-      complexity: result.complexity,
-      model: selectedModel.model,
-      additionalFilesUsed: result.additionalFilesUsed,
-      thinking: result.thinking,
-    };
+      return await handleError(projectId, error, stage, emitProgress);
+    }
   },
 );
