@@ -12,24 +12,52 @@ const LandingPage = () => {
       <BgMain bgNumber={3} />
       <div className="h-screen max-h-[768px] flex items-center justify-center mt-14 md:mt-10">
         <div className="flex flex-col gap-y-4 md:gap-y-6 w-full">
-          <span className="mx-auto text-sm text-foreground border border-foreground/10 ps-4 pe-3 py-3 rounded-full bg-white/5 backdrop-blur-lg flex items-center gap-x-2 cursor-pointer group transition-colors duration-300 hover:scale-102 animate-all hover:text-foreground hover:border-foreground/30">
-            <span className="scale-120">💖</span>
+          <div className="mx-auto flex items-center gap-x-4">
+            <span className="mx-auto text-sm text-foreground border border-foreground/10 ps-4 pe-3 py-3 rounded-full bg-white/5 backdrop-blur-lg flex items-center gap-x-2 cursor-pointer group transition-colors duration-300 hover:scale-102 animate-all hover:text-foreground hover:border-foreground/30">
+              <span className="scale-120">💖</span>
 
-            <span>Introducing GitDocs AI v2.0</span>
+              <span>Introducing GitDocs AI v2.0</span>
 
-            <ChevronRight
-              className="
-                        opacity-0
-                        size-0
-                        translate-x-[-4px]
-                        transition-all
-                        duration-300
-                        group-hover:opacity-100
-                        group-hover:size-4
-                        group-hover:translate-x-0
-                        "
-            />
-          </span>
+              <ChevronRight
+                className="
+                          opacity-0
+                          size-0
+                          translate-x-[-4px]
+                          transition-all
+                          duration-300
+                          group-hover:opacity-100
+                          group-hover:size-4
+                          group-hover:translate-x-0
+                          "
+              />
+            </span>
+
+            <a
+              href="https://www.producthunt.com/posts/gitdocs-ai"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mx-auto text-sm text-foreground border border-foreground/10 ps-4 pe-3 py-3 rounded-full bg-white/5 backdrop-blur-lg flex items-center gap-x-2 cursor-pointer group transition-all duration-300 hover:scale-[1.02] hover:text-foreground hover:border-foreground/30"
+            >
+              <span className="scale-110">🚀</span>
+
+              <span>Live on Product Hunt today</span>
+
+              <ChevronRight
+                className="
+                  opacity-0
+                  size-0
+                  translate-x-[-4px]
+                  transition-all
+                  duration-300
+                  group-hover:opacity-100
+                  group-hover:size-4
+                  group-hover:translate-x-0
+                "
+              />
+            </a>
+
+
+          </div>
 
           <h2 className="text-center text-3xl md:text-4xl lg:text-5xl font-semibold mt-2 max-w-9/10 mx-auto text-accent-foreground">
             Make <span className="font-handwriting text-4xl md:text-5xl lg:text-6xl">repository</span> explain itself
