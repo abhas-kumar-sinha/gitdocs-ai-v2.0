@@ -3,7 +3,7 @@ import { inngest } from "../client";
 import type { Octokit } from "@octokit/rest";
 import { publishProgress } from "@/lib/redis";
 import { lastAssistantTextMessage } from "../utils";
-import { Message, Repository } from "@/generated/prisma/client";
+import { Image, Message, Repository } from "@/generated/prisma/client";
 import { createAgent, openai } from "@inngest/agent-kit";
 import { readmeUpgradePrompt } from "@/lib/prompts/PROMPTS";
 import { getInstallationOctokit } from "@/lib/github/appAuth";
@@ -410,6 +410,7 @@ export const chatUpgradeReadme = inngest.createFunction(
                 orderBy: { createdAt: "asc" },
                 include: {
                   fragment: true,
+                  images: true
                 },
               },
             },
@@ -442,22 +443,27 @@ export const chatUpgradeReadme = inngest.createFunction(
       }
 
       // ========== STEP 4: Get User Message ==========
-      const userMessage = await step.run("get-user-message", async () => {
+      const userMessageContext = await step.run("get-user-message", async () => {
         try {
           const msg = await prisma.message.findUnique({
             where: { id: messageId },
+            include: {
+              images: true,
+            },
           });
 
           if (!msg || msg.role !== "USER") {
             throw new Error("Invalid message or not a user message");
           }
 
-          return msg.content;
+          return {message: msg.content, images: msg.images};
         } catch (err) {
           console.error("Error fetching user message:", err);
           throw err;
         }
       });
+
+      const { message: userMessage, images } = userMessageContext;
 
       await emitProgress(
         "ANALYZING_REQUEST",
@@ -536,6 +542,7 @@ export const chatUpgradeReadme = inngest.createFunction(
         allContext,
         conversationHistory,
         project.template || "standard",
+        (images || []) as unknown as Image[]
       );
 
       await emitProgress("GENERATING_README", 80, "AI is updating your README...");

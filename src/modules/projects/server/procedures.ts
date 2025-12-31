@@ -13,6 +13,7 @@ export type ProjectWithChildren = Prisma.ProjectGetPayload<{
         fragment: true;
       };
     };
+    images: true;
   };
 }>;
 
@@ -31,35 +32,77 @@ export const projectRouter = createTRPCRouter({
           .string()
           .min(1, { message: "Repository cannot be empty" }),
         template: z.string(),
+        images: z.array(
+          z.object({
+            name: z.string(),
+            mimeType: z.string(),
+            size: z.number(),
+            url: z.string(),
+            publicId: z.string(),
+            width: z.number().optional(),
+            height: z.number().optional(),
+            role: z.enum(["BANNER", "SCREENSHOT", "DIAGRAM", "LOGO", "OTHER"])
+              .optional(),
+          })
+        ).optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const createdProject = await prisma.project.create({
-        data: {
-          userId: ctx.auth.userId,
-          name: input.name,
-          repositoryId: input.repositoryId,
-          template: input.template,
-          messages: {
-            create: {
-              content: input.prompt,
-              role: "USER",
-              type: "RESULT",
-            },
+      return await prisma.$transaction(async (tx) => {
+        // 1. Create project
+        const project = await tx.project.create({
+          data: {
+            userId: ctx.auth.userId,
+            name: input.name,
+            repositoryId: input.repositoryId,
+            template: input.template,
           },
-        },
-      });
+        });
 
-      await inngest.send({
-        name: "readme/initial.build",
-        data: {
-          projectId: createdProject.id,
-          userId: ctx.auth.userId,
-        },
-      });
+        // 2. Create message
+        const message = await tx.message.create({
+          data: {
+            projectId: project.id,
+            content: input.prompt,
+            role: "USER",
+            type: "RESULT",
+          },
+        });
 
-      return createdProject;
+        // 3. Create images (linked to BOTH)
+        if (input.images?.length) {
+          await tx.image.createMany({
+            data: input.images.map((img) => ({
+              projectId: project.id,
+              messageId: message.id,
+
+              name: img.name,
+              mimeType: img.mimeType,
+              size: img.size,
+              role: img.role ?? "SCREENSHOT",
+
+              url: img.url,
+              publicId: img.publicId,
+
+              width: img.width,
+              height: img.height,
+            })),
+          });
+        }
+
+        // 4. Trigger async job
+        await inngest.send({
+          name: "readme/initial.build",
+          data: {
+            projectId: project.id,
+            userId: ctx.auth.userId,
+          },
+        });
+
+        return project;
+      });
     }),
+
 
   list: protectedProcedure.query(async ({ ctx }) => {
     const projects: ProjectWithChildren[] = await prisma.project.findMany({
@@ -71,6 +114,7 @@ export const projectRouter = createTRPCRouter({
           take: 1,
           include: { fragment: true },
         },
+        images: true
       },
       orderBy: { updatedAt: "desc" },
     });
@@ -92,6 +136,7 @@ export const projectRouter = createTRPCRouter({
             include: { fragment: true },
             orderBy: { createdAt: "asc" },
           },
+          images: true
         },
       });
 
@@ -150,6 +195,7 @@ export const projectRouter = createTRPCRouter({
         commitMessage: z.string().min(1).max(100),
         commitBranch: z.string().min(1),
         fragmentId: z.string().min(1),
+        assetsFolder: z.string().min(1),
       }),
     )
     .mutation(async ({ input }) => {
@@ -160,6 +206,7 @@ export const projectRouter = createTRPCRouter({
           commitMessage: input.commitMessage,
           commitBranch: input.commitBranch,
           fragmentId: input.fragmentId,
+          assetsFolder: input.assetsFolder,
         },
       });
 

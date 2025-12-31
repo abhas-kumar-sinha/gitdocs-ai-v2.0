@@ -2,6 +2,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { clerkClient } from "@clerk/nextjs/server";
 import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
+import { TRPCError } from "@trpc/server";
 
 const FeedbackInputSchema = z.object({
   intent: z.array(z.string()).min(1),
@@ -59,7 +60,7 @@ export const userRouter = createTRPCRouter({
           select: { feedbackRewarded: true },
         });
 
-        if (!user) throw new Error("User not found");
+        if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 
         // Save feedback (always)
         const feedbackEntry = await tx.feedback.create({

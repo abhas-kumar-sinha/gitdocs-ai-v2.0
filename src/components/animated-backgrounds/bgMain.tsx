@@ -3,7 +3,7 @@ import Image from "next/image"
 const BgMain = ( { bgNumber } : { bgNumber: number } ) => {
   return (
     <div
-    className="absolute top-45 inset-0 -z-10 blur-3xl"
+    className="absolute top-40 inset-0 -z-10 blur-3xl"
     >
     <Image
         alt=""

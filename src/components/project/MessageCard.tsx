@@ -7,7 +7,7 @@ import {
   ThumbsDown,
   ThumbsUp,
 } from "lucide-react";
-import { Fragment, Message, MessageType } from "@/generated/prisma/client";
+import { Fragment, Image as ImageType, Message, MessageType } from "@/generated/prisma/client";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -15,6 +15,8 @@ import remarkBreaks from "remark-breaks";
 import { Card } from "../ui/card";
 import { cn } from "@/lib/utils";
 import "@/styles/message-content.css"
+import Image from "next/image";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 function formatCreatedAt(date: Date | string) {
   const d = new Date(date);
@@ -36,17 +38,17 @@ function formatCreatedAt(date: Date | string) {
 // Helper to fix escaped newlines
 const preprocessText = (text: string) => {
   if (!text) return "";
-  // 1. Replace literal "\\n" with real newlines
-  // 2. Ensure double newlines for proper paragraph spacing if needed
   return text.replace(/\\n/g, "\n");
 };
 
 const UserMessage = ({
   timeStamp,
   content,
+  images
 }: {
   timeStamp: Date;
   content: string;
+  images: ImageType[];
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const MAX_LENGTH = 400;
@@ -73,6 +75,43 @@ const UserMessage = ({
         {formatCreatedAt(timeStamp)}
       </div>
       <div className="ms-auto flex flex-col gap-y-1 items-end group mt-3">
+        
+        <div className="grid grid-cols-3 w-4/5 gap-2 mt-2" dir="rtl">
+          {images && images.length > 0 && images.map((img) => (
+            <div key={img.id} className="aspect-video" dir="ltr">
+              <Dialog>
+                <DialogTrigger>
+                  <Image
+                    src={img.url}
+                    alt="Uploaded Image"
+                    height={1000}
+                    width={1000}
+                    className="object-contain rounded cursor-pointer border border-border"
+                  />
+                </DialogTrigger>
+                <DialogContent className="w-screen h-screen md:w-7/10 md:h-[calc(100vh-6rem)] max-w-7xl! border-none! flex flex-col items-center justify-center gap-8">
+                  
+                  <DialogHeader className="w-full">
+                    <DialogTitle>{img.name}</DialogTitle>
+                    <DialogDescription>{img.mimeType}</DialogDescription>
+                  </DialogHeader>
+
+                  <div className="mx-auto h-fit flex-1 rounded-lg overflow-hidden bg-muted">
+                    <Image
+                      src={img.url}
+                      alt="Uploaded Image"
+                      height={1000}
+                      width={1000}
+                      className="h-full w-full object-contain"
+                    />
+                  </div>
+
+                </DialogContent>
+              </Dialog>
+            </div>
+          ))}
+        </div>
+        
         <Card className="py-2 px-4 bg-muted rounded-xl max-w-[76%] w-fit min-w-24 border-none shadow-none overflow-hidden">
           <div className="message-content -ms-0.5">
             <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>
@@ -244,12 +283,14 @@ const AssistantMessage = ({
 
 const MessageCard = ({
   message,
+  images,
   fragment,
   fragmentVersion,
   activeFragment,
   setActiveFragment,
 }: {
   message: Message;
+  images: ImageType[];
   fragment: Fragment | null;
   fragmentVersion: number;
   activeFragment: Fragment | null;
@@ -269,7 +310,7 @@ const MessageCard = ({
   }
 
   return (
-    <UserMessage timeStamp={message.createdAt} content={message.content} />
+    <UserMessage timeStamp={message.createdAt} content={message.content} images={images} />
   );
 };
 export default MessageCard;

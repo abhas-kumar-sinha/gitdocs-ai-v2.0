@@ -2,6 +2,7 @@
 
 import "@/styles/markdown.css"
 import remarkGfm from "remark-gfm";
+import rehypeRaw from 'rehype-raw';
 import ReactMarkdown from "react-markdown";
 import React, { useRef, useEffect, useState, useMemo } from "react";
 import { PixelatedCanvas } from "@/components/ui/pixelated-canvas";
@@ -37,7 +38,7 @@ const MarkdownPreview = ({
   // Memoize the ReactMarkdown component to prevent unnecessary re-renders
   const memoizedMarkdown = useMemo(
     () => (
-      <ReactMarkdown remarkPlugins={[remarkGfm]}>
+      <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
         {cleanContent}
       </ReactMarkdown>
     ),

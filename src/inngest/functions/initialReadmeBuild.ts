@@ -3,20 +3,11 @@ import { inngest } from "../client";
 import type { Octokit } from "@octokit/rest";
 import { publishProgress } from "@/lib/redis";
 import { lastAssistantTextMessage } from "../utils";
-import { Message, Repository } from "@/generated/prisma/client";
+import { Image, Message, Repository } from "@/generated/prisma/client";
 import { createAgent, openai } from "@inngest/agent-kit";
 import { getInstallationOctokit } from "@/lib/github/appAuth";
-import {
-  contextDiscoveryPrompt,
-  readmeGeneratePrompt,
-} from "@/lib/prompts/PROMPTS";
-import {
-  type ModelConfig,
-  type RepositorySnapshot,
-  type GitHubTreeItem,
-  type FileContext,
-  type ContextDiscoveryResult,
-} from "@/types/readmeAi";
+import { contextDiscoveryPrompt, readmeGeneratePrompt } from "@/lib/prompts/PROMPTS";
+import { type ModelConfig, type RepositorySnapshot, type GitHubTreeItem, type FileContext, type ContextDiscoveryResult } from "@/types/readmeAi";
 
 const getTodayDate = () => {
   const today = new Date();
@@ -435,6 +426,7 @@ export const initialReadmeBuild = inngest.createFunction(
                 orderBy: { createdAt: "asc" },
                 include: {
                   fragment: true,
+                  images: true,
                 },
               },
             },
@@ -541,11 +533,14 @@ export const initialReadmeBuild = inngest.createFunction(
       
       // ========== STEP 7: Generate README ==========
       const selectedModel = selectReadmeModel(project.template || "standard");
+      const latestMessage = project.messages[0];
+      
       const systemPrompt = readmeGeneratePrompt(
         snapshot,
         project.template || "standard",
         contextFiles,
         contextDiscovery.reasoning,
+        (latestMessage?.images || []) as unknown as Image[],
       );
 
       let agentResult;
@@ -563,9 +558,8 @@ export const initialReadmeBuild = inngest.createFunction(
           }),
         });
 
-        const userMessage =
-          project.messages[0]?.content ||
-          "Generate a comprehensive README for this project.";
+        const userMessage = latestMessage!.content || "Generate a comprehensive README for this project.";
+
         agentResult = await agent.run(userMessage);
       } catch (err) {
         console.error("Error generating README:", err);

@@ -96,8 +96,8 @@ const Sidebar = () => {
       onSuccess: async () => {
         toast.success(
           feedbackRewarded
-            ? "Thank you for your feedback. Free credits will be added in tomorrow’s session."
-            : "Thank you for your feedback. You’ve earned 5 free credits!",
+            ? "Thank you for your feedback."
+            : "Thank you for your feedback. You’ve earned 5 free credits! Free credits will be added in tomorrow’s session.",
         );
 
         await user?.reload();

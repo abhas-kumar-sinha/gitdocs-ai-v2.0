@@ -28,6 +28,7 @@ import {
   ChevronDown,
   CircleFadingArrowUp,
   Files,
+  FolderGit2,
   GitBranch,
   GitPullRequestArrow,
   Info,
@@ -138,9 +139,9 @@ const GithubConnectionItem = ({
     useRepositoryContext();
   const [branchName, setBranchName] = useState<string>("");
   const [commitMessage, setCommitMessage] = useState<string>("");
-  const [commitVersion, setCommitVersion] = useState<string>(
-    activeFragmentId || "",
-  );
+  const [commitVersion, setCommitVersion] = useState<string>(activeFragmentId || "");
+  const [assetsFolder, setAssetsFolder] = useState<string>("");
+  const [sheetOpen, setSheetOpen] = useState<boolean>(false);
 
   const { data: userInstallations, isLoading } = useQuery(
     trpc.installation.list.queryOptions(),
@@ -177,6 +178,7 @@ const GithubConnectionItem = ({
   const createPr = useMutation(
     trpc.project.createPr.mutationOptions({
       onSuccess: () => {
+        setSheetOpen(false);
         toast.success("Job in Progress");
       },
       onError: () => {
@@ -196,6 +198,7 @@ const GithubConnectionItem = ({
       commitMessage,
       commitBranch: branchName,
       fragmentId: commitVersion,
+      assetsFolder,
     });
   };
 
@@ -429,7 +432,7 @@ const GithubConnectionItem = ({
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <Sheet>
+          <Sheet open={sheetOpen} onOpenChange={setSheetOpen} >
             <SheetTrigger asChild>
               <Button
                 disabled={userInstallations[0].permissions === "READ"}
@@ -510,6 +513,22 @@ const GithubConnectionItem = ({
                     required
                   />
                 </div>
+
+                {/* Assets Folder Name */}
+                {(project?.images?.length ?? 0) > 0 && <div className="space-y-3">
+                  <label className="flex items-center gap-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                    <FolderGit2 className="w-3.5 h-3.5" />
+                    Assets Folder Name
+                  </label>
+                  <input
+                    type="text"
+                    value={assetsFolder}
+                    onChange={(e) => setAssetsFolder(e.target.value)}
+                    className="w-full bg-background border border-border rounded-lg px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition-all"
+                    placeholder="e.g. docs/images"
+                    required
+                  />
+                </div>}
 
                 {/* README Version Selection */}
                 <div className="space-y-3">

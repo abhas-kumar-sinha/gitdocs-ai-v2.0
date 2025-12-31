@@ -9,34 +9,18 @@ import { Progress } from "../ui/progress";
 import Toolbar from "../kokonutui/toolbar";
 import { useRouter } from "next/navigation";
 import DesignPanel from "./tabs/DesignPanel";
-import AI_Prompt from "../kokonutui/ai-prompt";
+import AI_Prompt, { ImageItem } from "../kokonutui/ai-prompt";
 import ContextPanel from "./tabs/ContextPanel";
 import PreviewPanel from "./tabs/PreviewPanel";
 import MessageContainer from "./MessageContainer";
 import { useMemo, useState } from "react";
-import { Fragment } from "@/generated/prisma/client";
+import { Fragment, Image } from "@/generated/prisma/client";
 import { GithubConnectionItem } from "../common/SidebarItem";
 import ProjectNameChangeForm from "../forms/projectNameChange";
 import { DropdownMenuSub } from "@radix-ui/react-dropdown-menu";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "@/components/ui/resizable";
-import {
-  ChevronDown,
-  ChevronLeft,
-  CodeXml,
-  Form,
-  Globe,
-  History,
-  LaptopMinimal,
-  LucideIcon,
-  Palette,
-  SquarePen,
-  Star,
-} from "lucide-react";
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
+import { ChevronDown, ChevronLeft, CodeXml, Form, Globe, History, LaptopMinimal, LucideIcon, Palette, SquarePen, Star } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -150,7 +134,7 @@ const ProjectView = ({ projectId }: { projectId: string }) => {
                     className="hover:bg-transparent!"
                     suppressHydrationWarning
                   >
-                    <span className="uppercase px-1.5 py-1 rounded-md bg-accent text-xs tracking-tighter">
+                    <span className="uppercase px-1.5 py-1 rounded-md bg-sidebar-primary text-xs tracking-tighter">
                       {project.name.slice(0, 2)}
                     </span>
                     <span>{project.name}</span>
@@ -335,7 +319,7 @@ const ProjectView = ({ projectId }: { projectId: string }) => {
           </div>
         </div>
 
-        <div className="flex flex-col flex-1 relative mt-12 bg-foreground/5 rounded-xl my-2 mx-3 overflow-hidden">
+        <div className="flex flex-col flex-1 relative mt-12 bg-foreground/5 rounded-xl my-2 mx-3 overflow-hidden border border-border">
           {activeTab === "preview" && (
             <PreviewPanel
               content={activeFragment?.readme ? activeFragment?.readme : ""}
@@ -349,6 +333,8 @@ const ProjectView = ({ projectId }: { projectId: string }) => {
           {activeTab === "code" && (
             <CodePanel
               content={activeFragment?.readme ? activeFragment?.readme : ""}
+              images={project?.images}
+              setActiveTab={setActiveTab}
             />
           )}
           {activeTab === "context" && project && (

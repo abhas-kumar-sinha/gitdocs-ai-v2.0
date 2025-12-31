@@ -61,7 +61,7 @@ const MessageContainer = ({
   }, [messages, setActiveFragment]);
 
   return (
-    <div className="flex flex-col flex-1 w-full mt-14 mb-34 px-6 overflow-y-auto overflow-x-hidden pb-4 scroll-smooth">
+    <div className="flex flex-col flex-1 w-full mt-14 mb-34 px-6 overflow-y-auto overflow-x-hidden pb-2 scroll-smooth">
       <Suspense
         fallback={
           <p className="text-center text-gray-500 mt-4">Loading Messages...</p>
@@ -76,6 +76,7 @@ const MessageContainer = ({
             <MessageCard
               key={message.id}
               message={message}
+              images={message.images}
               fragment={message.fragment}
               fragmentVersion={fragmentVersion}
               activeFragment={activeFragment}
@@ -88,7 +89,7 @@ const MessageContainer = ({
         <ProgressTracker projectId={projectId} />
       )}
 
-      <div ref={bottomRef} />
+      <div className="mt-12" ref={bottomRef} />
     </div>
   );
 };

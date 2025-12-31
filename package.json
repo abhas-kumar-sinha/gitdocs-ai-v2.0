@@ -1,6 +1,6 @@
 {
   "name": "gitdocs-ai",
-  "version": "2.1.2",
+  "version": "2.2.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@clerk/nextjs": "^6.36.3",
+    "@fireworks-js/react": "^2.10.8",
     "@hookform/resolvers": "^5.2.2",
     "@inngest/agent-kit": "^0.13.2",
     "@monaco-editor/react": "^4.7.0",
@@ -50,6 +51,7 @@
     "@trpc/tanstack-react-query": "^11.8.0",
     "class-variance-authority": "^0.7.1",
     "client-only": "^0.0.1",
+    "cloudinary": "^2.8.0",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "date-fns": "^4.1.0",
@@ -73,6 +75,7 @@
     "react-markdown": "^10.1.0",
     "react-resizable-panels": "^3.0.6",
     "recharts": "^2.15.4",
+    "rehype-raw": "^7.0.0",
     "remark-breaks": "^4.0.0",
     "remark-gfm": "^4.0.1",
     "server-only": "^0.0.1",
