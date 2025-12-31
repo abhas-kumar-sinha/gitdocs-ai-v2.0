@@ -4,14 +4,12 @@ import BentoGrid from "@/components/kokonutui/bento-grid";
 import Footer from "@/components/layout/Footer";
 import Navbar from "@/components/layout/Navbar";
 import { ChevronRight } from "lucide-react";
-import NewYear from "@/components/animated-backgrounds/newYear";
 
 const LandingPage = () => {
   return (
     <>
       <Navbar />
       <BgMain bgNumber={3} />
-      <NewYear />
       <div className="h-screen max-h-[768px] flex items-center justify-center mt-14 md:mt-10">
         <div className="flex flex-col gap-y-4 md:gap-y-6 w-full">
           <div className="mx-auto flex flex-col md:flex-row items-center gap-y-2 gap-x-4">

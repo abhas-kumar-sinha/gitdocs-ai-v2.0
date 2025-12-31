@@ -8,7 +8,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import TemplateList from "@/components/template/TemplateList";
 import { templates } from "@/lib/constants/CONSTANTS";
 import BgMain from "@/components/animated-backgrounds/bgMain";
-import NewYear from "@/components/animated-backgrounds/newYear";
 
 async function ProjectsGrid() {
   const projects = await caller.project.list();
@@ -45,7 +44,6 @@ const DashboardPage = () => {
     <div className="flex h-screen">
       <Sidebar />
 
-      <NewYear />
       <div className="relative flex-1 overflow-y-scroll overflow-x-hidden">
         <BgMain bgNumber={3} />
         <div className="h-screen max-h-[768px] flex items-center justify-center">
