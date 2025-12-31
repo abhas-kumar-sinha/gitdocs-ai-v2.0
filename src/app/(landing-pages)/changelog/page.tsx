@@ -48,6 +48,40 @@ const versionChange1: Changelog[] = [
   }
 ]
 
+const versionChange2: Changelog[] = [
+  {
+    type: "NEW",
+    title: "Voice-Powered Prompts",
+    content:
+      "You can now dictate prompts using voice input, making it faster and more natural to describe what you want to document. This is especially useful for brainstorming ideas or capturing context without breaking your flow."
+  },
+  {
+    type: "NEW",
+    title: "Image-Aware README Enhancement",
+    content:
+      "Gitdocs now understands images as part of your documentation context. Upload screenshots, diagrams, or banners and let the AI use them intelligently to enhance and structure your README content."
+  },
+  {
+    type: "NEW",
+    title: "Contextual Image Roles",
+    content:
+      "Images can now be tagged with roles such as banners, screenshots, diagrams, or logos, allowing Gitdocs to place them in the most appropriate sections of your README for clearer, more professional documentation."
+  },
+  {
+    type: "FEATURE",
+    title: "Improved Commit Infrastructure",
+    content:
+      "The commit pipeline has been upgraded to reliably handle richer documentation outputs, including images and enhanced markdown, ensuring smooth and consistent pushes to your repositories."
+  },
+  {
+    type: "FEATURE",
+    title: "Richer AI Context for Documentation",
+    content:
+      "Behind the scenes, Gitdocs now provides the AI with deeper contextual signals from prompts, images, and project structure, resulting in more accurate, relevant, and high-quality README generation."
+  }
+];
+
+
 const LandingPage = () => {
   return (
     <>
@@ -72,7 +106,7 @@ const LandingPage = () => {
             </div>
             <div className="flex items-center gap-x-2 text-xs py-1 px-2 rounded-md bg-primary/20 text-primary font-thin font-mono">
               <CircleCheckBig size={10} />
-              2.0.0
+              2.2.0
             </div>
           </div>
 
@@ -81,8 +115,27 @@ const LandingPage = () => {
           <div className="relative flex h-full w-full">
             <div className="absolute left-6 h-[calc(100%-1.5em)] w-px bg-border hidden md:block" />
             <div className="absolute left-[19.45px] top-2 h-2.5 w-2.5 rounded-full bg-primary hidden md:block" />
+            
             <div className="md:ms-12">
               <div className="flex items-center gap-x-2 h-fit">
+                <span className="text-accent-foreground font-mono">2.2.0</span>
+                <span className="text-foreground/50 text-sm mt-1"> January 01, 2026 &nbsp; 00:00:00</span>
+              </div>
+
+              <div className="mt-4">
+                <h3 className="text-xl text-accent-foreground font-semibold">
+                  🚀 Platform Update: Voice, Images, and Smarter README Generation
+                </h3>
+                <p className="mt-2 text-sm md:text-base">
+                  We’re excited to roll out Gitdocs AI v2.2.0, a feature-rich update that makes documentation creation more natural, contextual, and powerful.
+                  This release introduces voice-powered prompts, image-aware README enhancement, and a more robust commit infrastructure—allowing you to capture ideas faster, provide richer context to the AI, and confidently push high-quality documentation to your repositories.
+                  With these improvements, Gitdocs moves closer to a truly multimodal documentation workflow that adapts to how you build and ship software.
+                </p>
+              </div>
+
+              <ChangelogItems items={versionChange2} />
+
+              <div className="flex items-center gap-x-2 h-fit mt-16">
                 <span className="text-accent-foreground font-mono">2.0.0</span>
                 <span className="text-foreground/50 text-sm mt-1"> December 28, 2025</span>
               </div>
@@ -98,7 +151,9 @@ const LandingPage = () => {
               <ChangelogItems items={versionChange1} />
 
             </div>
+            
           </div>
+          
 
           <hr className="my-6 border-border" />
 
