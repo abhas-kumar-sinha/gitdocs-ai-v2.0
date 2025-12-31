@@ -372,7 +372,7 @@ export default function AI_Prompt({ isActive, projectId, repository }: { isActiv
 
     r.onresult = (event) => {
       const transcript = event.results[0][0].transcript;
-      setValue((prev) => prev ? `${prev} ${transcript}` : transcript);
+      setValue(transcript);
 
     };
 
