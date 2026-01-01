@@ -220,23 +220,6 @@ Security & environment notes
 - Use environment-specific secrets management in production (Vercel secrets, AWS Parameter Store, Vault, etc.).
 - The webhook endpoint validates signatures — ensure `GITHUB_WEBHOOK_SECRET` is set identically in GitHub.
 
-License
-
-Important: This repository currently has no license specified in package.json. If you plan to open-source it, add a `LICENSE` file. Without a license, others cannot legally reuse your code.
-
-Recommended: MIT License (simple permissive license). To apply, create a `LICENSE` file with the following contents (replace YEAR and FULL NAME):
-
-```
-MIT License
-
-Copyright (c) YEAR YOUR NAME
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-... (full MIT text) ...
-```
-
-If you prefer another license, choose one (Apache-2.0, GPL-3.0, etc.) and add it to the repo.
-
 Acknowledgements
 - Built with Next.js, Prisma, tRPC, Inngest, Clerk, Octokit, Cloudinary, Redis, and many open-source libraries.
 - See `package.json` for a full list of dependencies.
