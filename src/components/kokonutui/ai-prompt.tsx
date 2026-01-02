@@ -418,6 +418,35 @@ export default function AI_Prompt({ isActive, projectId, repository }: { isActiv
               
   }
 
+  const handlePaste = (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+
+    for (const item of items) {
+      if (item.type.startsWith("image/")) {
+        e.preventDefault(); // stop text paste
+
+        const file = item.getAsFile();
+        if (!file) return;
+
+        // 🔁 Reuse the SAME upload flow
+        if (!fileInputRef.current) return;
+
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(file);
+
+        fileInputRef.current.files = dataTransfer.files;
+
+        // Manually trigger change event
+        fileInputRef.current.dispatchEvent(
+          new Event("change", { bubbles: true })
+        );
+
+        return;
+      }
+    }
+  };
+
   return (
     <div className="relative flex flex-col bg-sidebar rounded-3xl pt-4">
       {images.length > 0 && <ImageView images={images} setImages={setImages} repository={repository} />}
@@ -432,6 +461,7 @@ export default function AI_Prompt({ isActive, projectId, repository }: { isActiv
             setValue(e.target.value);
             adjustHeight();
           }}
+          onPaste={(e) => handlePaste(e)}
           onKeyDown={handleKeyDown}
           placeholder={"Ask Gitdocs to Generate a new Readme..."}
           ref={textareaRef}

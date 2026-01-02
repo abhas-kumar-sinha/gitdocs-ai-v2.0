@@ -74,7 +74,7 @@ const UserMessage = ({
       <div className="text-center text-xs text-foreground/50">
         {formatCreatedAt(timeStamp)}
       </div>
-      <div className="ms-auto flex flex-col gap-y-1 items-end group mt-3">
+      <div className="flex flex-col gap-y-1 items-end group mt-3">
         
         <div className="grid grid-cols-3 w-4/5 gap-2 mt-2" dir="rtl">
           {images && images.length > 0 && images.map((img) => (

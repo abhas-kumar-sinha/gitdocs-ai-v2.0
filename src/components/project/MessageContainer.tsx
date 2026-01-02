@@ -61,7 +61,7 @@ const MessageContainer = ({
   }, [messages, setActiveFragment]);
 
   return (
-    <div className="flex flex-col flex-1 w-full mt-14 mb-34 px-6 overflow-y-auto overflow-x-hidden pb-2 scroll-smooth">
+    <div className="flex flex-col flex-1 w-full mt-14 mb-34 px-6 overflow-y-auto overflow-x-auto pb-2 scroll-smooth">
       <Suspense
         fallback={
           <p className="text-center text-gray-500 mt-4">Loading Messages...</p>
