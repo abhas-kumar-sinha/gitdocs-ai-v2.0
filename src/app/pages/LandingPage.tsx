@@ -13,14 +13,6 @@ const LandingPage = () => {
       <div className="h-screen max-h-[768px] flex items-center justify-center mt-14 md:mt-10">
         <div className="flex flex-col gap-y-4 md:gap-y-6 w-full">
           <div className="mx-auto flex flex-col md:flex-row items-center gap-y-2 gap-x-4">
-            
-            <span className="mx-auto text-sm text-foreground border border-foreground/10 ps-4 pe-3 py-3 rounded-full bg-white/5 backdrop-blur-lg flex items-center gap-x-2 cursor-pointer group transition-colors duration-300 hover:scale-102 animate-all hover:text-foreground hover:border-foreground/30">
-              <span className="scale-120 animate-bounce delay-700">🎉</span>
-
-              <span>Happy New Year 2026</span>
-
-              <ChevronRight className="opacity-0 size-0 translate-x-[-4px] transition-all duration-300 group-hover:opacity-100 group-hover:size-4 group-hover:translate-x-0"/>
-            </span>
 
             <span className="mx-auto text-sm text-foreground border border-foreground/10 ps-4 pe-3 py-3 rounded-full bg-white/5 backdrop-blur-lg flex items-center gap-x-2 cursor-pointer group transition-colors duration-300 hover:scale-102 animate-all hover:text-foreground hover:border-foreground/30">
               <span className="scale-120">💖</span>
