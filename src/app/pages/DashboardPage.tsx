@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import TemplateList from "@/components/template/TemplateList";
 import { templates } from "@/lib/constants/CONSTANTS";
 import BgMain from "@/components/animated-backgrounds/bgMain";
+import { FaGithub } from "react-icons/fa";
 
 async function ProjectsGrid() {
   const projects = await caller.project.list();
@@ -48,16 +49,21 @@ const DashboardPage = () => {
         <BgMain bgNumber={3} />
         <div className="h-screen max-h-[768px] flex items-center justify-center">
           <div className="flex flex-col gap-y-2 w-full -mt-14">
-          <div className="mx-auto flex flex-col md:flex-row items-center gap-y-2 gap-x-4">
+            <div className="mx-auto flex flex-col md:flex-row items-center gap-4">
+              <a
+                href="https://github.com/abhas-kumar-sinha/gitdocs-ai-v2.0"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <span className="mx-auto text-sm text-foreground border border-foreground/10 ps-4 pe-3 py-3 rounded-full bg-white/5 backdrop-blur-lg flex items-center gap-x-2 cursor-pointer group transition-colors duration-300 hover:scale-102 animate-all hover:text-foreground hover:border-foreground/30">
+                  <span className="scale-120"><FaGithub /></span>
 
-            <span className="mx-auto text-sm text-foreground border border-foreground/10 ps-4 pe-3 py-3 rounded-full bg-white/5 backdrop-blur-lg flex items-center gap-x-2 cursor-pointer group transition-colors duration-300 hover:scale-102 animate-all hover:text-foreground hover:border-foreground/30">
-              <span className="scale-120">💖</span>
+                  <span>Star Us · Loved by early builders</span>
 
-              <span>Introducing GitDocs AI v2.0</span>
-
-              <ChevronRight className="opacity-0 size-0 translate-x-[-4px] transition-all duration-300 group-hover:opacity-100 group-hover:size-4 group-hover:translate-x-0"/>
-            </span>
-          </div>
+                  <ChevronRight className="opacity-0 size-0 translate-x-[-4px] transition-all duration-300 group-hover:opacity-100 group-hover:size-4 group-hover:translate-x-0"/>
+                </span>
+              </a>
+            </div>
 
             <h3 className="text-center text-xl md:text-2xl lg:text-3xl font-bold mt-8 md:mt-6 max-w-9/10 mx-auto">
               What should we <span className="font-handwriting text-2xl md:text-3xl lg:text-4xl me-1">document</span> today?
