@@ -31,6 +31,8 @@ import {
 import {
   Blocks,
   Box,
+  Briefcase,
+  GalleryVerticalEnd,
   House,
   Inbox,
   Mail,
@@ -72,11 +74,16 @@ const sidebarBottomItems = [
     label: "Templates",
     href: "/templates",
   },
-  // {
-  //   icon: Briefcase,
-  //   label: "Learn",
-  //   href: "/learn"
-  // }
+  {
+    icon: GalleryVerticalEnd,
+    label: "Changelog",
+    href: "/changelog",
+  },
+  {
+    icon: Briefcase,
+    label: "Blogs",
+    href: "/blogs"
+  }
 ];
 
 const Sidebar = () => {

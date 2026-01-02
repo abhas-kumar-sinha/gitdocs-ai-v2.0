@@ -75,6 +75,8 @@ const SidebarItem = ({
     e.stopPropagation();
     if (Item.label === "Search") {
       setIsCommandOpen?.(true);
+    } else if (Item.label === "Changelog" || Item.label === "Blogs") {
+      window.open(Item.href, "_blank", "noopener,noreferrer");
     } else {
       router.push(Item.href);
     }
