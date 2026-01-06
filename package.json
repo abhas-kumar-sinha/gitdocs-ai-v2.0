@@ -1,6 +1,6 @@
 {
   "name": "gitdocs-ai",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -45,6 +45,7 @@
     "@radix-ui/react-toggle": "^1.1.10",
     "@radix-ui/react-toggle-group": "^1.1.11",
     "@radix-ui/react-tooltip": "^1.2.8",
+    "@sentry/nextjs": "^10.32.1",
     "@tanstack/react-query": "^5.90.12",
     "@trpc/client": "^11.8.0",
     "@trpc/server": "^11.8.0",
