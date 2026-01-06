@@ -10,6 +10,8 @@ import { SidebarProvider } from "@/contexts/SidebarContext";
 import { RepositoryProvider } from "@/contexts/RepositoryContext";
 import GoogleTagManager from "@/components/analytics/GoogleTagManager";
 import { ScrollPositionProvider } from "@/contexts/ScrollPositionContext";
+import { Analytics } from "@vercel/analytics/next"
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.gitdocs.space"),
@@ -83,6 +85,8 @@ export default function RootLayout({
                     <AiProvider>
                       <Toaster />
                       {children}
+                      <Analytics />
+                      <SpeedInsights />
                     </AiProvider>
                   </SidebarProvider>
                 </RepositoryProvider>
