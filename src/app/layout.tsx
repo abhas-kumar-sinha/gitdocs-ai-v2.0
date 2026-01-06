@@ -1,15 +1,9 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { Providers } from "./providers";
-import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "@/components/ui/sonner";
-import { AiProvider } from "@/contexts/AiContext";
-import { TRPCReactProvider } from "@/trpc/client";
 import { Geist_Mono, Caveat, Nunito } from "next/font/google";
-import { SidebarProvider } from "@/contexts/SidebarContext";
-import { RepositoryProvider } from "@/contexts/RepositoryContext";
 import GoogleTagManager from "@/components/analytics/GoogleTagManager";
-import { ScrollPositionProvider } from "@/contexts/ScrollPositionContext";
 import { Analytics } from "@vercel/analytics/next"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 
@@ -49,7 +43,6 @@ export const metadata: Metadata = {
   },
 };
 
-
 const nunito = Nunito({
   subsets: ["latin"],
   variable: "--font-nunito"
@@ -71,30 +64,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider>
-      <TRPCReactProvider>
-        <html lang="en" suppressHydrationWarning>
-          <body
-            className={`${caveat.variable} ${geistMono.variable} ${nunito.variable} antialiased`}
-          >
-            <GoogleTagManager />
-            <Providers>
-              <ScrollPositionProvider>
-                <RepositoryProvider>
-                  <SidebarProvider>
-                    <AiProvider>
-                      <Toaster />
-                      {children}
-                      <Analytics />
-                      <SpeedInsights />
-                    </AiProvider>
-                  </SidebarProvider>
-                </RepositoryProvider>
-              </ScrollPositionProvider>
-            </Providers>
-          </body>
-        </html>
-      </TRPCReactProvider>
-    </ClerkProvider>
+    <html lang="en" suppressHydrationWarning>
+      <body
+        className={`${caveat.variable} ${geistMono.variable} ${nunito.variable} antialiased`}
+      >
+        <GoogleTagManager />
+        <Providers>
+          <Toaster />
+          {children}
+          <Analytics />
+          <SpeedInsights />
+        </Providers>
+      </body>
+    </html>
   );
 }
