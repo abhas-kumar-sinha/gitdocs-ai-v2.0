@@ -1,7 +1,6 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
 import { TRPCError } from "@trpc/server";
-import { prisma } from "@/lib/db";
 import { inngest } from "@/inngest/client";
 
 export const repositoryRouter = createTRPCRouter({
@@ -14,7 +13,7 @@ export const repositoryRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const installation = await prisma.installation.findFirst({
+      const installation = await ctx.prisma.installation.findFirst({
         where: {
           id: input.installationId,
           members: { some: { userId: ctx.auth.userId } },

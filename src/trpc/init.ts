@@ -8,6 +8,7 @@ import { clerkClient } from "@clerk/nextjs/server";
 export const createTRPCContext = cache(async () => {
   return {
     auth: await auth(),
+    prisma,
   };
 });
 
@@ -18,7 +19,7 @@ const t = initTRPC.context<Context>().create({
 });
 
 export const isAuthorized = t.middleware(async ({ next, ctx }) => {
-  const clerkId = ctx?.auth?.userId;
+  const clerkId = ctx.auth?.userId;
 
   if (!clerkId) {
     throw new TRPCError({
@@ -27,7 +28,7 @@ export const isAuthorized = t.middleware(async ({ next, ctx }) => {
     });
   }
 
-  let user = await prisma.user.findUnique({
+  let user = await ctx.prisma.user.findUnique({
     where: { clerkId },
     select: { id: true, clerkId: true },
   });
@@ -48,11 +49,8 @@ export const isAuthorized = t.middleware(async ({ next, ctx }) => {
       });
     }
 
-    user = await prisma.user.create({
-      data: {
-        clerkId,
-        email,
-      },
+    user = await ctx.prisma.user.create({
+      data: { clerkId, email },
       select: { id: true, clerkId: true },
     });
   }
@@ -68,7 +66,6 @@ export const isAuthorized = t.middleware(async ({ next, ctx }) => {
     },
   });
 });
-
 
 // Base router and procedure helpers
 export const createTRPCRouter = t.router;

@@ -1,7 +1,6 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
 import { TRPCError } from "@trpc/server";
-import { prisma } from "@/lib/db";
 import { inngest } from "@/inngest/client";
 import { Prisma } from "@/generated/prisma/client";
 
@@ -16,12 +15,9 @@ export type InstallationWithRepositories = Prisma.InstallationGetPayload<{
 }>;
 
 export const installationRouter = createTRPCRouter({
-  // ----------------------------------------------------
-  // LIST INSTALLATIONS ACCESSIBLE TO USER
-  // ----------------------------------------------------
   list: protectedProcedure.query(async ({ ctx }) => {
     const installations: InstallationWithRepositories[] =
-      await prisma.installation.findMany({
+      await ctx.prisma.installation.findMany({
         where: {
           members: {
             some: {
@@ -42,9 +38,6 @@ export const installationRouter = createTRPCRouter({
     return installations;
   }),
 
-  // ----------------------------------------------------
-  // SYNC REPOSITORIES (ACCESS CHECK VIA MEMBERSHIP)
-  // ----------------------------------------------------
   syncRepositories: protectedProcedure
     .input(
       z.object({
@@ -54,7 +47,7 @@ export const installationRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const installation = await prisma.installation.findFirst({
+      const installation = await ctx.prisma.installation.findFirst({
         where: {
           id: input.installationId,
           members: {
@@ -82,9 +75,6 @@ export const installationRouter = createTRPCRouter({
       return { success: true };
     }),
 
-  // ----------------------------------------------------
-  // TOGGLE INSTALLATION PERMISSIONS
-  // ----------------------------------------------------
   updateInstallationAccess: protectedProcedure
     .input(
       z.object({
@@ -94,7 +84,7 @@ export const installationRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const installation = await prisma.installation.findFirst({
+      const installation = await ctx.prisma.installation.findFirst({
         where: {
           id: input.installationId,
           members: {
@@ -115,7 +105,7 @@ export const installationRouter = createTRPCRouter({
         });
       }
 
-      const updatedInstallation = await prisma.installation.update({
+      const updatedInstallation = await ctx.prisma.installation.update({
         where: {
           id: input.installationId,
         },

@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { prisma } from "@/lib/db";
 import { inngest } from "@/inngest/client";
 import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
 import { Prisma } from "@/generated/prisma/client";
@@ -14,8 +13,8 @@ type messageWithFragment = Prisma.MessageGetPayload<{
 export const messagesRouter = createTRPCRouter({
   getMany: protectedProcedure
     .input(z.object({ projectId: z.string() }))
-    .query(async ({ input }) => {
-      const messages: messageWithFragment[] = await prisma.message.findMany({
+    .query(async ({ input, ctx }) => {
+      const messages: messageWithFragment[] = await ctx.prisma.message.findMany({
         where: {
           projectId: input.projectId,
         },
@@ -58,7 +57,7 @@ export const messagesRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      return await prisma.$transaction(async (tx) => {
+      return await ctx.prisma.$transaction(async (tx) => {
         // 1️⃣ Create the message
         const newMessage = await tx.message.create({
           data: {

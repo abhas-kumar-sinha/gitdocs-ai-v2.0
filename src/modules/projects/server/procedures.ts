@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { prisma } from "@/lib/db";
 import { TRPCError } from "@trpc/server";
 import { inngest } from "@/inngest/client";
 import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
@@ -48,7 +47,7 @@ export const projectRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      return await prisma.$transaction(async (tx) => {
+      return await ctx.prisma.$transaction(async (tx) => {
         // 1. Create project
         const project = await tx.project.create({
           data: {
@@ -105,7 +104,7 @@ export const projectRouter = createTRPCRouter({
 
 
   list: protectedProcedure.query(async ({ ctx }) => {
-    const projects: ProjectWithChildren[] = await prisma.project.findMany({
+    const projects: ProjectWithChildren[] = await ctx.prisma.project.findMany({
       where: { userId: ctx.auth.userId },
       include: {
         repository: true,
@@ -125,7 +124,7 @@ export const projectRouter = createTRPCRouter({
   getById: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
-      const project = await prisma.project.findFirst({
+      const project = await ctx.prisma.project.findFirst({
         where: {
           id: input.id,
           userId: ctx.auth.userId,
@@ -152,13 +151,13 @@ export const projectRouter = createTRPCRouter({
 
   updateStarred: protectedProcedure
     .input(z.object({ id: z.string(), isStarred: z.boolean() }))
-    .mutation(async ({ input }) => {
-      const currentProject = await prisma.project.findUnique({
+    .mutation(async ({ input, ctx }) => {
+      const currentProject = await ctx.prisma.project.findUnique({
         where: { id: input.id },
         select: { updatedAt: true },
       });
 
-      const project = await prisma.project.update({
+      const project = await ctx.prisma.project.update({
         where: { id: input.id },
         data: {
           isStarred: input.isStarred,
@@ -171,13 +170,13 @@ export const projectRouter = createTRPCRouter({
 
   updateName: protectedProcedure
     .input(z.object({ id: z.string(), name: z.string().min(1).max(100) }))
-    .mutation(async ({ input }) => {
-      const currentProject = await prisma.project.findUnique({
+    .mutation(async ({ input, ctx }) => {
+      const currentProject = await ctx.prisma.project.findUnique({
         where: { id: input.id },
         select: { updatedAt: true },
       });
 
-      const project = await prisma.project.update({
+      const project = await ctx.prisma.project.update({
         where: { id: input.id },
         data: {
           name: input.name,

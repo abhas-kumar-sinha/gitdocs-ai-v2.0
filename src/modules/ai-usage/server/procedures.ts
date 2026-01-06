@@ -1,5 +1,4 @@
 import { protectedProcedure } from "@/trpc/init";
-import { prisma } from "@/lib/db";
 import { TRPCError } from "@trpc/server";
 
 const getTodayDate = () => {
@@ -12,7 +11,7 @@ export const aiUsageRouter = {
   getUsage: protectedProcedure.query(async ({ ctx }) => {
     const today = getTodayDate();
 
-    const user = await prisma.user.findUnique({
+    const user = await ctx.prisma.user.findUnique({
       where: {
         id: ctx.auth.userId,
       },
@@ -30,7 +29,7 @@ export const aiUsageRouter = {
     }
 
     // Try to find today's usage
-    let usage = await prisma.aiUsage.findUnique({
+    let usage = await ctx.prisma.aiUsage.findUnique({
       where: {
         userId_date: {
           userId: ctx.auth.userId,
@@ -41,7 +40,7 @@ export const aiUsageRouter = {
 
     // If no usage exists for today, create one
     if (!usage) {
-      usage = await prisma.aiUsage.create({
+      usage = await ctx.prisma.aiUsage.create({
         data: {
           userId: ctx.auth.userId,
           date: today,

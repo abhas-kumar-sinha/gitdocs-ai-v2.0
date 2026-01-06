@@ -1,11 +1,10 @@
 import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
-import { prisma } from "@/lib/db";
 import { Status } from "@/generated/prisma/enums";
 import z from "zod";
 
 export const installationProcessRouter = createTRPCRouter({
   findRecent: protectedProcedure.query(async ({ ctx }) => {
-    return prisma.installationProcess.findFirst({
+    return ctx.prisma.installationProcess.findFirst({
       where: {
         userId: ctx.auth.userId,
       },
@@ -22,7 +21,7 @@ export const installationProcessRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      await prisma.installationProcess.updateMany({
+      await ctx.prisma.installationProcess.updateMany({
         where: {
           userId: ctx.auth.userId,
           status: Status.PENDING,
