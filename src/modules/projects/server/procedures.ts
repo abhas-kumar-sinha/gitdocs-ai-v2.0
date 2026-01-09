@@ -153,7 +153,7 @@ export const projectRouter = createTRPCRouter({
     .input(z.object({ id: z.string(), isStarred: z.boolean() }))
     .mutation(async ({ input, ctx }) => {
       const currentProject = await ctx.prisma.project.findUnique({
-        where: { id: input.id },
+        where: { id: input.id, userId: ctx.auth.userId },
         select: { updatedAt: true },
       });
 
@@ -172,7 +172,7 @@ export const projectRouter = createTRPCRouter({
     .input(z.object({ id: z.string(), name: z.string().min(1).max(100) }))
     .mutation(async ({ input, ctx }) => {
       const currentProject = await ctx.prisma.project.findUnique({
-        where: { id: input.id },
+        where: { id: input.id, userId: ctx.auth.userId },
         select: { updatedAt: true },
       });
 
