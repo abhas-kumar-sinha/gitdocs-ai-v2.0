@@ -28,10 +28,17 @@ export const isAuthorized = t.middleware(async ({ next, ctx }) => {
     });
   }
 
-  let user = await ctx.prisma.user.findUnique({
-    where: { clerkId },
-    select: { id: true, clerkId: true },
-  });
+  let user;
+
+  try {
+    user = await ctx.prisma.user.findUnique({
+      where: { clerkId },
+      select: { id: true, clerkId: true },
+    });
+  } catch (error) {
+    console.log(error);
+    user = null;
+  } 
 
   if (!user) {
     const clerk = await clerkClient();

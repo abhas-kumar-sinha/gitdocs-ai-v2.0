@@ -194,7 +194,7 @@ export const projectRouter = createTRPCRouter({
         commitMessage: z.string().min(1).max(100),
         commitBranch: z.string().min(1),
         fragmentId: z.string().min(1),
-        assetsFolder: z.string().min(1),
+        assetsFolder: z.string().optional(),
       }),
     )
     .mutation(async ({ input }) => {

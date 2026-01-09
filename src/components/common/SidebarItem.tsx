@@ -546,7 +546,7 @@ const GithubConnectionItem = ({
                       <SelectValue placeholder="Select Readme version" />
                     </SelectTrigger>
 
-                    <SelectContent>
+                    <SelectContent className="border-none">
                       {fragmentIds?.map((id, idx) => (
                         <SelectItem key={id} value={id ?? ""}>
                           Readme Version: {idx + 1}

@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { prisma } from "@/lib/db";
 import { clerkClient } from "@clerk/nextjs/server";
 import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
 import { TRPCError } from "@trpc/server";
@@ -20,7 +19,7 @@ export const userRouter = createTRPCRouter({
 
   getCurrent: protectedProcedure
     .query(async ({ ctx }) => {
-      const user = await prisma.user.findUnique({
+      const user = await ctx.prisma.user.findUnique({
         where: { id: ctx.auth.userId },
         include: {
           installationMemberships: {
@@ -54,7 +53,7 @@ export const userRouter = createTRPCRouter({
       const userId = ctx.auth.userId;
 
       // First, complete the database transaction
-      const feedback = await prisma.$transaction(async (tx) => {
+      const feedback = await ctx.prisma.$transaction(async (tx) => {
         const user = await tx.user.findUnique({
           where: { id: userId },
           select: { feedbackRewarded: true },
