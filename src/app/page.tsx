@@ -8,6 +8,16 @@ export const metadata: Metadata = {
   title: "Gitdocs AI – Generate & Improve README Files with AI",
   description:
     "Gitdocs AI helps developers generate, improve, and maintain professional README files directly from their GitHub repositories.",
+  keywords: [
+    "README generator",
+    "AI documentation",
+    "GitHub README",
+    "developer documentation",
+    "AI developer tools",
+    "GitHub tools",
+    "Gitdocs AI",
+    "README.md generator",
+  ],
   alternates: {
     canonical: "https://www.gitdocs.space",
   },
