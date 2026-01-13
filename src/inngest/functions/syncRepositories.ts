@@ -9,14 +9,13 @@ export const syncRepositories = inngest.createFunction(
   { 
     id: "github-sync-repositories",
     retries: 3,
+    concurrency: { limit: 10 }
   },
   { event: "github/sync-repositories" },
   async ({ event, step }) => {
     const { installationId, actualInstallationId } = event.data;
 
-    // ----------------------------------------------------
     // STEP 1: Fetch Installation
-    // ----------------------------------------------------
     const installation = await step.run("fetch-installation", async () => {
       try {
         if (actualInstallationId) {
@@ -42,17 +41,13 @@ export const syncRepositories = inngest.createFunction(
       );
     }
 
-    // ----------------------------------------------------
     // STEP 2: Get Octokit for Installation
-    // ----------------------------------------------------
     const octokit = await getInstallationOctokit(
           parseInt(installation.installationId)
         );
 
 
-    // ----------------------------------------------------
     // STEP 3: Fetch repositories from GitHub
-    // ----------------------------------------------------
     const repos = await step.run("fetch-repos", async () => {
       try {
         const { data } =
@@ -83,9 +78,7 @@ export const syncRepositories = inngest.createFunction(
       }
     });
 
-    // ----------------------------------------------------
     // STEP 4: Upsert repositories + link to installation
-    // ----------------------------------------------------
     await step.run("upsert-repos", async () => {
       const errors: Array<{ repo: string; error: string }> = [];
 

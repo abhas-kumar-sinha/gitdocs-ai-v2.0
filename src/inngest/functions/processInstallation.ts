@@ -5,7 +5,7 @@ import { getInstallationOctokit, getAppOctokit } from "@/lib/github/appAuth";
 import { RequestError } from "octokit";
 
 export const processInstallation = inngest.createFunction(
-  { id: "github-process-installation" },
+  { id: "github-process-installation", concurrency: { limit: 15 } },
   { event: "github/process-installation" },
   async ({ event, step }) => {
     const {
