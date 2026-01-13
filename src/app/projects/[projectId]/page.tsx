@@ -1,5 +1,7 @@
 import { Metadata } from "next";
 import ProjectView from "@/components/project/ProjectView";
+import { Suspense } from "react";
+import LoadingScreen from "@/components/common/LoadingScreen";
 
 export const metadata: Metadata = {
   title: "Gitdocs AI Dashboard",
@@ -19,7 +21,11 @@ interface Props {
 const Page = async ({ params }: Props) => {
   const { projectId } = await params;
 
-  return <ProjectView projectId={projectId} />;
+  return (
+    <Suspense fallback={<LoadingScreen title="Loading Project" subtitle="Please wait while we load your project" />}>
+      <ProjectView projectId={projectId} />
+    </Suspense>
+  );
 };
 
 export default Page;
