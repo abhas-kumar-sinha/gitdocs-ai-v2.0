@@ -15,6 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import { useAuth } from '@clerk/nextjs';
 
 const navLinks = [
   {
@@ -37,6 +38,7 @@ const navLinks = [
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
+  const { isLoaded } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -111,6 +113,11 @@ const Navbar = () => {
               </DropdownMenuGroup>
             </DropdownMenuContent>
           </DropdownMenu>
+
+          <div className={!isLoaded ? "flex items-center space-x-2" : "hidden"}>
+            <div className="h-3 w-18 rounded bg-background animate-pulse" />
+            <div className="h-9 w-9 shrink-0 rounded-full bg-background animate-pulse" />
+          </div>
 
           {/* CTA Buttons */}
           <SignedOut>
