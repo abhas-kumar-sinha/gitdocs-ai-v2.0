@@ -258,7 +258,7 @@ const GithubConnectionItem = ({
 
   return (
     <>
-      {!isLoading && userInstallations && userInstallations?.length == 0 ? (
+      {!isLoading && userInstallations && userInstallations?.length > 0 ? (
         <div className="flex items-center w-full">
           <DropdownMenu>
             <DropdownMenuTrigger
