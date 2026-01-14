@@ -56,6 +56,7 @@ const Navbar = () => {
 
   return (
     <header
+      role="banner"
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300 py-5",
         scrolled ? "backdrop-blur-md" : "",
@@ -73,7 +74,7 @@ const Navbar = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:ms-10 ms-6 md:flex items-center lg:space-x-8 space-x-5 text-foreground">
+          <nav role="navigation" className="hidden lg:ms-10 ms-6 md:flex items-center lg:space-x-8 space-x-5 text-foreground">
             {navLinks.map((navItem, idx) => {
               return (
                 <Link

@@ -473,7 +473,7 @@ export default function AI_Prompt({ isActive, projectId, repository }: { isActiv
         <div className="absolute right-3 bottom-3 left-3 flex w-[calc(100%-24px)] items-center justify-between">
           <div className="flex items-center gap-x-1">
             <SignedIn>
-            <Button variant="outline" size="icon-sm" className="rounded-full" onClick={handleClick} >
+            <Button variant="outline" role="button" aria-label="Add Image" size="icon-sm" className="rounded-full" onClick={handleClick} >
               <Plus />
             </Button>
             <input
@@ -489,6 +489,8 @@ export default function AI_Prompt({ isActive, projectId, repository }: { isActiv
                     <Button
                       disabled={!!projectId}
                       variant="outline"
+                      role="button"
+                      aria-label="Connect GitHub"
                       className="flex h-8 items-center gap-1 w-fit rounded-full ps-4! pe-3! ms-1 text-xs hover:bg-black/10 focus-visible:ring-1 focus-visible:ring-blue-500 focus-visible:ring-offset-0 dark:text-white dark:hover:bg-white/10"
                     >
                       <Plus />
@@ -502,6 +504,8 @@ export default function AI_Prompt({ isActive, projectId, repository }: { isActiv
                       <Button
                         disabled={!!projectId}
                         variant="outline"
+                        role="button"
+                        aria-label="Select Repository"
                         className="flex h-8 items-center gap-1 rounded-full ps-4! pe-3! ms-1 text-xs hover:bg-black/10 focus-visible:ring-1 focus-visible:ring-blue-500 focus-visible:ring-offset-0 dark:text-white dark:hover:bg-white/10"
                       >
                         <Book className="h-3.5! w-3.5!" />
@@ -536,13 +540,15 @@ export default function AI_Prompt({ isActive, projectId, repository }: { isActiv
             </SignedIn>
             <SignedOut>
               <SignUpButton mode="modal">
-                <Button variant="outline" size="icon-sm" className="rounded-full" onClick={handleClick} >
+                <Button variant="outline" role="button" aria-label="Add Image" size="icon-sm" className="rounded-full" >
                   <Plus />
                 </Button>
               </SignUpButton>
               <SignUpButton mode="modal">
                 <Button
                   variant="outline"
+                  role="button"
+                  aria-label="Select Repository"
                   className="flex h-8 items-center gap-1 rounded-full ps-4! pe-3! ms-1 text-xs hover:bg-black/10 focus-visible:ring-1 focus-visible:ring-blue-500 focus-visible:ring-offset-0 dark:text-white dark:hover:bg-white/10"
                 >
                   <Book className="h-3.5! w-3.5!" />
@@ -555,6 +561,8 @@ export default function AI_Prompt({ isActive, projectId, repository }: { isActiv
           <div className="flex items-center md:gap-x-2 gap-x-1">
             <Button 
               variant="outline" 
+              role="button"
+              aria-label="Voice input"
               size="icon-sm" 
               className="rounded-full"   
               onClick={() => {handleVoiceInput()}} 

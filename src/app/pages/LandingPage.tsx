@@ -11,7 +11,7 @@ const LandingPage = () => {
     <>
       <Navbar />
       <BgMain bgNumber={3} />
-      <div className="h-screen max-h-[768px] flex items-center justify-center mt-14 md:mt-10">
+      <div role="main" className="h-screen max-h-[768px] flex items-center justify-center mt-14 md:mt-10">
         <div className="flex flex-col gap-y-4 md:gap-y-6 w-full">
           <div className="mx-auto flex flex-col md:flex-row items-center gap-4">
             <a
@@ -51,7 +51,7 @@ const LandingPage = () => {
           </div>
         </div>
       </div>
-      <div className="lg:px-14 flex flex-col gap-y-4">
+      <div role="region" className="lg:px-14 flex flex-col gap-y-4">
         <h3 className="text-2xl md:text-3xl lg:text-4xl text-center text-accent-foreground">
           Built for the modern stack
         </h3>
