@@ -4,7 +4,7 @@ import BentoGrid from "@/components/kokonutui/bento-grid";
 import Footer from "@/components/layout/Footer";
 import Navbar from "@/components/layout/Navbar";
 import { ChevronRight } from "lucide-react";
-import { FaGithub } from "react-icons/fa";
+import GitHubIcon from "@/components/common/Github";
 
 const LandingPage = () => {
   return (
@@ -20,7 +20,7 @@ const LandingPage = () => {
               rel="noopener noreferrer"
             >
               <span className="mx-auto text-sm text-foreground border border-foreground/10 ps-4 pe-3 py-3 rounded-full bg-white/5 backdrop-blur-lg flex items-center gap-x-2 cursor-pointer group transition-colors duration-300 hover:scale-102 animate-all hover:text-foreground hover:border-foreground/30">
-                <span className="scale-120"><FaGithub /></span>
+                <span className="scale-120"><GitHubIcon className="h-4.5 w-4.5" /></span>
 
                 <span>Star Us · Loved by early builders</span>
 

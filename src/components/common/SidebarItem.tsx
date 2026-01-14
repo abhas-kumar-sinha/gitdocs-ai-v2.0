@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
 import { useTRPC } from "@/trpc/client";
-import { FaGithub } from "react-icons/fa";
+import GitHubIcon from "@/components/common/Github";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import ConnectGithub from "./ConnectGithub";
@@ -258,7 +258,7 @@ const GithubConnectionItem = ({
 
   return (
     <>
-      {!isLoading && userInstallations && userInstallations?.length > 0 ? (
+      {!isLoading && userInstallations && userInstallations?.length == 0 ? (
         <div className="flex items-center w-full">
           <DropdownMenu>
             <DropdownMenuTrigger
@@ -605,8 +605,8 @@ const GithubConnectionItem = ({
             }}
             className="cursor-pointer w-full my-1.5 py-1 px-[4.5px] border border-neutral-700/50 group/button rounded-md bg-background hover:bg-neutral-300/50 dark:hover:bg-neutral-700/50 flex items-center text-foreground hover:text-foreground/90"
           >
-            <div className="flex items-center justify-center bg-accent py-1 px-[5px] rounded-md">
-              <FaGithub size={15} />
+            <div className="flex items-center justify-center bg-accent py-1 px-[4px] rounded-md">
+              <GitHubIcon className="h-4.25 w-4.25" />
             </div>
             <span
               className={cn(
