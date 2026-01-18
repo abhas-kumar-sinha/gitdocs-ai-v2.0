@@ -2,6 +2,7 @@ import { z } from "zod";
 import { inngest } from "@/inngest/client";
 import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
 import { Prisma } from "@/generated/prisma/client";
+import { TRPCError } from "@trpc/server";
 
 type messageWithFragment = Prisma.MessageGetPayload<{
   include: {
@@ -14,6 +15,18 @@ export const messagesRouter = createTRPCRouter({
   getMany: protectedProcedure
     .input(z.object({ projectId: z.string() }))
     .query(async ({ input, ctx }) => {
+
+      const project = await ctx.prisma.project.findFirst({
+        where: {
+          id: input.projectId,
+          userId: ctx.auth.userId,
+        },
+      })
+
+      if (!project) {
+        throw new TRPCError({ code: "NOT_FOUND" });
+      }
+
       const messages: messageWithFragment[] = await ctx.prisma.message.findMany({
         where: {
           projectId: input.projectId,
