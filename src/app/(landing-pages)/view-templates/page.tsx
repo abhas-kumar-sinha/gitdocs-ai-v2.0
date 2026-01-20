@@ -5,14 +5,57 @@ import { templates } from "@/lib/constants/CONSTANTS";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "README Templates – Gitdocs AI",
+  title: {
+    default: "README Templates for GitHub & SaaS Projects",
+    template: "%s | Gitdocs AI",
+  },
+
   description:
-    "Browse professionally designed README templates for open-source and SaaS projects.",
+    "Explore professionally designed README templates for GitHub, open-source, and SaaS projects. Choose a template and generate a complete README using AI.",
+
+  keywords: [
+    "README templates",
+    "GitHub README templates",
+    "open source README",
+    "SaaS README template",
+    "project documentation templates",
+    "README.md examples",
+  ],
+
   alternates: {
     canonical: "https://www.gitdocs.space/view-templates",
+    languages: {
+      "en": "https://www.gitdocs.space/view-templates",
+      "x-default": "https://www.gitdocs.space/view-templates",
+    },
+  },
+
+  openGraph: {
+    type: "website",
+    title: "README Templates – Gitdocs AI",
+    description:
+      "Browse professionally designed README templates for open-source and SaaS projects. Generate a complete README using AI.",
+    url: "https://www.gitdocs.space/view-templates",
+    siteName: "Gitdocs AI",
+    images: [
+      {
+        url: "/og.png",
+        width: 1200,
+        height: 630,
+        alt: "Gitdocs AI README Templates",
+      },
+    ],
+    locale: "en_US",
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: "README Templates – Gitdocs AI",
+    description:
+      "Browse professionally designed README templates for GitHub and SaaS projects.",
+    images: ["/og.png"],
   },
 };
-
 
 const LandingPage = () => {
   return (

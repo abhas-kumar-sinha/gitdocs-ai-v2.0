@@ -65,9 +65,9 @@ const DashboardPage = () => {
               </a>
             </div>
 
-            <h3 className="text-center text-xl md:text-2xl lg:text-3xl font-bold mt-8 md:mt-6 max-w-9/10 mx-auto">
+            <h1 className="text-center text-xl md:text-2xl lg:text-3xl font-bold mt-8 md:mt-6 max-w-9/10 mx-auto">
               What should we <span className="font-handwriting text-2xl md:text-3xl lg:text-4xl me-1">document</span> today?
-            </h3>
+            </h1>
 
             <div className="mx-auto relative w-9/10 max-w-2xl">
               <div className="py-4">

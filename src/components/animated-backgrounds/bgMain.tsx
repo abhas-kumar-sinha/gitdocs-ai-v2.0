@@ -6,7 +6,7 @@ const BgMain = ( { bgNumber } : { bgNumber: number } ) => {
     className="absolute top-40 inset-0 -z-10 blur-3xl"
     >
     <Image
-        alt=""
+        alt="Background Image"
         width={1000}
         height={1000}
         src={bgNumber === 1 ? "/1.jpg" : bgNumber === 2 ? "/2.jpg" : "/3.jpg"}

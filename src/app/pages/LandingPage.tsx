@@ -36,9 +36,9 @@ const LandingPage = () => {
             </span>
           </div>
 
-          <h2 className="text-center text-3xl md:text-4xl lg:text-5xl font-semibold mt-2 max-w-9/10 mx-auto text-accent-foreground">
+          <h1 className="text-center text-3xl md:text-4xl lg:text-5xl font-semibold mt-2 max-w-9/10 mx-auto text-accent-foreground">
             Make <span className="font-handwriting text-4xl md:text-5xl lg:text-6xl">repository</span> explain itself
-          </h2>
+          </h1>
           <p className="text-foreground font-semibold text-xs -mt-4 md:text-base lg:text-lg text-center max-w-2/3 mx-auto">
             Create structured README files chatting with AI
           </p>
@@ -52,9 +52,9 @@ const LandingPage = () => {
         </div>
       </div>
       <div role="region" className="lg:px-14 flex flex-col gap-y-4">
-        <h3 className="text-2xl md:text-3xl lg:text-4xl text-center text-accent-foreground">
+        <h2 className="text-2xl md:text-3xl lg:text-4xl text-center text-accent-foreground">
           Built for the modern stack
-        </h3>
+        </h2>
         <p className="text-center text-foreground text-xs md:text-base max-w-2/3 mx-auto">
           Everything you need to maintain comprehensive documentation without
           leaving your terminal.

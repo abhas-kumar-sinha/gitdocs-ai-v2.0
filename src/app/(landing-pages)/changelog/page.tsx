@@ -5,14 +5,65 @@ import { CircleCheckBig } from "lucide-react";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Changelog – Gitdocs AI",
+  title: {
+    default: "Changelog – Gitdocs AI",
+    template: "%s | Gitdocs AI",
+  },
+
   description:
-    "Track new features, improvements, and updates to Gitdocs AI.",
+    "Track new features, improvements, fixes, and updates to Gitdocs AI. Stay up to date with the latest changes from the creator.",
+
+  keywords: [
+    "Gitdocs AI changelog",
+    "product updates",
+    "feature updates",
+    "release notes",
+    "Gitdocs updates",
+    "developer tool updates",
+  ],
+
+  authors: [
+    {
+      name: "Abhas Kumar Sinha",
+      url: "https://github.com/abhas-kumar-sinha",
+    },
+  ],
+
   alternates: {
     canonical: "https://www.gitdocs.space/changelog",
+    languages: {
+      "en": "https://www.gitdocs.space/changelog",
+      "x-default": "https://www.gitdocs.space/changelog",
+    },
+  },
+
+  openGraph: {
+    type: "website", // ✅ changelog is not an article
+    title: "Gitdocs AI Changelog",
+    description:
+      "Track new features, improvements, and updates to Gitdocs AI.",
+    url: "https://www.gitdocs.space/changelog",
+    siteName: "Gitdocs AI",
+    images: [
+      {
+        url: "/og.png",
+        width: 1200,
+        height: 630,
+        alt: "Gitdocs AI Changelog",
+      },
+    ],
+    locale: "en_US",
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    creator: "@AbhasKumar99",
+    title: "Gitdocs AI Changelog",
+    description:
+      "New features, improvements, and updates to Gitdocs AI.",
+    images: ["/og.png"],
   },
 };
-
 
 export interface Changelog {
     type: "NEW" | "FEATURE" | "FIXES",
