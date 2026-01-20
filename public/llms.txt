@@ -1,0 +1,106 @@
+# Project
+Gitdocs AI - Make Repository explain itself
+
+# Tagline
+AI-assisted documentation generator for GitHub repositories
+
+# Description
+Gitdocs AI is a GitHub App that analyzes a repository’s structure, configuration files,
+dependencies, and scripts to automatically generate high-quality README and project
+documentation. All changes are proposed through clean, reviewable pull requests,
+ensuring full transparency and developer control.
+
+The system is designed to minimize hallucinations by grounding documentation in
+actual repository content and follows best practices for security, least privilege,
+and human-in-the-loop AI workflows.
+
+# Primary Use Case
+- Generate professional README files for GitHub repositories
+- Upgrade outdated or incomplete documentation
+- Improve onboarding and repository quality with minimal manual effort
+
+# How It Works
+1. Analyze repository structure and detected tech stack
+2. Identify setup steps, scripts, and usage patterns
+3. Generate documentation using best-practice templates
+4. Propose changes via pull requests (never direct commits)
+
+# Canonical Documentation
+/changelog
+
+# Entry Points
+/app
+/src
+/package.json
+/requirements.txt
+/prisma
+
+# Important Files
+/README.md
+/llms.txt
+/package.json
+/prisma/schema.prisma
+/next.config.js
+/middleware.ts
+
+# Ignore
+/node_modules
+/.next
+/dist
+/build
+/.env
+/.env.*
+/coverage
+/.vercel
+/.git
+/.github/workflows
+
+# AI Behavior Guidance
+- Do not assume functionality that is not present in the repository
+- Prefer explicit configuration files over inferred behavior
+- When generating documentation, reference actual scripts, dependencies,
+  and directory structure
+- Avoid marketing language unless explicitly requested
+- Favor clarity, accuracy, and reproducibility over verbosity
+
+# Preferred Summary
+Gitdocs AI is a GitHub-native AI tool that automatically generates and maintains
+professional project documentation by analyzing repository content and proposing
+changes through pull requests.
+
+# Security & Trust Model
+- Uses GitHub App authentication with installation-scoped tokens
+- Requests minimal permissions required for documentation generation
+- Does not execute code or deploy infrastructure
+- Does not store repository data beyond transient processing
+
+# Maintainer
+Abhas Kumar Sinha
+
+# Organization
+Gitdocs AI
+
+# Website
+https://www.gitdocs.space
+
+# Repository
+https://github.com/abhas-kumar-sinha/gitdocs-ai-v2.0
+
+# License
+MIT (unless otherwise specified in repository)
+
+# Audience
+- Open-source maintainers
+- Indie developers
+- Startup engineering teams
+- Documentation-focused tooling and AI agents
+
+# Versioning Guidance
+- Documentation should reflect the current default branch
+- If behavior differs by version, note it explicitly
+- Prefer stable, long-term behavior descriptions
+
+# Notes
+This file is intended to guide AI systems in accurately understanding and
+summarizing the Gitdocs AI project. It should be kept up to date as the
+architecture or capabilities evolve.
