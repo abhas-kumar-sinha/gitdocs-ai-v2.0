@@ -13,7 +13,7 @@ const LandingPage = () => {
       <BgMain bgNumber={3} />
       <div role="main" className="h-screen max-h-[768px] flex items-center justify-center mt-14 md:mt-10">
         <div className="flex flex-col gap-y-4 md:gap-y-6 w-full">
-          <div className="mx-auto flex flex-col md:flex-row items-center gap-4">
+          <div className="mx-auto flex flex-col-reverse md:flex-row items-center gap-4">
             <a
               href="https://github.com/abhas-kumar-sinha/gitdocs-ai-v2.0"
               target="_blank"
@@ -39,8 +39,8 @@ const LandingPage = () => {
           <h1 className="text-center text-3xl md:text-4xl lg:text-5xl font-semibold mt-2 max-w-9/10 mx-auto text-accent-foreground">
             Make <span className="font-handwriting text-4xl md:text-5xl lg:text-6xl">repository</span> explain itself
           </h1>
-          <p className="text-foreground font-semibold text-xs -mt-4 md:text-base lg:text-lg text-center max-w-2/3 mx-auto">
-            Create structured README files chatting with AI
+          <p className="text-accent-foreground/80 font-semibold text-xs -mt-4 md:text-base lg:text-lg text-center max-w-2/3 mx-auto">
+            Generate github README files chatting with AI
           </p>
           <div className="mx-auto relative w-9/10 max-w-3xl">
             <div className="py-4">
@@ -51,11 +51,11 @@ const LandingPage = () => {
           </div>
         </div>
       </div>
-      <div role="region" className="lg:px-14 flex flex-col gap-y-4">
+      <div role="region" className="lg:px-14 flex flex-col gap-y-2">
         <h2 className="text-2xl md:text-3xl lg:text-4xl text-center text-accent-foreground">
           Built for the modern stack
         </h2>
-        <p className="text-center text-foreground text-xs md:text-base max-w-2/3 mx-auto">
+        <p className="text-center text-accent-foreground/80 text-xs md:text-base max-w-2/3 mx-auto">
           Everything you need to maintain comprehensive documentation without
           leaving your terminal.
         </p>
