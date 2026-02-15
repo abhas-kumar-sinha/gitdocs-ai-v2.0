@@ -28,10 +28,10 @@ export const metadata: Metadata = {
   ],
 
   alternates: {
-    canonical: "https://www.gitdocs.space/blogs",
+    canonical: "https://www.gitdocs.cloud/blogs",
     languages: {
-      "en": "https://www.gitdocs.space/blogs",
-      "x-default": "https://www.gitdocs.space/blogs",
+      "en": "https://www.gitdocs.cloud/blogs",
+      "x-default": "https://www.gitdocs.cloud/blogs",
     },
   },
 
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
     title: "Gitdocs AI Blog",
     description:
       "Guides, insights, and best practices for documentation, open-source, and developer productivity.",
-    url: "https://www.gitdocs.space/blogs",
+    url: "https://www.gitdocs.cloud/blogs",
     siteName: "Gitdocs AI",
     images: [
       {

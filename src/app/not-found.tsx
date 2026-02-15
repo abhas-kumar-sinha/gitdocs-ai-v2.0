@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
-export default function NotFound() {
+export default function NotFound({backHref = "/"} : {backHref?: string}) {
   return (
     <div className="relative flex h-screen w-full flex-col items-center justify-center overflow-hidden">
 
@@ -20,7 +20,7 @@ export default function NotFound() {
         </div>
 
         <Button asChild size="lg" className="mt-4">
-          <Link href="/">
+          <Link href={backHref}>
             Go back home
           </Link>
         </Button>

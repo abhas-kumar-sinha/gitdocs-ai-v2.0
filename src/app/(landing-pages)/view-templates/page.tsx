@@ -23,10 +23,10 @@ export const metadata: Metadata = {
   ],
 
   alternates: {
-    canonical: "https://www.gitdocs.space/view-templates",
+    canonical: "https://www.gitdocs.cloud/view-templates",
     languages: {
-      "en": "https://www.gitdocs.space/view-templates",
-      "x-default": "https://www.gitdocs.space/view-templates",
+      "en": "https://www.gitdocs.cloud/view-templates",
+      "x-default": "https://www.gitdocs.cloud/view-templates",
     },
   },
 
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     title: "README Templates – Gitdocs AI",
     description:
       "Browse professionally designed README templates for open-source and SaaS projects. Generate a complete README using AI.",
-    url: "https://www.gitdocs.space/view-templates",
+    url: "https://www.gitdocs.cloud/view-templates",
     siteName: "Gitdocs AI",
     images: [
       {

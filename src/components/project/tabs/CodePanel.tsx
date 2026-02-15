@@ -35,15 +35,17 @@ interface FolderItem {
   icon: React.ComponentType<{ className?: string }>;
 }
 
-interface RawPreviewProps {
+interface CodePanelProps {
   content: string;
+  setContent? : (value: string) => void;
   images?: ImageType[];
   setActiveTab: (tab: string) => void;
+  onlyEditor?: boolean;
   contributing?: string;
   license?: string;
 }
 
-const RawPreview = ({ content, images, setActiveTab, contributing, license }: RawPreviewProps) => {
+const CodePanel = ({ content, setContent, images, setActiveTab, onlyEditor, contributing, license }: CodePanelProps) => {
   const { rawScrollPosition, setRawScrollPosition } = useScrollPosition();
   const { theme, resolvedTheme } = useTheme();
   const [isReady, setIsReady] = useState<boolean>(false);
@@ -309,7 +311,7 @@ const RawPreview = ({ content, images, setActiveTab, contributing, license }: Ra
   const isViewingImage = currentFile?.type === "image";
   const showLoadingOverlay = !isReady && !isViewingImage;
 
-  if (!content) {
+  if (!content && content !== "") {
     return (
       <div className="h-full flex flex-col gap-y-2 items-center justify-center bg-foreground/5">
         <PixelatedCanvas
@@ -341,6 +343,50 @@ const RawPreview = ({ content, images, setActiveTab, contributing, license }: Ra
   }
 
   const currentTheme = resolvedTheme || theme;
+
+  if (onlyEditor && setContent) {
+    return (
+      <div className="relative h-full">
+        {/* Loading overlay - only shown for markdown files */}
+        {showLoadingOverlay && (
+          <div className="absolute inset-0 z-10 flex items-center justify-center bg-background">
+            <div className="flex flex-col items-center gap-3 -mt-8">
+              <div className="w-8 h-8 border-4 border-foreground/20 border-t-foreground/60 rounded-full animate-spin" />
+              <p className="text-sm text-foreground/60">Preparing preview...</p>
+            </div>
+          </div>
+        )}
+
+        <div 
+          className={cn(
+            "h-full transition-opacity duration-300",
+            isReady ? "opacity-100" : "opacity-0"
+          )}
+        >
+          <Editor
+            defaultLanguage="markdown"
+            value={(content || "")
+              .replace(/\\n/g, "\n")
+              .replace(/\\`\\`\\`/g, "```")}
+            onChange={(value) => {
+            setContent(value || "");
+            }}
+            onMount={handleEditorDidMount}
+            options={{
+              minimap: { enabled: false },
+              wordBasedSuggestions: "currentDocument",
+              scrollBeyondLastLine: true,
+              lineNumbers: "off",
+              roundedSelection: false,
+              wordWrap: "on",
+              readOnly: false,
+              theme: currentTheme === "light" ? "light" : "vs-dark",
+            }}
+          />
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="relative h-full">
@@ -525,15 +571,14 @@ const RawPreview = ({ content, images, setActiveTab, contributing, license }: Ra
                     defaultLanguage="markdown"
                     value={(currentFile.content || "")
                       .replace(/\\n/g, "\n")
-                      .replace(/\\`\\`\\`/g, "```")
-                      .trim()}
+                      .replace(/\\`\\`\\`/g, "```")}
                     onMount={handleEditorDidMount}
                     options={{
                       minimap: { enabled: false },
                       scrollBeyondLastLine: false,
                       lineNumbers: "on",
                       roundedSelection: false,
-                      wordWrap: "off",
+                      wordWrap: "on",
                       readOnly: false,
                       theme: currentTheme === "light" ? "light" : "vs-dark",
                     }}
@@ -552,4 +597,4 @@ const RawPreview = ({ content, images, setActiveTab, contributing, license }: Ra
   );
 };
 
-export default RawPreview;
+export default CodePanel;

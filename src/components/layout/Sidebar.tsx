@@ -90,12 +90,7 @@ const Sidebar = () => {
   const trpc = useTRPC();
   const { user, isLoaded } = useUser();
   const [isCommandOpen, setIsCommandOpen] = useState(false);
-  const {
-    isSidebarOpen,
-    setIsSidebarOpen,
-    isFeedbackFormOpen,
-    setIsFeedbackFormOpen,
-  } = useSidebarContext();
+  const { isSidebarOpen, setIsSidebarOpen, isFeedbackFormOpen, setIsFeedbackFormOpen } = useSidebarContext();
   const feedbackRewarded = user?.publicMetadata?.feedbackRewarded === true;
 
   const feedbackSubmission = useMutation(

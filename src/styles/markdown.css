@@ -141,39 +141,31 @@
 }
 
 /* Code blocks */
-.markdown-preview pre {
-  padding: 16px;
-  overflow: auto;
-  font-size: 85%;
-  line-height: 1.45;
-  background-color: #f6f8fa;
-  border-radius: 6px;
-  margin-top: 0;
-  margin-bottom: 16px;
-}
-
-.dark .markdown-preview pre {
-  background-color: #161b22;
-}
-
 .markdown-preview code {
   padding: 0.2em 0.4em;
   margin: 0;
   font-size: 85%;
-  background-color: "#F6F8FA";
+  background-color: #f6f8fa;
   border-radius: 6px;
   font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
 }
 
+.dark .markdown-preview code {
+  background-color: #161b22;
+}
+
+.markdown-preview pre {
+  margin-top: 0;
+  margin-bottom: 16px;
+}
 
 .markdown-preview pre code {
   padding: 0;
   margin: 0;
   font-size: 100%;
-  background-color: transparent;
+  background-color: transparent !important;
   border: 0;
   display: block;
-  overflow-x: auto;
 }
 
 /* Blockquotes */
@@ -285,6 +277,112 @@
 .markdown-preview del {
   text-decoration: line-through;
 }
+
+/* =========================================
+   Base Alert Styling
+   ========================================= */
+.markdown-alert {
+  padding: 0.5rem 1rem;
+  margin-bottom: 1rem;
+  border-left: 0.25rem solid; 
+  border-radius: 6px;
+  font-size: 16px;
+}
+
+/* Alert Title (Icon + Label) */
+.markdown-alert > p:first-child {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  line-height: 1.5;
+}
+
+/* Icon Styling */
+.markdown-alert > p:first-child svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor; 
+}
+
+.markdown-alert > *:last-child {
+  margin-bottom: 0;
+}
+
+/* =========================================
+   Light Mode Colors (GitHub Inspired)
+   ========================================= */
+
+/* Note (Blue) */
+.markdown-alert-note {
+  border-color: #0969da;
+  background-color: #ddf4ff;
+}
+.markdown-alert-note > p:first-child { color: #0969da; }
+
+/* Tip (Green) */
+.markdown-alert-tip {
+  border-color: #1a7f37;
+  background-color: #dafbe1;
+}
+.markdown-alert-tip > p:first-child { color: #1a7f37; }
+
+/* Important (Purple) */
+.markdown-alert-important {
+  border-color: #8250df;
+  background-color: #f0e7ff;
+}
+.markdown-alert-important > p:first-child { color: #8250df; }
+
+/* Warning (Yellow/Orange) */
+.markdown-alert-warning {
+  border-color: #9a6700;
+  background-color: #fff8c5;
+}
+.markdown-alert-warning > p:first-child { color: #9a6700; }
+
+/* Caution (Red) */
+.markdown-alert-caution {
+  border-color: #d1242f;
+  background-color: #ffebe9;
+}
+.markdown-alert-caution > p:first-child { color: #d1242f; }
+
+/* =========================================
+   Dark Mode Colors
+   ========================================= */
+
+.dark .markdown-alert-note {
+  border-color: #2f81f7;
+  background-color: rgba(56, 139, 253, 0.15);
+}
+.dark .markdown-alert-note > p:first-child { color: #2f81f7; }
+
+.dark .markdown-alert-tip {
+  border-color: #3fb950;
+  background-color: rgba(46, 160, 67, 0.15);
+}
+.dark .markdown-alert-tip > p:first-child { color: #3fb950; }
+
+.dark .markdown-alert-important {
+  border-color: #a371f7;
+  background-color: rgba(163, 113, 247, 0.15);
+}
+.dark .markdown-alert-important > p:first-child { color: #a371f7; }
+
+.dark .markdown-alert-warning {
+  border-color: #d29922;
+  background-color: rgba(187, 128, 9, 0.15);
+}
+.dark .markdown-alert-warning > p:first-child { color: #d29922; }
+
+.dark .markdown-alert-caution {
+  border-color: #f85149;
+  background-color: rgba(248, 81, 73, 0.15);
+}
+.dark .markdown-alert-caution > p:first-child { color: #f85149; }
 
 /* ==================== MARKDOWN PREVIEW MINI - 6PX BASE ==================== */
 .markdown-preview-mini {
@@ -627,4 +725,16 @@
   align-items: center;
   gap: 1px;
   margin-bottom: 6px;
+}
+
+/* Mermaid Diagrams */
+.mermaid {
+  display: flex;
+  justify-content: center;
+  margin: 1.5rem 0;
+}
+
+.mermaid svg {
+  max-width: 100%;
+  height: auto;
 }

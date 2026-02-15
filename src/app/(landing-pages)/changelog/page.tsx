@@ -30,10 +30,10 @@ export const metadata: Metadata = {
   ],
 
   alternates: {
-    canonical: "https://www.gitdocs.space/changelog",
+    canonical: "https://www.gitdocs.cloud/changelog",
     languages: {
-      "en": "https://www.gitdocs.space/changelog",
-      "x-default": "https://www.gitdocs.space/changelog",
+      "en": "https://www.gitdocs.cloud/changelog",
+      "x-default": "https://www.gitdocs.cloud/changelog",
     },
   },
 
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
     title: "Gitdocs AI Changelog",
     description:
       "Track new features, improvements, and updates to Gitdocs AI.",
-    url: "https://www.gitdocs.space/changelog",
+    url: "https://www.gitdocs.cloud/changelog",
     siteName: "Gitdocs AI",
     images: [
       {

@@ -1,3 +1,5 @@
+"use client"
+
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -11,43 +13,34 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useTRPC } from "@/trpc/client";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Loader2 } from "lucide-react";
+import { updateDocumentTitle } from "@/lib/db/documents";
 import { toast } from "sonner";
 
-const ProjectNameChangeForm = ({
+const DocumentNameChangeForm = ({
   children,
   isOpenNameChangeForm,
   setIsOpenNameChangeForm,
   value,
   setValue,
-  projectId,
+  documentId,
 }: {
   children: React.ReactNode;
   isOpenNameChangeForm: boolean;
   setIsOpenNameChangeForm: (value: boolean) => void;
   value: string;
   setValue: (value: string) => void;
-  projectId: string;
+  documentId: string;
 }) => {
-  const trpc = useTRPC();
-  const queryClient = useQueryClient();
 
-  const updateProjectName = useMutation(
-    trpc.project.updateName.mutationOptions({
-      onError: () => {
-        toast.error("Failed to update project name");
-      },
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: [["project", "getById"], { input: { id: projectId } }],
-        });
-        toast.success("Project Name updated successfully");
-        setIsOpenNameChangeForm(false);
-      },
-    }),
-  );
+  const handleNameUpdate = async () => {
+    if (!value) {
+      toast.error("Enter a new Title");
+      return;
+    }
+    await updateDocumentTitle(documentId, value);
+    setIsOpenNameChangeForm(false);
+    toast.success("Project Updated")
+  }
 
   return (
     <Dialog open={isOpenNameChangeForm} onOpenChange={setIsOpenNameChangeForm}>
@@ -75,20 +68,14 @@ const ProjectNameChangeForm = ({
           </span>
           <DialogFooter>
             <DialogClose asChild>
-              <Button disabled={updateProjectName.isPending} variant="outline">
+              <Button variant="outline">
                 Cancel
               </Button>
             </DialogClose>
             <Button
-              disabled={updateProjectName.isPending}
-              onClick={() => {
-                updateProjectName.mutate({ id: projectId, name: value });
-              }}
+              onClick={handleNameUpdate}
             >
-              {updateProjectName.isPending && (
-                <Loader2 className="animate-spin" />
-              )}
-              {updateProjectName.isPending ? "Saving..." : "Save"}
+              Save
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -97,4 +84,4 @@ const ProjectNameChangeForm = ({
   );
 };
 
-export default ProjectNameChangeForm;
+export default DocumentNameChangeForm;

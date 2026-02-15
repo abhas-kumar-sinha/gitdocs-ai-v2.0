@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   description:
     "Learn how Gitdocs AI collects, uses, stores, and protects your personal data when you use our services.",
   alternates: {
-    canonical: "https://www.gitdocs.space/privacy",
+    canonical: "https://www.gitdocs.cloud/privacy",
   },
   robots: {
   index: true,
@@ -156,11 +156,11 @@ const LandingPage = () => {
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
                   <span className="text-xl">📧</span>
-                  <a href="mailto:abhas.kumar@gitdocs.space" className="text-primary hover:underline font-medium">abhas.kumar@gitdocs.space</a>
+                  <a href="mailto:abhas.kumar@gitdocs.cloud" className="text-primary hover:underline font-medium">abhas.kumar@gitdocs.cloud</a>
                 </div>
                 <div className="flex items-center gap-3">
                   <span className="text-xl">🌐</span>
-                  <a href="https://www.gitdocs.space" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline font-medium">www.gitdocs.space</a>
+                  <a href="https://www.gitdocs.cloud" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline font-medium">www.gitdocs.cloud</a>
                 </div>
               </div>
               <p className="mt-6 font-bold text-foreground">Gitdocs AI</p>

@@ -1,14 +1,20 @@
 "use client";
 
-import "@/styles/markdown.css"
+import "@/styles/markdown.css";
+import 'katex/dist/katex.min.css';
 import remarkGfm from "remark-gfm";
+import remarkMath from 'remark-math';
 import rehypeRaw from 'rehype-raw';
+import rehypeKatex from 'rehype-katex';
 import ReactMarkdown from "react-markdown";
-import React, { useRef, useEffect, useState, useMemo } from "react";
-import { PixelatedCanvas } from "@/components/ui/pixelated-canvas";
-import { useScrollPosition } from "@/contexts/ScrollPositionContext";
+import CodeBlock from "../plugins/CodeBlock";
+import remarkAlert from 'remark-github-blockquote-alert';
+import { MermaidDiagram } from "../plugins/MermaidDiagram";
 import ShimmerText from "@/components/kokonutui/shimmer-text";
-
+import { PixelatedCanvas } from "@/components/ui/pixelated-canvas";
+import React, { useRef, useEffect, useState, useMemo } from "react";
+import { useScrollPosition } from "@/contexts/ScrollPositionContext";
+ 
 const MarkdownPreview = ({
   content,
   view = "max",
@@ -16,10 +22,8 @@ const MarkdownPreview = ({
   content: string;
   view?: "max" | "min" | "min-max";
 }) => {
-  const { markdownScrollPosition, setMarkdownScrollPosition } =
-    useScrollPosition();
+  const { markdownScrollPosition, setMarkdownScrollPosition } = useScrollPosition();
   const [isReady, setIsReady] = useState(false);
-
   const containerRef = useRef<HTMLDivElement>(null);
   const hasRestoredRef = useRef(false);
   const scrollPositionRef = useRef(markdownScrollPosition);
@@ -38,11 +42,35 @@ const MarkdownPreview = ({
   // Memoize the ReactMarkdown component to prevent unnecessary re-renders
   const memoizedMarkdown = useMemo(
     () => (
-      <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
+      <ReactMarkdown 
+        remarkPlugins={[remarkGfm, remarkMath, remarkAlert]} 
+        rehypePlugins={[rehypeRaw, rehypeKatex]}
+        components={{
+          code({ node, className, children, ...props }) {
+            const match = /language-(\w+)/.exec(className || '');
+            const language = match ? match[1] : '';
+            const codeString = String(children).replace(/\n$/, '');
+            
+            const isBlockCode = node?.position !== undefined && className;
+
+            if (language === 'mermaid') {
+              return <MermaidDiagram chart={codeString} />;
+            }
+
+            return isBlockCode && language ? (
+              <CodeBlock language={language} code={codeString} view={view} />
+            ) : (
+              <code className={className} {...props}>
+                {children}
+              </code>
+            );
+          }
+        }}
+      >
         {cleanContent}
       </ReactMarkdown>
     ),
-    [cleanContent]
+    [cleanContent, view]
   );
 
   // Explicitly save scroll position when component unmounts

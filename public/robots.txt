@@ -6,4 +6,4 @@ Disallow: /github/
 Disallow: /projects
 Disallow: /templates
 
-Sitemap: https://www.gitdocs.space/sitemap.xml
+Sitemap: https://www.gitdocs.cloud/sitemap.xml

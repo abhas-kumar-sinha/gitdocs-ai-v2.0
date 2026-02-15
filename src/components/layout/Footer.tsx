@@ -56,7 +56,7 @@ const connectLinks = [
     title: "Terms",
   },
   {
-    href: "https://www.linkedin.com/in/abhas-kumar-sinha-b23038317",
+    href: "https://www.linkedin.com/in/abhas-kumar-sinha-iitd",
     title: "LinkedIn",
   },
   {
@@ -183,7 +183,7 @@ const Footer = () => {
             </Link>
           </Button>
           <Button asChild variant="outline" aria-label="Visit Abhas Kumar Sinha on LinkedIn" size="icon-sm" className="cursor-pointer">
-            <Link href="https://www.linkedin.com/in/abhas-kumar-sinha-b23038317" target="_blank" rel="noopener noreferrer">
+            <Link href="https://www.linkedin.com/in/abhas-kumar-sinha-iitd" target="_blank" rel="noopener noreferrer">
               <Linkedin />
             </Link>
           </Button>

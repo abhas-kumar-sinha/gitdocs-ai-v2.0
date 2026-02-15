@@ -5,22 +5,63 @@ import { SignedIn, SignedOut } from "@clerk/nextjs";
 
 export const metadata: Metadata = {
   title: {
-    default: "Gitdocs AI – Generate & Improve README Files with AI",
+    default:
+      "Gitdocs AI – AI GitHub README Generator & Developer Documentation Platform",
     template: "%s | Gitdocs AI",
   },
 
   description:
-    "Gitdocs AI helps developers generate, improve, and maintain professional README files directly from their GitHub repositories using AI.",
+    "Gitdocs AI is an AI-powered README generator and developer documentation platform that helps teams generate, improve, and maintain high-quality GitHub README.md files and technical documentation directly from repositories.",
 
   keywords: [
-    "README generator",
-    "AI documentation",
-    "GitHub README",
-    "developer documentation",
-    "AI developer tools",
-    "GitHub tools",
-    "README.md generator",
+    // Core intent
+    "gitdocs ai",
+    "readme generator",
+    "ai readme generator",
+    "github readme generator",
+    "ai documentation generator",
+    "developer documentation platform",
+
+    // GitHub intent
+    "github documentation",
+    "github readme",
+    "github tools",
+    "github ai tools",
+    "github automation",
+    "github developer tools",
+
+    // AI + docs
+    "ai documentation",
+    "ai developer tools",
+    "ai docs generator",
     "automated documentation",
+    "documentation automation",
+    "ai technical writing",
+
+    // Product intent
+    "developer tools",
+    "documentation tools",
+    "software documentation",
+    "technical documentation",
+    "documentation platform",
+    "docs platform",
+    "engineering documentation",
+
+    // README specific
+    "readme.md generator",
+    "readme builder",
+    "readme creator",
+    "github readme builder",
+    "project documentation",
+    "open source documentation",
+
+    // Long-tail
+    "ai tools for developers",
+    "ai tools for github",
+    "ai tools for open source",
+    "documentation for developers",
+    "developer productivity tools",
+    "engineering productivity tools",
   ],
 
   authors: [
@@ -31,26 +72,40 @@ export const metadata: Metadata = {
   ],
 
   alternates: {
-    canonical: "https://www.gitdocs.space",
+    canonical: "https://www.gitdocs.cloud",
     languages: {
-      "en": "https://www.gitdocs.space",
-      "x-default": "https://www.gitdocs.space",
+      "en": "https://www.gitdocs.cloud",
+      "x-default": "https://www.gitdocs.cloud",
+    },
+  },
+
+  robots: {
+    index: true,
+    follow: true,
+    nocache: false,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-snippet": -1,
+      "max-image-preview": "large",
+      "max-video-preview": -1,
     },
   },
 
   openGraph: {
     type: "website",
-    title: "Gitdocs AI – AI-Powered README Generator",
+    title:
+      "Gitdocs AI – AI README Generator & Developer Documentation Platform",
     description:
-      "Generate production-ready README files with AI. Connect your GitHub repo and ship better documentation faster.",
-    url: "https://www.gitdocs.space",
+      "Generate production-ready README.md files and developer documentation using AI. Gitdocs AI connects to GitHub repositories and automates professional documentation workflows.",
+    url: "https://www.gitdocs.cloud",
     siteName: "Gitdocs AI",
     images: [
       {
         url: "/og.png",
         width: 1200,
         height: 630,
-        alt: "Gitdocs AI – AI README Generator",
+        alt: "Gitdocs AI – AI README Generator for GitHub",
       },
     ],
     locale: "en_US",
@@ -59,10 +114,20 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     creator: "@AbhasKumar99",
-    title: "Gitdocs AI – Generate Better README Files with AI",
+    title:
+      "Gitdocs AI – AI README Generator & Developer Documentation Platform",
     description:
-      "AI-powered README generator for GitHub repositories. Ship better docs, faster.",
+      "AI-powered README and documentation generator for GitHub repositories. Automate professional docs for developers and teams.",
     images: ["/og.png"],
+  },
+
+  category: "developer tools",
+
+  other: {
+    "application-name": "Gitdocs AI",
+    "google-site-verification": "YOUR_VERIFICATION_CODE",
+    "msvalidate.01": "YOUR_BING_CODE",
+    "apple-mobile-web-app-title": "Gitdocs AI",
   },
 };
 
@@ -81,7 +146,7 @@ const Home = () => {
             description:
               "Gitdocs AI is an AI-powered developer tool that generates, improves, and maintains professional README files directly from GitHub repositories.",
 
-            url: "https://www.gitdocs.space",
+            url: "https://www.gitdocs.cloud",
             operatingSystem: "Web",
             applicationCategory: "DeveloperApplication",
 
