@@ -62,7 +62,7 @@
     "dexie": "^4.2.1",
     "dotenv": "^17.2.3",
     "embla-carousel-react": "^8.6.0",
-    "inngest": "^3.48.0",
+    "inngest": "^4.4.0",
     "input-otp": "^1.4.2",
     "ioredis": "^5.8.2",
     "lucide-react": "^0.561.0",
